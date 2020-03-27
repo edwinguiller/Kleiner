@@ -14,22 +14,18 @@ def index():
     contenu += "<a href='/Agilog'>Page Agilog</a>" # lien vers Agilog
     return contenu;
 
-#La page pour Agilean avec une vision d'un historique des commandes, un lien vers une recherche de commande, un lien pour commander des kit
+#La page pour Agilean
 @app.route('/Agilean')
 def Agilean():
-#<br/>
+
     contenu = ""
+    contenu = "Accueil Agilean <br/><br/>"
     contenu += "<a href='/'>retour à la page d'accueil</a><br/>"#un retour a la page d'accueil
-    contenu += "<br/> "
-    contenu += "Page Agilean "
-    contenu += "<br/> "
-    contenu += "Combien voulez vous passer de commandes? "# une demande pour savoir combien de kit on veut commander et qui envois vrs la page commande
-    contenu += "<form method='get' action='commande'>"
-    contenu += "<input type='int' name='nombre' value=''>"
-    contenu += "<input type='submit' value='passer commande'>"
+    contenu += "<a href='/Agilean'>valider la réception</a><br/>" #lien vers la validation de la réception
+    
     return contenu;
 
-#La page Agilog avec un historique des commandes, et une vision des commandes en cours avec la possibilité de dire qu'on a traité la commande et qu'on a fini de préparer
+#La page Agilog 
 @app.route('/Agilog')
 def Agilog():
 #<br/>
@@ -37,6 +33,9 @@ def Agilog():
     contenu += "<a href='/'>retour à la page d'accueil</a><br/>"#un retour a la page d'accueil
     contenu += "<br/> "
     contenu += "Page Agilog"
+    contenu += "<a href='/Agilog'>Initialisation</a><br/>"#lien vers l'initialisation
+    contenu += "<a href='/Agilog'>Commande en cours</a><br/>" #lien vers les commandes en cours    
+
     return contenu;
 
 #La page pour passer une commande
