@@ -34,8 +34,8 @@ def Agilog():
     contenu += "<br/> "
     contenu += "Page Agilog"
     contenu += "<br/> "
-    contenu += "<a href='/Agilog'>Initialisation</a><br/>"#lien vers l'initialisation
-    contenu += "<a href='/Agilog'>Commande en cours</a><br/>" #lien vers les commandes en cours    
+    contenu += "<a href='/Initialisation'>Initialisation</a><br/>"#lien vers l'initialisation
+    contenu += "<a href='/Commande_en_cours'>Commande en cours</a><br/>" #lien vers les commandes en cours    
 
     return contenu;
 
@@ -53,6 +53,8 @@ def Initialisation ():
     contenu += "<a href='/Initialisation'>Gestion stocks</a><br/>" #lien vers la gestion des stock
     
     return contenu;
+
+#
 
 #La page pour passer une commande
 @app.route('/commande', methods=['GET'])
