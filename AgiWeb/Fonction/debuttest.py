@@ -20,7 +20,7 @@ def Agilean():
 
     contenu = ""
     contenu = "Accueil Agilean <br/><br/>"
-    contenu += "<a href='/'>retour à la page d'accueil</a><br/>"#un retour a la page d'accueil
+    contenu += "<a href='/'>retour à la page précédente</a><br/>"#un retour a la page d'accueil
     contenu += "<a href='/Agilean'>valider la réception</a><br/>" #lien vers la validation de la réception
     
     return contenu;
@@ -30,12 +30,28 @@ def Agilean():
 def Agilog():
 #<br/>
     contenu = ""
-    contenu += "<a href='/'>retour à la page d'accueil</a><br/>"#un retour a la page d'accueil
+    contenu += "<a href='/'>retour à la page précédente</a><br/>"#un retour a la page d'accueil
     contenu += "<br/> "
     contenu += "Page Agilog"
+    contenu += "<br/> "
     contenu += "<a href='/Agilog'>Initialisation</a><br/>"#lien vers l'initialisation
     contenu += "<a href='/Agilog'>Commande en cours</a><br/>" #lien vers les commandes en cours    
 
+    return contenu;
+
+#La page Initialisation
+@app.route('/Initialisation')
+def Initialisation ():
+	
+    contenu = ""
+    contenu += "<a href='/'>retour à la page précédente</a><br/>"#un retour a la page d'accueil
+    contenu += "<br/> "
+    contenu += "Initialisation"
+    contenu += "<br/> "
+    contenu += "<a href='/Initialisation'>Stock</a><br/>"#lien vers le stock initial
+    contenu += "<a href='/Initialisation'>Code kit</a><br/>" #lien vers les Code kit
+    contenu += "<a href='/Initialisation'>Gestion stocks</a><br/>" #lien vers la gestion des stock
+    
     return contenu;
 
 #La page pour passer une commande
