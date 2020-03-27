@@ -43,9 +43,9 @@ python -m flask run
 !! always set yourself at the root of your project
 
 ## Push Process
-git add .  
-git commit -m "your message"  
-git push  
+git add .   
+git commit -m "your message"   
+git push   
 
 ## Pull Process
 git pull
