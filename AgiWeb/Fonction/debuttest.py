@@ -22,10 +22,10 @@ def Agilean():
     contenu = "Accueil Agilean <br/><br/>"
     contenu += "<a href='/'>retour à la page précédente</a><br/>"#un retour a la page d'accueil
     contenu += "<a href='/Agilean'>valider la réception</a><br/>" #lien vers la validation de la réception
-    
+
     return contenu;
 
-#La page Agilog 
+#La page Agilog
 @app.route('/Agilog')
 def Agilog():
 #<br/>
@@ -35,23 +35,24 @@ def Agilog():
     contenu += "Page Agilog"
     contenu += "<br/> "
     contenu += "<a href='/Initialisation'>Initialisation</a><br/>"#lien vers l'initialisation
-    contenu += "<a href='/Commande_en_cours'>Commande en cours</a><br/>" #lien vers les commandes en cours    
+    contenu += "<a href='/Commande_en_cours'>Commande en cours</a><br/>" #lien vers les commandes en cours
 
     return contenu;
 
 #La page Initialisation
 @app.route('/Initialisation')
 def Initialisation ():
-	
+
     contenu = ""
     contenu += "<a href='/'>retour à la page précédente</a><br/>"#un retour a la page d'accueil
     contenu += "<br/> "
     contenu += "Initialisation"
     contenu += "<br/> "
-    contenu += "<a href='/Initialisation'>Stock</a><br/>"#lien vers le stock initial
+    contenu += "<a href='/accueil/agilog/initialisation/ajout_piece'>Stock</a><br/>"#lien vers le stock initial
     contenu += "<a href='/Initialisation'>Code kit</a><br/>" #lien vers les Code kit
     contenu += "<a href='/Initialisation'>Gestion stocks</a><br/>" #lien vers la gestion des stock
-    
+
+
     return contenu;
 
 #
@@ -68,6 +69,33 @@ def commande():
         contenu += "bj"
     return contenu
 
+@app.route('/accueil/agilog/initialisation/ajout_piece', methods=['GET', 'POST'])#recupere 2 variable nom et prnom et les ajoutent a la base de données (a modifier pour mettre piece et quantite)
+def ajout_piece():
+    contenu=""
+    contenu += "<form method='get' action='ajout_piece'>"
+    contenu += "nom de la piece <br/>"
+    contenu += "<input type='text' name='nom' value=''>"
+    contenu += "<br/>"
+    contenu += "stock de depart <br/>"
+    contenu += "<input type='int' name='quantite' value=''>"
+    contenu += "<input type='submit' value='Envoyer'>"
+
+    nome=request.args.get('nom','')
+    quantitee=request.args.get('quantite','')
+
+    con = lite.connect('/Users/Benjamin/Documents/GitHub/Kleiner/Examples/flask-exemples/exemples.db')
+    con.row_factory = lite.Row
+    cur = con.cursor()
+    if (nome!="" and quantitee>0):
+        cur.execute("INSERT INTO piece('nom', 'quantite') VALUES (?,?)", (nome,quantitee))
+
+    cur.execute("SELECT nom, quantite FROM piece;")
+    lignes = cur.fetchall()
+    con.commit()
+    con.close()
+    contenu += render_template('affichage_personnes.html', piece = lignes)#creer une fonction pour afficher les pieces deja existante
+
+    return contenu;
 
 # se lance avec http:
 
