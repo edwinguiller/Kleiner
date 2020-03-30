@@ -15,44 +15,46 @@ app = Flask(__name__)
 @app.route('/')
 def index():
 
-	contenu = ""
-	contenu += "<a href='/afficher_personnes'>Affichage des personnes de la BDD dont le prenom commence par la lettre </a><br/><br/>"
-	contenu += "<form method='get' action='hello_get'>"
-	contenu += "<input type='text' name='prenom' value=''>"
-	contenu += "<input type='submit' value='Envoyer'>"
-	return contenu;
+    contenu = ""
+    contenu += "<a href='/afficher_personnes'>Affichage des personnes de la BDD dont le prenom commence par la lettre </a><br/><br/>"
+    contenu += "<form method='get' action='affichage_personnes_dont_la_premiere_lettre_est'>"
+    contenu += "<input type='text' name='baba' value=''>"
+    contenu += "<input type='submit' value='Envoyer'>"
+    return contenu;
 
 
 @app.route('/afficher_personnes', methods=['GET'])
 def afficher_personnes():
 
-	con = lite.connect('exemples.db')
-	con.row_factory = lite.Row
-	cur = con.cursor()
-	cur.execute("SELECT nom, prenom, role FROM personnes WHERE prenom LIKE 'A%'")
-	lignes = cur.fetchall()
-	con.close()
-	return render_template('affichage_personnes.html', personnes = lignes)
+    con = lite.connect('exemples.db')
+    con.row_factory = lite.Row
+    cur = con.cursor()
+    cur.execute("SELECT nom, prenom, role FROM personnes WHERE prenom LIKE 'A%'")
+    lignes = cur.fetchall()
+    con.close()
+    return render_template('affichage_personnes.html', personnes = lignes)
 @app.route('/affichage_personnes_dont_la_premiere_lettre_est', methods=['GET'])
 def affichage_personnes_dont_la_premiere_lettre_est():
-	contenu = ""
-	contenu += "Hello, " + request.args.get('prenom', 'une valeur par défaut de la req') + " !"
+    contenu = ""
+    contenu += "Hello, " + request.args.get('baba', 'une valeur par défaut de la req') + " !"
 
-	contenu += "<a href='/'>retour à l'index</a><br/><br/>"
-	con = lite.connect('exemples.db')
-	con.row_factory = lite.Row
-	cur = con.cursor()
+    contenu += "<a href='/'>retour à l'index</a><br/><br/>"
+    con = lite.connect('exemples.db')
+    con.row_factory = lite.Row
+    cur = con.cursor()
 
-	cur.execute("SELECT nom, prenom, role FROM personnes WHERE prenom LIKE 'request.args.get('prenom')%'")
-	lignes = cur.fetchall()
-	con.close()
-	return render_template('affichage_personnes.html', personnes = lignes)
+    jeje=request.args.get('baba')
+    contenu += jeje
+    cur.execute("SELECT nom, prenom, role FROM personnes WHERE prenom LIKE 'jeje%'")
+    lignes = cur.fetchall()
+    con.close()
+    return render_template('affichage_personnes.html', personnes = lignes)
 
 
-	return contenu
+    return contenu
 # ---------------------------------------
 # pour lancer le serveur web local Flask
 # ---------------------------------------
 
 if __name__ == '__main__':
-	app.run(debug=True, port=5678)
+    app.run(debug=True, port=5678)
