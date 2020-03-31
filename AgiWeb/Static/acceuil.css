@@ -1,25 +1,23 @@
-header div{
-	display :inline-block;
-	width: 20%;
+/*Menu navigation, logo_proverbe , footer, h2, small,center */
 
-}
-div.leftbox{
-	background-color: red
-
-}
-div.rightbox{
-	vertical-align: top;
-	background-color: yellow
-
-
-}
 .logo{
 	width:150px ;
 	height:50px
 }
 
+div#content div{
+	display :inline-block;
+	width: 12%;
+
+}
+div#content div#photo{
 
 
+}
+div#content div#proverbe{
+	vertical-align: top;
+
+  }
 nav.menu-nav ul li.bouton{
 	list-style-type: none;
 	display :inline-block;
@@ -37,8 +35,13 @@ nav.menu-nav ul li.bouton:hover a{
 	background-color:white;
 	transition: 0.5S all;
 }
+
+footer{
+	color:blue; 
+ }
+
 h2{
-	padding:20px;
+	padding:30px;
 }
 
 
@@ -48,51 +51,51 @@ h2{
 
 }
 
-.content{
-	display :inline-block;
-	width:50%;
-
-}
-div.leftbox2{
-	background-color: yellow;
-
-}
-div.rightbox2{
-	background-color: red;
-	vertical-align: top;
-
-
-}
-.big{
-	font-size: 30px
-}
 
 .center{
 	text-align: center
 }
-.backred{
-	background-color:red
-}
+
+/*AgiWeb*/
+
+
+div#content-acceuil div{
+	display :inline-block;
+	width:48%;
 
 }
-footer{
-	color:blue; 
- }
+div.leftbox{
 
+}
+div.rightbox{
 
-/*h1{
-	color :FF7733;
-	font-size: 30px;
-	padding:20px;
-}*/
+  }
 
+/*AgiLog*/
+div#content-agilog div{
+	display :inline-block;
+	width:48%;
 
-.contentkirian {
-	display: flex;
-	flex-direction: row;
-	width: 100%;
+}
+div.leftbox{
+
+}
+div.rightbox{
+}
+ 
+div#content-agilog ul li.bouton2{
+	list-style-type: none;
+
 }
 
-.box {
-	width: 50%
+div#content-agilog ul li.bouton2 a{
+	color:white;
+	background-color:990066;
+	text-decoration: none;
+	padding:10px;
+	font-size:20px;
 }
+div#content-agilog ul li.bouton2:hover a{
+	color:990066;
+	background-color:white;
+	transition: 0.5S all;
