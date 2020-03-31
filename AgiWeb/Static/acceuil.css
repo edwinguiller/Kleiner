@@ -1,0 +1,98 @@
+header div{
+	display :inline-block;
+	width: 20%;
+
+}
+div.leftbox{
+	background-color: red
+
+}
+div.rightbox{
+	vertical-align: top;
+	background-color: yellow
+
+
+}
+.logo{
+	width:150px ;
+	height:50px
+}
+
+
+
+nav.menu-nav ul li.bouton{
+	list-style-type: none;
+	display :inline-block;
+}
+
+nav.menu-nav ul li.bouton a{
+	color:white;
+	background-color:FF7733;
+	text-decoration: none;
+	padding:10px;
+	font-size:20px;
+}
+nav.menu-nav ul li.bouton:hover a{
+	color:FF7733;
+	background-color:white;
+	transition: 0.5S all;
+}
+h2{
+	padding:20px;
+}
+
+
+}
+.small {
+	font.size: 15px
+
+}
+
+.content{
+	display :inline-block;
+	width:50%;
+
+}
+div.leftbox2{
+	background-color: yellow;
+
+}
+div.rightbox2{
+	background-color: red;
+	vertical-align: top;
+
+
+}
+.big{
+	font-size: 30px
+}
+
+.center{
+	text-align: center
+}
+.backred{
+	background-color:red
+}
+
+}
+footer{
+	color:blue; 
+ }
+
+
+/*h1{
+	color :FF7733;
+	font-size: 30px;
+	padding:20px;
+}*/
+
+
+.contentkirian {
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+}
+
+.box {
+	width: 50%
+}
