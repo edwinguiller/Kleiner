@@ -49,11 +49,49 @@ def Initialisation ():
     contenu += "Initialisation"
     contenu += "<br/> "
     contenu += "<a href='/accueil/agilog/initialisation/ajout_piece'>Stock</a><br/>"#lien vers le stock initial
-    contenu += "<a href='/Initialisation'>Code kit</a><br/>" #lien vers les Code kit
+    contenu += "<a href='/accueil/agilog/initialisation/code_kit'>Code kit</a><br/>" #lien vers les Code kit
     contenu += "<a href='/Initialisation'>Gestion stocks</a><br/>" #lien vers la gestion des stock
 
 
     return contenu;
+    
+@app.route('/accueil/agilog/initialisation/code_kit', methods=['GET', 'POST'])
+def Code_kit():
+	
+	contenu=""
+	contenu += "<a href='/accueil/agilog/initialisation/'>retour à la page précédente</a><br/>"
+	contenu += "<br/>"
+	contenu += "Kit"
+	contenu += "<br/>"
+	contenu += "<form method='get' action='code_kit'>"
+	contenu += "<input type='str' name='Code_article' value=''>"
+	contenu += "<input type='submit' value='Envoyer'>"
+	contenu += "<br/>"
+	contenu +="Liste des pièces du Kit"
+	contenu +="<br/>"
+	
+	code=request.args.get('Code_article','')
+	con = lite.connect('/Users/Arthur LAUREILLE/Documents/GitHub/Kleiner/AgiWeb/Fonction/exemples.db')
+	con.row_factory = lite.Row
+	cur=con.cursor()
+	cur.execute("SELECT role FROM personnes;")
+	lignes = cur.fetchall()
+	if code in lignes  or code=='':
+		contenu += "<br/>"
+		contenu += "Erreur le code existe déjà"
+		contenu += "<br/>"
+	else :
+		contenu += "<br/>"
+		contenu += "Entrer le nom puis la quantite de pièce"
+		contenu += "<br/>"
+		contenu += "<form method='get' action='code_kit'>"
+		contenu += "<input type='str' name='nom_piece' value=''>"
+		contenu += "<input type='str' name='quantite' value=''>"
+		contenu += "<input type='submit' value='Valider'>"
+		contenu += "<input type='submit' value='Ajouter piece'>"
+	contenu += render_template('affichage_personnes.html', personnes = lignes)
+	return contenu
+	
 
 #
 
