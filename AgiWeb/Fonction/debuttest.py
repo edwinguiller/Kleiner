@@ -83,10 +83,16 @@ def ajout_piece():
     nome=request.args.get('nom','')
     quantitee=request.args.get('quantite','')
 
+    if (nome!="" or quantitee!="" ):
+        try:
+            seuile=int(quantitee)
+        except:
+            contenu += '<br/> le stock doit être un nombre entier'
+
     con = lite.connect('/Users/Benjamin/Documents/GitHub/Kleiner/Examples/flask-exemples/exemples.db')
     con.row_factory = lite.Row
     cur = con.cursor()
-    if (nome!="" and quantitee>0):
+    if (nome!="" and quantitee>0): #ajouter test si nome n existe pas deja
         cur.execute("INSERT INTO piece('nom', 'quantite') VALUES (?,?)", (nome,quantitee))
 
     cur.execute("SELECT nom, quantite FROM piece;")
@@ -97,6 +103,45 @@ def ajout_piece():
 
     return contenu;
 
+@app.route('/accueil/agilog/initialisation/gestion_stock', methods=['GET', 'POST'])#recupere 2 variable nom et prnom et les ajoutent a la base de données (a modifier pour mettre piece et quantite)
+def gestion_stock():
+    contenu=""
+
+    contenu += "<form method='get' action='gestion_stock'>"
+    contenu += "quel est le nom de ta piece <br/>"
+    contenu += "<input type='str' name='nom' value=''>"
+    contenu += "<br/> <br/>"
+    contenu += "quel est le seuil de recommanda <br/>"
+    contenu += "<input type='str' name='seuil' value=''>"
+    contenu += "<br/> <br/>"
+    contenu += "le stock de securite <br/>"
+    contenu += "<input type='str' name='secu' value=''>"
+    contenu += "<br/> <br/>"
+    contenu += "le delai de réapprovisionnement <br/>"
+    contenu += "<input type='str' name='delai' value=''>"
+    contenu += "<input type='submit' value='Envoyer'>"
+    # a finir
+    nome=request.args.get('nom','')
+    seuile=request.args.get('seuil','')
+    secue=request.args.get('secue','')
+    delaie=request.args.get('delai','')
+
+    con = lite.connect('/Users/Benjamin/Documents/GitHub/Kleiner/Examples/flask-exemples/exemples.db')
+    con.row_factory = lite.Row
+    cur = con.cursor()
+    if (nome=="" and seuile=="" and secue=="" and delaie==""):
+        contenu += ""
+    elif (nome=="a"):
+        contenu += " <br/> c'est pas bon"
+    else:
+        cur.execute("UPDATE personnes SET prenom=? WHERE nom=?", [seuile,nome])
+    cur.execute("SELECT nom, prenom, role FROM personnes;")
+    lignes = cur.fetchall()
+    #con.commit()#enregistrer la requete de modification.
+    con.close()
+    contenu += render_template('affichage_personnes.html', personnes = lignes)
+
+    return contenu;
 # se lance avec http:
 
 #//localhost:5678

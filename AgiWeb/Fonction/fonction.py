@@ -49,27 +49,41 @@ def ajout_piece():
 @app.route('/accueil/agilog/initialisation/gestion_stock', methods=['GET', 'POST'])#recupere 2 variable nom et prnom et les ajoutent a la base de données (a modifier pour mettre piece et quantite)
 def gestion_stock():
     contenu=""
-    contenu += "quel est le nom de ta piece"
-    contenu += "<input type='int' name='secu' value=''>"
+
     contenu += "<form method='get' action='gestion_stock'>"
+    contenu += "quel est le nom de ta piece <br/>"
+    contenu += "<input type='str' name='nom' value=''>"
+    contenu += "<br/> <br/>"
     contenu += "quel est le seuil de recommanda <br/>"
     contenu += "<input type='int' name='seuil' value=''>"
-    contenu += "<br/>"
-    contenu += "le stock de securite<br/>"
-    contenu += "<input type='int' name='secu' value=''>"
-    contenu += "le delai de réapprovisionnement<br/>"
-    contenu += "<input type='int' name='delai' value=''>"
+    contenu += "<br/> <br/>"
+    contenu += "le stock de securite <br/>"
+    contenu += "<input type='str' name='secu' value=''>"
+    contenu += "<br/> <br/>"
+    contenu += "le delai de réapprovisionnement <br/>"
+    contenu += "<input type='str' name='delai' value=''>"
     contenu += "<input type='submit' value='Envoyer'>"
     # a finir
-    prenome=request.args.get('prenom','')
     nome=request.args.get('nom','')
+    seuile=request.args.get('seuil','')
+    secue=request.args.get('secue','')
+    delaie=request.args.get('delai','')
 
+    if (nome!="" or seuile!="" or secue!="" or delaie!=""):
+        try:
+            seuile=int(seuile)
+        except:
+            contenu += 'gros c est pas un nombre'
     con = lite.connect('/Users/Benjamin/Documents/GitHub/Kleiner/Examples/flask-exemples/exemples.db')
     con.row_factory = lite.Row
     cur = con.cursor()
-    if (nome!=""):
-        cur.execute("UPDATE piece SET seuil_recomp=?, stock_secu=?, delai_reappro=? WHERE nom=?", (nome,prenome))
-cur.execute("UPDATE employe SET salaire=? WHERE id=?",[salaire,ide])
+    if (nome=="" and seuile=="" and secue=="" and delaie==""):
+        contenu += ""
+    elif (nome=="a" or seuile in cur.execute('SELECT prenom FROM personnes')):
+        #for row in cur.execute('SELECT date, num_facture FROM achat WHERE fournisseur=? ORDER BY date ASC',[fournisseur1]):
+        contenu += " <br/> c'est pas bon"
+    else:
+        cur.execute("UPDATE personnes SET role=? WHERE nom=?", [seuile,nome])
     cur.execute("SELECT nom, prenom, role FROM personnes;")
     lignes = cur.fetchall()
     #con.commit()#enregistrer la requete de modification.
