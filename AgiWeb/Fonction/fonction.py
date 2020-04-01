@@ -68,9 +68,9 @@ def gestion_stock():
     con.row_factory = lite.Row
     cur = con.cursor()
     if (nome!=""):
-        cur.execute("UPDATE piece SET seuil_recomp=?, stock_secu=?, delai_reappro=? WHERE nom=?", (nome,prenome))
-cur.execute("UPDATE employe SET salaire=? WHERE id=?",[salaire,ide])
-    cur.execute("SELECT nom, prenom, role FROM personnes;")
+		cur.execute("UPDATE piece SET seuil_recomp=?, stock_secu=?, delai_reappro=? WHERE nom=?", (nome,prenome))
+		cur.execute("UPDATE employe SET salaire=? WHERE id=?",[salaire,ide])
+		cur.execute("SELECT nom, prenom, role FROM personnes;")
     lignes = cur.fetchall()
     #con.commit()#enregistrer la requete de modification.
     con.close()
