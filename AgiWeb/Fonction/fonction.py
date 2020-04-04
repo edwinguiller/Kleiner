@@ -69,6 +69,8 @@ def gestion_stock():
     secue=request.args.get('secue','')
     delaie=request.args.get('delai','')
 
+
+
     if (nome!="" or seuile!="" or secue!="" or delaie!=""):
         try:
             seuile=int(seuile)
@@ -77,9 +79,11 @@ def gestion_stock():
     con = lite.connect('/Users/Benjamin/Documents/GitHub/Kleiner/Examples/flask-exemples/exemples.db')
     con.row_factory = lite.Row
     cur = con.cursor()
+    cur.execute("SELECT nom, prenom, role FROM personnes;")
+    lignes = cur.fetchall()
     if (nome=="" and seuile=="" and secue=="" and delaie==""):
         contenu += ""
-    elif (nome=="a" or seuile in cur.execute('SELECT prenom FROM personnes')):
+    elif (nome=="a" or nome in lignes[1]):
         #for row in cur.execute('SELECT date, num_facture FROM achat WHERE fournisseur=? ORDER BY date ASC',[fournisseur1]):
         contenu += " <br/> c'est pas bon"
     else:
