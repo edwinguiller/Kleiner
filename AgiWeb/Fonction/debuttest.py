@@ -49,11 +49,49 @@ def Initialisation ():
     contenu += "Initialisation"
     contenu += "<br/> "
     contenu += "<a href='/accueil/agilog/initialisation/ajout_piece'>Stock</a><br/>"#lien vers le stock initial
-    contenu += "<a href='/Initialisation'>Code kit</a><br/>" #lien vers les Code kit
+    contenu += "<a href='/accueil/agilog/initialisation/code_kit'>Code kit</a><br/>" #lien vers les Code kit
     contenu += "<a href='/Initialisation'>Gestion stocks</a><br/>" #lien vers la gestion des stock
 
 
     return contenu;
+
+@app.route('/accueil/agilog/initialisation/code_kit', methods=['GET', 'POST'])
+def Code_kit():
+
+    contenu=""
+    contenu += "<a href='/accueil/agilog/initialisation/'>retour à la page précédente</a><br/>"
+    contenu += "<br/>"
+    contenu += "Kit"
+    contenu += "<br/>"
+    contenu += "<form method='get' action='code_kit'>"
+    contenu += "<input type='str' name='Code_article' value=''>"
+    contenu += "<input type='submit' value='Envoyer'>"
+    contenu += "<br/>"
+    contenu +="Liste des pièces du Kit"
+    contenu +="<br/>"
+
+    code=request.args.get('Code_article','')
+    con = lite.connect('/Users/Arthur LAUREILLE/Documents/GitHub/Kleiner/AgiWeb/Fonction/exemples.db')
+    con.row_factory = lite.Row
+    cur=con.cursor()
+    cur.execute("SELECT role FROM personnes;")
+    lignes = cur.fetchall()
+    if code in lignes  or code=='':
+        contenu += "<br/>"
+        contenu += "Erreur le code existe déjà"
+        contenu += "<br/>"
+    else :
+        contenu += "<br/>"
+        contenu += "Entrer le nom puis la quantite de pièce"
+        contenu += "<br/>"
+        contenu += "<form method='get' action='code_kit'>"
+        contenu += "<input type='str' name='nom_piece' value=''>"
+        contenu += "<input type='str' name='quantite' value=''>"
+        contenu += "<input type='submit' value='Valider'>"
+        contenu += "<input type='submit' value='Ajouter piece'>"
+    contenu += render_template('affichage_personnes.html', personnes = lignes)
+    return contenu
+
 
 #
 
@@ -83,10 +121,16 @@ def ajout_piece():
     nome=request.args.get('nom','')
     quantitee=request.args.get('quantite','')
 
+    if (nome!="" or quantitee!="" ):
+        try:
+            seuile=int(quantitee)
+        except:
+            contenu += '<br/> le stock doit être un nombre entier'
+
     con = lite.connect('/Users/Benjamin/Documents/GitHub/Kleiner/Examples/flask-exemples/exemples.db')
     con.row_factory = lite.Row
     cur = con.cursor()
-    if (nome!="" and quantitee>0):
+    if (nome!="" and quantitee>0): #ajouter test si nome n existe pas deja
         cur.execute("INSERT INTO piece('nom', 'quantite') VALUES (?,?)", (nome,quantitee))
 
     cur.execute("SELECT nom, quantite FROM piece;")
@@ -97,6 +141,52 @@ def ajout_piece():
 
     return contenu;
 
+@app.route('/accueil/agilog/initialisation/gestion_stock', methods=['GET', 'POST'])#recupere 2 variable nom et prnom et les ajoutent a la base de données (a modifier pour mettre piece et quantite)
+def gestion_stock():
+    contenu=""
+
+    contenu += "<form method='get' action='gestion_stock'>"
+    contenu += "quel est le nom de ta piece <br/>"
+    contenu += "<input type='str' name='nom' value=''>"
+    contenu += "<br/> <br/>"
+    contenu += "quel est le seuil de recommanda <br/>"
+    contenu += "<input type='int' name='seuil' value=''>"
+    contenu += "<br/> <br/>"
+    contenu += "le stock de securite <br/>"
+    contenu += "<input type='int' name='secu' value=''>"
+    contenu += "<br/> <br/>"
+    contenu += "le delai de réapprovisionnement <br/>"
+    contenu += "<input type='int' name='delai' value=''>"
+    contenu += "<input type='submit' value='Envoyer'>"
+
+    nome=request.args.get('nom','')
+    seuile=request.args.get('seuil','')
+    secue=request.args.get('secue','')
+    delaie=request.args.get('delai','')
+    try:
+        seuile=int(seuile)
+        secue=int(secue)
+        delaie=int(delaie)
+    except:
+        contenu += '<br/> Les stocks de sécurité, les delais de réapprovisionnement et le seuils de rec doivent être des nombres entier'
+
+    con = lite.connect('/Users/Benjamin/Documents/GitHub/Kleiner/Examples/flask-exemples/exemples.db')
+    con.row_factory = lite.Row
+    cur = con.cursor()
+
+    if (nome=="" and seuile=="" and secue=="" and delaie==""):
+        contenu += ""
+    elif (seuile<0 or secue<0 or delaie<0):
+        contenu += " <br/> Les nombres doivent être supérieur à 0"
+    else:
+        cur.execute("UPDATE Piece SET seuil_recomp=?, stock_secu=?, delai_reappro=? WHERE nom=?", [seuile,secue,delaie,nome])
+    cur.execute("SELECT nom, id_piece, quantite, seuil_recomp, stock_secu, delai_reappro FROM piece;")
+    lignes = cur.fetchall()
+    #con.commit()#enregistrer la requete de modification.
+    con.close()
+    contenu += render_template('affichage_personnes.html', personnes = lignes)#une fonction html pour afficher un tableau
+
+    return contenu;
 # se lance avec http:
 
 #//localhost:5678
