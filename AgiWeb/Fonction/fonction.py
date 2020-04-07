@@ -1,5 +1,6 @@
 from flask import Flask, url_for, request, render_template, redirect
 import sqlite3 as lite
+import time
 
 app = Flask(__name__)
 #créer les stocks initiaux
@@ -154,6 +155,31 @@ def gestion_stock():
 @app.route('/accueil/agilog/en_cours/aff_stock', methods=['GET', 'POST'])#recupere 2 variable nom et prnom et les ajoutent a la base de données (a modifier pour mettre piece et quantite)
 def aff_stock():
 
+    contenu=""
+
+    contenu += "<form method='get' action='aff_stock'>"
+    contenu += "quel est le nom de ta piece <br/>"
+    contenu += "<input type='str' name='nom' value=''>"
+    contenu += "<br/> <br/>"
+    contenu += "combien faut il en commender <br/>"
+    contenu += "<input type='int' name='nb' value=''>"
+    contenu += "<input type='submit' value='Envoyer'>"
+    nome=request.args.get('nom','')
+    nbe=request.args.get('nb','')
+
+    con = lite.connect('/Users/Benjamin/Documents/GitHub/Kleiner/Examples/flask-exemples/exemples.db')
+    con.row_factory = lite.Row
+    cur = con.cursor()
+    cur.execute("SELECT delai_reappro, quantite FROM piece WHERE nom=?;", (nome))
+    donne = cur.fetchall()
+    quantitee= donne[1]+ nbe
+    delai=donne[0]
+    time.sleep(delai)
+    cur.execute("UPDATE piece SET quantite=? WHERE nom=?", [quantitee,nome])
+    #con.commit()#enregistrer la requete de modification.
+    con.close()
+
+    return contenu
 
 if __name__ == '__main__':
     app.run(debug=True, port=5678)
