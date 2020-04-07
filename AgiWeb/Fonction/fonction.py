@@ -80,10 +80,13 @@ def gestion_stock():
     con.row_factory = lite.Row
     cur = con.cursor()
     cur.execute("SELECT nom, prenom, role FROM personnes;")
-    lignes = cur.fetchall()
+    test = cur.fetchall()
+    L=[]
+    for test in test:
+        L.append(test[1])
     if (nome=="" and seuile=="" and secue=="" and delaie==""):
         contenu += ""
-    elif (nome=="a" or nome in lignes[1]):
+    elif (nome=="a" or nome in L):
         #for row in cur.execute('SELECT date, num_facture FROM achat WHERE fournisseur=? ORDER BY date ASC',[fournisseur1]):
         contenu += " <br/> c'est pas bon"
     else:

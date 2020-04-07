@@ -123,19 +123,30 @@ def ajout_piece():
 
     if (nome!="" or quantitee!="" ):
         try:
-            seuile=int(quantitee)
+            quantitee=int(quantitee)
         except:
             contenu += '<br/> le stock doit être un nombre entier'
 
-    con = lite.connect('/Users/Benjamin/Documents/GitHub/Kleiner/Examples/flask-exemples/exemples.db')
+    con = lite.connect('C:/Users/Benjamin/Documents/GitHub/Kleiner/AgiWeb/AgiWeb_BDD.db')
     con.row_factory = lite.Row
     cur = con.cursor()
-    if (nome!="" and quantitee>0): #ajouter test si nome n existe pas deja
-        cur.execute("INSERT INTO piece('nom', 'quantite') VALUES (?,?)", (nome,quantitee))
+    cur.execute("SELECT nom FROM Piece;")
+    testnom = cur.fetchall()
+    test=[]
+    for testnom in testnom:
+        test.append(testnom[0])
+
+    if (nome!="" and quantitee!= ""):
+        if (nome in test):
+            contenu += "Cette piece existe deja"
+        elif (nome!="" and quantitee>-1): #ajouter un createur d'id apres
+            cur.execute("INSERT INTO piece('nom', 'quantite') VALUES (?,?)", (nome,quantitee))
+        else:
+            contenu += (" Il faut un nom et une quantité positive")
 
     cur.execute("SELECT nom, quantite FROM piece;")
     lignes = cur.fetchall()
-    con.commit()
+    #con.commit()
     con.close()
     contenu += render_template('affichage_personnes.html', piece = lignes)#creer une fonction pour afficher les pieces deja existante
 
