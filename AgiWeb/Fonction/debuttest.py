@@ -109,6 +109,7 @@ def commande():
 
 @app.route('/accueil/agilog/initialisation/ajout_piece', methods=['GET', 'POST'])#recupere 2 variable nom et prnom et les ajoutent a la base de données (a modifier pour mettre piece et quantite)
 def ajout_piece():
+    # la demande du nom de la piece à rajouter et du stock à mettre
     contenu=""
     contenu += "<form method='get' action='ajout_piece'>"
     contenu += "nom de la piece <br/>"
@@ -121,12 +122,30 @@ def ajout_piece():
     nome=request.args.get('nom','')
     quantitee=request.args.get('quantite','')
 
+    #test si le stock est un entier si qlq chose est rentré
     if (nome!="" or quantitee!="" ):
         try:
             quantitee=int(quantitee)
         except:
             contenu += '<br/> le stock doit être un nombre entier'
 
+    # creation de l'id
+    con = lite.connect('/Users/Benjamin/Documents/GitHub/Kleiner/Examples/flask-exemples/exemples.db') #attention chez toi c'est pas rangé au meme endroit
+    con.row_factory = lite.Row
+    cur = con.cursor()
+    cur.execute("SELECT id_piece FROM piece")
+    liste_id1 = cur.fetchall()
+    liste_id2=[]
+    for chaque in liste_id1:
+        liste_id2.append(chaque[0])
+    taille=len(liste_id2)
+    if taille==0:
+        ide=1
+    else:
+        ide=max(liste_id2)+1
+    con.close()
+
+    # on ajoute le nom l'id et le stock à la bdd
     con = lite.connect('C:/Users/Benjamin/Documents/GitHub/Kleiner/AgiWeb/AgiWeb_BDD.db')
     con.row_factory = lite.Row
     cur = con.cursor()
@@ -134,19 +153,20 @@ def ajout_piece():
     testnom = cur.fetchall()
     test=[]
     for testnom in testnom:
-        test.append(testnom[0])
+        test.append(testnom[0]) # une liste pour ensuite voir si la piece demandé n'existe pas deja
 
     if (nome!="" and quantitee!= ""):
         if (nome in test):
             contenu += "Cette piece existe deja"
         elif (nome!="" and quantitee>-1): #ajouter un createur d'id apres
-            cur.execute("INSERT INTO piece('nom', 'quantite') VALUES (?,?)", (nome,quantitee))
+            cur.execute("INSERT INTO piece('nom', 'quantite', id_piece) VALUES (?,?,?)", (nome,quantitee,ide))
         else:
             contenu += (" Il faut un nom et une quantité positive")
 
+    # a modifier, l'affichage des pieces
     cur.execute("SELECT nom, quantite FROM piece;")
     lignes = cur.fetchall()
-    #con.commit()
+    con.commit()
     con.close()
     contenu += render_template('affichage_personnes.html', piece = lignes)#creer une fonction pour afficher les pieces deja existante
 
@@ -156,11 +176,12 @@ def ajout_piece():
 def gestion_stock():
     contenu=""
 
+    #demande le nom de la piece, le seuil de recompletement, le stock de secu et le delai de reapro a changer en fournisseur
     contenu += "<form method='get' action='gestion_stock'>"
     contenu += "quel est le nom de ta piece <br/>"
     contenu += "<input type='str' name='nom' value=''>"
     contenu += "<br/> <br/>"
-    contenu += "quel est le seuil de recommanda <br/>"
+    contenu += "quel est le seuil de recompletement <br/>"
     contenu += "<input type='int' name='seuil' value=''>"
     contenu += "<br/> <br/>"
     contenu += "le stock de securite <br/>"
@@ -174,20 +195,22 @@ def gestion_stock():
     seuile=request.args.get('seuil','')
     secue=request.args.get('secue','')
     delaie=request.args.get('delai','')
+    #test si ce sont bien des entiers
     try:
         seuile=int(seuile)
         secue=int(secue)
         delaie=int(delaie)
     except:
-        contenu += '<br/> Les stocks de sécurité, les delais de réapprovisionnement et le seuils de rec doivent être des nombres entier'
+        contenu += '<br/> Les stocks de sécurité, les delais de réapprovisionnement et le seuils de recompletement doivent être des nombres entier'
 
     con = lite.connect('/Users/Benjamin/Documents/GitHub/Kleiner/Examples/flask-exemples/exemples.db')
     con.row_factory = lite.Row
     cur = con.cursor()
 
+    # si tout est bien rempli on met a jour la bdd
     if (nome=="" and seuile=="" and secue=="" and delaie==""):
         contenu += ""
-    elif (seuile<0 or secue<0 or delaie<0):
+    elif (seuile<0 or secue<0 or delaie<0 or nome=""):
         contenu += " <br/> Les nombres doivent être supérieur à 0"
     else:
         cur.execute("UPDATE Piece SET seuil_recomp=?, stock_secu=?, delai_reappro=? WHERE nom=?", [seuile,secue,delaie,nome])
@@ -196,6 +219,43 @@ def gestion_stock():
     #con.commit()#enregistrer la requete de modification.
     con.close()
     contenu += render_template('affichage_personnes.html', personnes = lignes)#une fonction html pour afficher un tableau
+
+    return contenu;
+
+@app.route('/accueil/agilog/en_cours/declarer_kit', methods=['GET', 'POST'])#recupere 2 variable nom et prnom et les ajoutent a la base de données (a modifier pour mettre piece et quantite)
+def declarer_kit():
+
+    contenu=""
+    contenu += "<form method='get' action='declarer_kit'>"
+    contenu += "num kit "
+    contenu += "<input type='text' name='num_kit' value=''>"
+    contenu += "<input type='submit' value='Envoyer'>"
+
+    num_kite=request.args.get('num_kit','')
+    #génération de l'id
+    con = lite.connect('/Users/Benjamin/Documents/GitHub/Kleiner/Examples/flask-exemples/exemples.db') #attention chez toi c'est pas rangé au meme endroit
+    con.row_factory = lite.Row
+    cur = con.cursor()
+    cur.execute("SELECT id_vente FROM production")
+    liste_id1 = cur.fetchall()
+    liste_id2=[]
+    contenu += str(len(L))
+    for chaque in liste_id1:
+        liste_id2.append(chaque[0])
+    taille=len(liste_id2)
+    if taille==0:
+        ide=1
+    else:
+        ide=max(liste_id2)+1
+    con.close()
+
+    con = lite.connect('/Users/Benjamin/Desktop/Pjt base de donnéé/flask/flask-exemples/flask-exemples/exemples.db')
+    con.row_factory = lite.Row
+    cur = con.cursor()
+    if (nome!=""):
+        cur.execute("INSERT INTO production('id_vente', 'nom_kit', 'fini') Value (?,?,?)", (ide,num_kite,1))
+    con.commit()#enregistrer la requete de modification.
+    con.close()
 
     return contenu;
 # se lance avec http:
