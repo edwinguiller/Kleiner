@@ -25,13 +25,13 @@ nav.menu-nav ul li.bouton{
 
 nav.menu-nav ul li.bouton a{
 	color:white;
-	background-color:FF7733;
+	background-color:orange;
 	text-decoration: none;
 	padding:10px;
 	font-size:20px;
 }
 nav.menu-nav ul li.bouton:hover a{
-	color:FF7733;
+	color:orange;
 	background-color:white;
 	transition: 0.5S all;
 }
