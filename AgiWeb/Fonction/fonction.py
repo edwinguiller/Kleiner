@@ -63,6 +63,7 @@ def ajouter_piece_dans_kit (x=0,contenu=""):
         cur=con.cursor()
         cur.execute("SELECT nom FROM piece")
         lignes=cur.fetchall()
+<<<<<<< HEAD
         if nom_piece not in ligne or quantite=<0 :
             contenu += "<br/>"
             contenu += "Erreur la pièce n'existe pas ou la quantite est nulle"
@@ -70,6 +71,34 @@ def ajouter_piece_dans_kit (x=0,contenu=""):
 
 
 #        cur.execute("UPDATE ;")#à modifier, on insert la nouvelle piece dans le kit
+=======
+        if nom_piece not in ligne :
+			try:
+				quantite=int(quantite)
+				quantite>0
+			except:	
+				contenu += "<br/>"
+				contenu += "Erreur la quantite est n'est pas bonne"
+				contenu += "<br/>"
+				contenu += "on recommence l'enregistrement de cette pièce ensemble mon chou dans quelques secondes"#time.sleep()
+				contenu += "<br/>"
+				time.sleep(5)
+				return(ajouter_piece_dans_kit(code,))
+			else:
+				con = lite.connect('/Users/Arthur LAUREILLE/Documents/GitHub/Kleiner/AgiWeb/Fonction/exemples.db')#à modifier
+				con.row_factory = lite.Row
+				cur=con.cursor()
+				cur.execute("UPDATE ;")#à modifier, on insert la nouvelle piece dans le kit
+		else:
+			contenu += "<br/>"
+			contenu += "Erreur la pièce n'existe pas"
+			contenu += "<br/>"
+			contenu += "on recommence l'enregistrement de cette pièce ensemble mon chou dans quelques secondes"#time.sleep()
+			contenu += "<br/>"
+			time.sleep(5)
+			return(ajouter_piece_dans_kit(x,))	
+			
+>>>>>>> c79d95d98be4fce91b05071a2b51be92414ca68b
 
 @app.route('/accueil/agilog/initialisation/ajout_piece', methods=['GET', 'POST'])#recupere 2 variable nom et prnom et les ajoutent a la base de données (a modifier pour mettre piece et quantite)
 def ajout_piece():
