@@ -122,13 +122,6 @@ def ajout_piece():
     nome=request.args.get('nom','')
     quantitee=request.args.get('quantite','')
 
-    #test si le stock est un entier si qlq chose est rentré
-    if (nome!="" or quantitee!="" ):
-        try:
-            quantitee=int(quantitee)
-        except:
-            contenu += '<br/> le stock doit être un nombre entier'
-
     # creation de l'id
     con = lite.connect('/Users/Benjamin/Documents/GitHub/Kleiner/Examples/flask-exemples/exemples.db') #attention chez toi c'est pas rangé au meme endroit
     con.row_factory = lite.Row
@@ -145,23 +138,39 @@ def ajout_piece():
         ide=max(liste_id2)+1
     con.close()
 
-    # on ajoute le nom l'id et le stock à la bdd
-    con = lite.connect('C:/Users/Benjamin/Documents/GitHub/Kleiner/AgiWeb/AgiWeb_BDD.db')
-    con.row_factory = lite.Row
-    cur = con.cursor()
-    cur.execute("SELECT nom FROM Piece;")
-    testnom = cur.fetchall()
-    test=[]
-    for testnom in testnom:
-        test.append(testnom[0]) # une liste pour ensuite voir si la piece demandé n'existe pas deja
-
-    if (nome!="" and quantitee!= ""):
-        if (nome in test):
-            contenu += "Cette piece existe deja"
-        elif (nome!="" and quantitee>-1): #ajouter un createur d'id apres
-            cur.execute("INSERT INTO piece('nom', 'quantite', id_piece) VALUES (?,?,?)", (nome,quantitee,ide))
+    #test si le stock est un entier si qlq chose est rentré
+    if (nome!="" or quantitee!="" ):
+        try:
+            quantitee=int(quantitee)
+        except:
+            contenu += '<br/> le stock doit être un nombre entier'
         else:
-            contenu += (" Il faut un nom et une quantité positive")
+            # on ajoute le nom l'id et le stock à la bdd
+            con = lite.connect('C:/Users/Benjamin/Documents/GitHub/Kleiner/AgiWeb/AgiWeb_BDD.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT nom FROM Piece;")
+            testnom = cur.fetchall()
+            test=[]
+            for testnom in testnom:
+                test.append(testnom[0]) # une liste pour ensuite voir si la piece demandé n'existe pas deja
+
+            if (nome!="" and quantitee!= ""):
+                if (nome in test):
+                    contenu += "Cette piece existe deja"
+                elif (nome!="" and quantitee>-1): #ajouter un createur d'id apres
+                    cur.execute("INSERT INTO piece('nom', 'quantite', id_piece) VALUES (?,?,?)", (nome,quantitee,ide))
+                else:
+                    contenu += (" Il faut un nom et une quantité positive")
+
+    #delete
+    contenu += "<form method='get' action='gestion_stock'>"
+    contenu += "<br/><br/> quelest le nom de la piece que tu veux tu supprimer? <br/>"
+    contenu += "<input type='str' name='nomdel' value=''>"
+    contenu += "<input type='submit' value='Envoyer'>"
+
+    nomdele=request.args.get('nomdel','')
+    cur.execute ("DELETE FROM 'piece' WHERE nom=?", [nomdele])
 
     # a modifier, l'affichage des pieces
     cur.execute("SELECT nom, quantite FROM piece;")
@@ -202,18 +211,18 @@ def gestion_stock():
         delaie=int(delaie)
     except:
         contenu += '<br/> Les stocks de sécurité, les delais de réapprovisionnement et le seuils de recompletement doivent être des nombres entier'
-
-    con = lite.connect('/Users/Benjamin/Documents/GitHub/Kleiner/Examples/flask-exemples/exemples.db')
-    con.row_factory = lite.Row
-    cur = con.cursor()
-
-    # si tout est bien rempli on met a jour la bdd
-    if (nome=="" and seuile=="" and secue=="" and delaie==""):
-        contenu += ""
-    elif (seuile<0 or secue<0 or delaie<0 or nome=""):
-        contenu += " <br/> Les nombres doivent être supérieur à 0"
     else:
-        cur.execute("UPDATE Piece SET seuil_recomp=?, stock_secu=?, delai_reappro=? WHERE nom=?", [seuile,secue,delaie,nome])
+        con = lite.connect('/Users/Benjamin/Documents/GitHub/Kleiner/Examples/flask-exemples/exemples.db')
+        con.row_factory = lite.Row
+        cur = con.cursor()
+
+        # si tout est bien rempli on met a jour la bdd
+        if (nome=="" and seuile=="" and secue=="" and delaie==""):
+            contenu += ""
+        elif (seuile<0 or secue<0 or delaie<0 or nome==""):
+            contenu += " <br/> Les nombres doivent être supérieur à 0"
+        else:
+            cur.execute("UPDATE Piece SET seuil_recomp=?, stock_secu=?, delai_reappro=? WHERE nom=?", [seuile,secue,delaie,nome])
     cur.execute("SELECT nom, id_piece, quantite, seuil_recomp, stock_secu, delai_reappro FROM piece;")
     lignes = cur.fetchall()
     #con.commit()#enregistrer la requete de modification.
@@ -239,7 +248,6 @@ def declarer_kit():
     cur.execute("SELECT id_vente FROM production")
     liste_id1 = cur.fetchall()
     liste_id2=[]
-    contenu += str(len(L))
     for chaque in liste_id1:
         liste_id2.append(chaque[0])
     taille=len(liste_id2)
