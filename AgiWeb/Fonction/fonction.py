@@ -19,54 +19,54 @@ def index():
     return contenu;
 
 
-#def ajouter_piece_dans_kit (x=0,contenu=""):
-#    if x==0 or contenu=="":
-#        contenu += "<a href='/accueil/agilog/initialisation/'>retour à la page précédente</a><br/>"
-#        contenu += "<br/>"
-#        contenu += "Kit"
-#        contenu += "<br/>"
-#        contenu += "<form method='get' action='code_kit'>"
-#        contenu += "<input type='str' name='Code_article' value=''>"
-#        contenu += "<input type='submit' value='Envoyer'>"
-#        code=int(request.args.get('Code_article',''))
-#        con = lite.connect('/Users/Arthur LAUREILLE/Documents/GitHub/Kleiner/AgiWeb/Fonction/exemples.db')#à modifier
-#        con.row_factory = lite.Row
-#        cur=con.cursor()
-#        cur.execute("SELECT role FROM personnes;")#à modifier
-#        lignes = cur.fetchall()
-#        if code in lignes  or code=='':
-#            contenu += "<br/>"
-#            contenu += "Erreur le code existe déjà"
-#            contenu += "<br/>"
-#            return (ajouter_piece_dans_kit(,contenu))#on recommence, attention comme ça, ça m'arche pas "type submit"
-#        else :
-#            con = lite.connect('/Users/Arthur LAUREILLE/Documents/GitHub/Kleiner/AgiWeb/Fonction/exemples.db')#à modifier
-#            con.row_factory = lite.Row
-#            cur=con.cursor()
-#            cur.execute("INSERT INTO ;")#à modifier, on crée le kit vierge
-#            return(ajouter_piece_dans_kit(code,contenu))
-#    else:
-#        contenu += "<br/>"
-#        contenu += "Vous etes entrain de créer le Kit n°"+str(x)
-#        contenu += "<br/>"
-#        contenu += "<br/>"
-#        contenu += "Entrer le nom puis la quantite de pièce"
-#        contenu += "<br/>"
-#        contenu += "<form method='get' action='code_kit'>"
-#        contenu += "<input type='str' name='nom_piece' value=''>"
-#        contenu += "<input type='str' name='quantite' value=''>"
-#        contenu += "<input type='submit' value='Valider'>"
-#        nom_piece=str(request.args.get('nom_piece','')
-#        quantite=int(request.args.get('quantite','')
-#        con = lite.connect('/Users/Arthur LAUREILLE/Documents/GitHub/Kleiner/AgiWeb/Fonction/exemples.db')#à modifier
-#        con.row_factory = lite.Row
-#        cur=con.cursor()
-#        cur.execute("SELECT nom FROM piece")
-#        lignes=cur.fetchall()
-#        if nom_piece not in ligne or quantite=<0 :
-#            contenu += "<br/>"
-#            contenu += "Erreur la pièce n'existe pas ou la quantite est nulle"
-#            contenu += "<br/>"
+def ajouter_piece_dans_kit (x=0,contenu=""):
+    if x==0 or contenu=="":
+        contenu += "<a href='/accueil/agilog/initialisation/'>retour à la page précédente</a><br/>"
+        contenu += "<br/>"
+        contenu += "Kit"
+        contenu += "<br/>"
+        contenu += "<form method='get' action='code_kit'>"
+        contenu += "<input type='str' name='Code_article' value=''>"
+        contenu += "<input type='submit' value='Envoyer'>"
+        code=int(request.args.get('Code_article',''))
+        con = lite.connect('/Users/Arthur LAUREILLE/Documents/GitHub/Kleiner/AgiWeb/Fonction/exemples.db')#à modifier
+        con.row_factory = lite.Row
+        cur=con.cursor()
+        cur.execute("SELECT role FROM personnes;")#à modifier
+        lignes = cur.fetchall()
+        if code in lignes  or code=='':
+            contenu += "<br/>"
+            contenu += "Erreur le code existe déjà"
+            contenu += "<br/>"
+            return (ajouter_piece_dans_kit(,contenu))#on recommence, attention comme ça, ça m'arche pas "type submit"
+        else :
+            con = lite.connect('/Users/Arthur LAUREILLE/Documents/GitHub/Kleiner/AgiWeb/Fonction/exemples.db')#à modifier
+            con.row_factory = lite.Row
+            cur=con.cursor()
+            cur.execute("INSERT INTO ;")#à modifier, on crée le kit vierge
+            return(ajouter_piece_dans_kit(code,contenu))
+    else:
+        contenu += "<br/>"
+        contenu += "Vous etes entrain de créer le Kit n°"+str(x)
+        contenu += "<br/>"
+        contenu += "<br/>"
+        contenu += "Entrer le nom puis la quantite de pièce"
+        contenu += "<br/>"
+        contenu += "<form method='get' action='code_kit'>"
+        contenu += "<input type='str' name='nom_piece' value=''>"
+        contenu += "<input type='str' name='quantite' value=''>"
+        contenu += "<input type='submit' value='Valider'>"
+        nom_piece=str(request.args.get('nom_piece','')
+        quantite=int(request.args.get('quantite','')
+        con = lite.connect('/Users/Arthur LAUREILLE/Documents/GitHub/Kleiner/AgiWeb/Fonction/exemples.db')#à modifier
+        con.row_factory = lite.Row
+        cur=con.cursor()
+        cur.execute("SELECT nom FROM piece")
+        lignes=cur.fetchall()
+        if nom_piece not in ligne or quantite=<0 :
+            contenu += "<br/>"
+            contenu += "Erreur la pièce n'existe pas ou la quantite est nulle"
+            contenu += "<br/>"
 
 
 #        cur.execute("UPDATE ;")#à modifier, on insert la nouvelle piece dans le kit
