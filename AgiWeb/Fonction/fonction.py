@@ -87,7 +87,7 @@ def ajouter_piece_dans_kit (x=0,contenu=""):
 			contenu += "on recommence l'enregistrement de cette pièce ensemble mon chou dans quelques secondes"#time.sleep()
 			contenu += "<br/>"
 			time.sleep(5)
-			return(ajouter_piece_dans_kit(code,))	
+			return(ajouter_piece_dans_kit(x,))	
 			
 
 @app.route('/accueil/agilog/initialisation/ajout_piece', methods=['GET', 'POST'])#recupere 2 variable nom et prnom et les ajoutent a la base de données (a modifier pour mettre piece et quantite)
