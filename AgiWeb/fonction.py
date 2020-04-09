@@ -1,4 +1,4 @@
-from flask import Flask, url_for, request, render_template, redirect
+Nathanfrom flask import Flask, url_for, request, render_template, redirect
 import sqlite3 as lite
 import time
 
@@ -29,7 +29,7 @@ def ajouter_piece_dans_kit (x=0,contenu=""):
         contenu += "<input type='str' name='Code_article' value=''>"
         contenu += "<input type='submit' value='Envoyer'>"
         code=int(request.args.get('Code_article',''))
-        con = lite.connect('/Users/Arthur LAUREILLE/Documents/GitHub/Kleiner/AgiWeb/Fonction/exemples.db')#à modifier
+        con = lite.connect('/Users/Nathan/Documents/GitHub/Kleiner/AgiWeb/Fonction/exemples.db')#à modifier
         con.row_factory = lite.Row
         cur=con.cursor()
         cur.execute("SELECT role FROM personnes;")#à modifier
@@ -40,7 +40,7 @@ def ajouter_piece_dans_kit (x=0,contenu=""):
             contenu += "<br/>"
             return (ajouter_piece_dans_kit(,contenu))#on recommence, attention comme ça, ça m'arche pas "type submit"
         else :
-            con = lite.connect('/Users/Arthur LAUREILLE/Documents/GitHub/Kleiner/AgiWeb/Fonction/exemples.db')#à modifier
+            con = lite.connect('/Users/Nathan/Documents/GitHub/Kleiner/AgiWeb/Fonction/exemples.db')#à modifier
             con.row_factory = lite.Row
             cur=con.cursor()
             cur.execute("INSERT INTO ;")#à modifier, on crée le kit vierge
@@ -58,7 +58,7 @@ def ajouter_piece_dans_kit (x=0,contenu=""):
         contenu += "<input type='submit' value='Valider'>"
         nom_piece=str(request.args.get('nom_piece','')
         quantite=int(request.args.get('quantite','')
-        con = lite.connect('/Users/Arthur LAUREILLE/Documents/GitHub/Kleiner/AgiWeb/Fonction/exemples.db')#à modifier
+        con = lite.connect('/Users/Nathan/Documents/GitHub/Kleiner/AgiWeb/Fonction/exemples.db')#à modifier
         con.row_factory = lite.Row
         cur=con.cursor()
         cur.execute("SELECT nom FROM piece")
@@ -76,7 +76,7 @@ def ajouter_piece_dans_kit (x=0,contenu=""):
 			try:
 				quantite=int(quantite)
 				quantite>0
-			except:	
+			except:
 				contenu += "<br/>"
 				contenu += "Erreur la quantite est n'est pas bonne"
 				contenu += "<br/>"
@@ -85,7 +85,7 @@ def ajouter_piece_dans_kit (x=0,contenu=""):
 				time.sleep(5)
 				return(ajouter_piece_dans_kit(code,))
 			else:
-				con = lite.connect('/Users/Arthur LAUREILLE/Documents/GitHub/Kleiner/AgiWeb/Fonction/exemples.db')#à modifier
+				con = lite.connect('/Users/Nathan/Documents/GitHub/Kleiner/AgiWeb/Fonction/exemples.db')#à modifier
 				con.row_factory = lite.Row
 				cur=con.cursor()
 				cur.execute("UPDATE ;")#à modifier, on insert la nouvelle piece dans le kit
@@ -96,8 +96,8 @@ def ajouter_piece_dans_kit (x=0,contenu=""):
 			contenu += "on recommence l'enregistrement de cette pièce ensemble mon chou dans quelques secondes"#time.sleep()
 			contenu += "<br/>"
 			time.sleep(5)
-			return(ajouter_piece_dans_kit(x,))	
-			
+			return(ajouter_piece_dans_kit(x,))
+
 >>>>>>> c79d95d98be4fce91b05071a2b51be92414ca68b
 
 @app.route('/accueil/agilog/initialisation/ajout_piece', methods=['GET', 'POST'])#recupere 2 variable nom et prnom et les ajoutent a la base de données (a modifier pour mettre piece et quantite)
@@ -114,7 +114,7 @@ def ajout_piece():
     prenome=request.args.get('prenom','')
     nome=request.args.get('nom','')
 
-    con = lite.connect('/Users/Benjamin/Documents/GitHub/Kleiner/Examples/flask-exemples/exemples.db')
+    con = lite.connect('/Users/Nathan/Documents/GitHub/Kleiner/Examples/flask-exemples/exemples.db')
     con.row_factory = lite.Row
     cur = con.cursor()
     if (nome!=""):
@@ -151,7 +151,7 @@ def gestion_stock():
     secue=request.args.get('secue','')
     delaie=request.args.get('delai','')
 
-    con = lite.connect('/Users/Benjamin/Documents/GitHub/Kleiner/Examples/flask-exemples/exemples.db')
+    con = lite.connect('/Users/Nathan/Documents/GitHub/Kleiner/Examples/flask-exemples/exemples.db')
     con.row_factory = lite.Row
     cur = con.cursor()
 
@@ -207,7 +207,7 @@ def aff_stock():
     nome=request.args.get('nom','')
     nbe=request.args.get('nb','')
 
-    con = lite.connect('/Users/Benjamin/Documents/GitHub/Kleiner/Examples/flask-exemples/exemples.db')
+    con = lite.connect('/Users/Nathan/Documents/GitHub/Kleiner/Examples/flask-exemples/exemples.db')
     con.row_factory = lite.Row
     cur = con.cursor()
     cur.execute("SELECT delai_reappro, quantite FROM piece WHERE nom=?;", (nome))

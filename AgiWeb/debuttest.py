@@ -8,36 +8,36 @@ app = Flask(__name__)
 @app.route('/')
 def index():
 
-    contenu = ""
-    contenu = "Page d'accueil <br/><br/>"
-    contenu += "<a href='/Agilean'>Page Agilean</a><br/>" #lien vers Agilean
-    contenu += "<a href='/Agilog'>Page Agilog</a>" # lien vers Agilog
-    return contenu;
+    # contenu = ""
+    # contenu = "Page d'accueil <br/><br/>"
+    # contenu += "<a href='/Agilean'>Page Agilean</a><br/>" #lien vers Agilean
+    # contenu += "<a href='/Agilog'>Page Agilog</a>" # lien vers Agilog
+    return render_template('accueil.html');
 
 #La page pour Agilean
 @app.route('/Agilean')
 def Agilean():
 
-    contenu = ""
-    contenu = "Accueil Agilean <br/><br/>"
-    contenu += "<a href='/'>retour à la page précédente</a><br/>"#un retour a la page d'accueil
-    contenu += "<a href='/Agilean'>valider la réception</a><br/>" #lien vers la validation de la réception
+    # contenu = ""
+    # contenu = "Accueil Agilean <br/><br/>"
+    # contenu += "<a href='/'>retour à la page précédente</a><br/>"#un retour a la page d'accueil
+    # contenu += "<a href='/Agilean'>valider la réception</a><br/>" #lien vers la validation de la réception
 
-    return contenu;
+    return render_template('AgiLean_accueil.html');
 
 #La page Agilog
 @app.route('/Agilog')
 def Agilog():
 #<br/>
-    contenu = ""
-    contenu += "<a href='/'>retour à la page précédente</a><br/>"#un retour a la page d'accueil
-    contenu += "<br/> "
-    contenu += "Page Agilog"
-    contenu += "<br/> "
-    contenu += "<a href='/Initialisation'>Initialisation</a><br/>"#lien vers l'initialisation
-    contenu += "<a href='/Commande_en_cours'>Commande en cours</a><br/>" #lien vers les commandes en cours
+    # contenu = ""
+    # contenu += "<a href='/'>retour à la page précédente</a><br/>"#un retour a la page d'accueil
+    # contenu += "<br/> "
+    # contenu += "Page Agilog"
+    # contenu += "<br/> "
+    # contenu += "<a href='/Initialisation'>Initialisation</a><br/>"#lien vers l'initialisation
+    # contenu += "<a href='/Commande_en_cours'>Commande en cours</a><br/>" #lien vers les commandes en cours
 
-    return contenu;
+    return render_template('AgiLog_accueil.html');
 
 #La page Initialisation
 @app.route('/Initialisation')
@@ -71,7 +71,7 @@ def Code_kit():
     contenu +="<br/>"
 
     code=request.args.get('Code_article','')
-    con = lite.connect('/Users/Arthur LAUREILLE/Documents/GitHub/Kleiner/AgiWeb/Fonction/exemples.db')
+    con = lite.connect('/Users/Nathan/Documents/GitHub/Kleiner/AgiWeb/Fonction/exemples.db')
     con.row_factory = lite.Row
     cur=con.cursor()
     cur.execute("SELECT role FROM personnes;")
@@ -123,7 +123,7 @@ def ajout_piece():
     quantitee=request.args.get('quantite','')
 
     # creation de l'id
-    con = lite.connect('/Users/Benjamin/Documents/GitHub/Kleiner/Examples/flask-exemples/exemples.db') #attention chez toi c'est pas rangé au meme endroit
+    con = lite.connect('/Users/Nathan/Documents/GitHub/Kleiner/Examples/flask-exemples/exemples.db') #attention chez toi c'est pas rangé au meme endroit
     con.row_factory = lite.Row
     cur = con.cursor()
     cur.execute("SELECT id_piece FROM piece")
@@ -146,7 +146,7 @@ def ajout_piece():
             contenu += '<br/> le stock doit être un nombre entier'
         else:
             # on ajoute le nom l'id et le stock à la bdd
-            con = lite.connect('C:/Users/Benjamin/Documents/GitHub/Kleiner/AgiWeb/AgiWeb_BDD.db')
+            con = lite.connect('C:/Users/Nathan/Documents/GitHub/Kleiner/AgiWeb/AgiWeb_BDD.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT nom FROM Piece;")
@@ -165,7 +165,7 @@ def ajout_piece():
 
     #delete
     contenu += "<form method='get' action='gestion_stock'>"
-    contenu += "<br/><br/> quelest le nom de la piece que tu veux tu supprimer? <br/>"
+    contenu += "<br/><br/> quel est le nom de la piece que tu veux tu supprimer? <br/>"
     contenu += "<input type='str' name='nomdel' value=''>"
     contenu += "<input type='submit' value='Envoyer'>"
 
@@ -212,7 +212,7 @@ def gestion_stock():
     except:
         contenu += '<br/> Les stocks de sécurité, les delais de réapprovisionnement et le seuils de recompletement doivent être des nombres entier'
     else:
-        con = lite.connect('/Users/Benjamin/Documents/GitHub/Kleiner/Examples/flask-exemples/exemples.db')
+        con = lite.connect('/Users/Nathan/Documents/GitHub/Kleiner/Examples/flask-exemples/exemples.db')
         con.row_factory = lite.Row
         cur = con.cursor()
 
@@ -242,7 +242,7 @@ def declarer_kit():
 
     num_kite=request.args.get('num_kit','')
     #génération de l'id
-    con = lite.connect('/Users/Benjamin/Documents/GitHub/Kleiner/Examples/flask-exemples/exemples.db') #attention chez toi c'est pas rangé au meme endroit
+    con = lite.connect('/Users/Nathan/Documents/GitHub/Kleiner/Examples/flask-exemples/exemples.db') #attention chez toi c'est pas rangé au meme endroit
     con.row_factory = lite.Row
     cur = con.cursor()
     cur.execute("SELECT id_vente FROM production")
@@ -257,7 +257,7 @@ def declarer_kit():
         ide=max(liste_id2)+1
     con.close()
 
-    con = lite.connect('/Users/Benjamin/Desktop/Pjt base de donnéé/flask/flask-exemples/flask-exemples/exemples.db')
+    con = lite.connect('/Users/Nathan/Desktop/Pjt base de donnéé/flask/flask-exemples/flask-exemples/exemples.db')
     con.row_factory = lite.Row
     cur = con.cursor()
     if (nome!=""):

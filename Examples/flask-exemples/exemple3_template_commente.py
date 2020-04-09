@@ -19,7 +19,7 @@ def index():
     contenu += "<a href='/template_get?prenom=toi'>Lien direct</a><br/><br/>" #hypertexte lien direct vers l'autre page (= vue) et definition par defaut de la variable prenom = toi avec la méthode template get
 
     contenu += "<form method='get' action='template_get'>" # active bouton envoyer
-    #contenu += "<input type='text' name='prenom' value=''>" #champ à remplir qui changera la valeur prise par 'prenom'
+    contenu += "<input type='text' name='prenom' value=''>" #champ à remplir qui changera la valeur prise par 'prenom'
     contenu += "<input type='submit' value='+'>" #bouton envoyer
     contenu += "</form><br/>" #3x à la ligne
 
