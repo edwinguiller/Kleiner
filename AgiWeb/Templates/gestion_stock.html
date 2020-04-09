@@ -6,36 +6,9 @@
 <link href="../Static/accueil.css" rel="stylesheet" type="text/css">
 </head>
 
-<body>
-<header>
-	<div id="content">
-		<img class = "logo" src="../Static/logo.jpg" alt=""/>
-		<div id="proverbe">
-			<p>La gestion c'est la vie </p>
-		</div>
-		
-	</div>
-</header>
-	
-<nav class="menu-nav">
-			<ul>
-				<li class="bouton">
-					<a href="accueil.html"> Accueil </a>
-				</li>
-				<li class="bouton">
-					<a href="AgiLog_accueil.html" target="_blank" rel="nofollow">
-					AgiLog </a>
-				</li>
-				<li class="bouton">
-					<a href="AgiLean_accueil.html" target="_blank" rel="nofollow">
-					AgiLean </a>
-				</li>
 
-			</ul>
+{% include "Navbar.html" %}
 
-
-		</nav>
-	
 <!-- Scrollspy requires position: relative; a fixed height and overflow-y: scroll; applied to the element being spied.
   Add below class to page styles
   .scrollspy-example{
@@ -43,7 +16,7 @@
 			height: <height>;
 			overflow-y: scroll;
   } -->
-	
+
 <div class='contenu'>
 	<h1>Ajout d'une personne</h1><br/>
 	{% if msg!="" %}<strong>{{ msg }}</strong><br/><br/>{% endif %}
@@ -56,11 +29,11 @@
 			<option value='1' {% if role==1 %} active {% endif %}>fournisseur 1</option>
 			<option value='2' {% if role==2 %} active {% endif %}>fournisseur 2</option>
 			<option value='3' {% if role==3 %} active {% endif %}>fournisseur 3</option>
-			
+
 		</select>
 	<input type='submit' value='ajouter'>
 	</form><br/>
 </div>
-	
+
 </body>
 </html>
