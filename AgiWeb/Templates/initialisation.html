@@ -1,10 +1,12 @@
 <html>
-	<head>
-		<link rel="stylesheet" type="text/css" href="../Static/accueil.css">
-		<meta charset="utf-8">
-	</head>
+{% include "head.html" %}
 
 	<body>
-
-
 		{% include "Navbar.html" %}
+		{% for piece in list_id_piece %}
+		<p>
+			l'id de la pièce est : {{piece[0]}}
+		</p>
+		{% endfor %}
+	</body>
+</html>
