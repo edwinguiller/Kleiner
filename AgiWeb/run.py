@@ -1,4 +1,6 @@
 from flask import Flask, url_for, request, render_template, redirect
+from fonctions_logiques import *
+from constantes import *
 import sqlite3 as lite
 import random
 
@@ -7,96 +9,54 @@ app = Flask(__name__)
 # Une belle (Hyp'ss) page d'accueil avec un lien vers la partie Agilean et un vers la partie Agilog
 @app.route('/')
 def index():
-
-    # contenu = ""
-    # contenu = "Page d'accueil <br/><br/>"
-    # contenu += "<a href='/Agilean'>Page Agilean</a><br/>" #lien vers Agilean
-    # contenu += "<a href='/Agilog'>Page Agilog</a>" # lien vers Agilog
     return render_template('accueil.html');
-
-#La page pour Agilean
-@app.route('/Agilean')
-def Agilean():
-
-    # contenu = ""
-    # contenu = "Accueil Agilean <br/><br/>"
-    # contenu += "<a href='/'>retour à la page précédente</a><br/>"#un retour a la page d'accueil
-    # contenu += "<a href='/Agilean'>valider la réception</a><br/>" #lien vers la validation de la réception
-
-    return render_template('AgiLean_accueil.html');
 
 #La page Agilog
 @app.route('/Agilog')
-def Agilog():
-#<br/>
-    # contenu = ""
-    # contenu += "<a href='/'>retour à la page précédente</a><br/>"#un retour a la page d'accueil
-    # contenu += "<br/> "
-    # contenu += "Page Agilog"
-    # contenu += "<br/> "
-    # contenu += "<a href='/Initialisation'>Initialisation</a><br/>"#lien vers l'initialisation
-    # contenu += "<a href='/Commande_en_cours'>Commande en cours</a><br/>" #lien vers les commandes en cours
+def agilog():
+    return render_template('agiLog_accueil.html');
 
-    return render_template('AgiLog_accueil.html');
 
-#La page Initialisation
-@app.route('/Initialisation')
-def Initialisation ():
+@app.route('/Agilog/Encours')
+def encoursAlog(): #à faire
+    return render_template('encours_alog.html')
 
-    contenu = ""
-    contenu += "<a href='/'>retour à la page précédente</a><br/>"#un retour a la page d'accueil
-    contenu += "<br/> "
-    contenu += "Initialisation"
-    contenu += "<br/> "
-    contenu += "<a href='/accueil/agilog/initialisation/ajout_piece'>Stock</a><br/>"#lien vers le stock initial
-    contenu += "<a href='/accueil/agilog/initialisation/code_kit'>Code kit</a><br/>" #lien vers les Code kit
-    contenu += "<a href='/Initialisation'>Gestion stocks</a><br/>" #lien vers la gestion des stock
+@app.route('/Agilog/Encours/Declarer_kit', methods=['GET', 'POST'])#recupere 2 variable nom et prnom et les ajoutent a la base de données (a modifier pour mettre piece et quantite)
+def declarer_kit():
 
+    contenu=""
+    contenu += "<form method='get' action='declarer_kit'>"
+    contenu += "num kit "
+    contenu += "<input type='text' name='num_kit' value=''>"
+    contenu += "<input type='submit' value='Envoyer'>"
+
+    num_kite=request.args.get('num_kit','')
+    #génération de l'id
+    con = lite.connect(cheminbdd) #attention chez toi c'est pas rangé au meme endroit
+    con.row_factory = lite.Row
+    cur = con.cursor()
+    cur.execute("SELECT id_vente FROM production")
+    liste_id1 = cur.fetchall()
+    liste_id2=[]
+    for chaque in liste_id1:
+        liste_id2.append(int(chaque[0]))
+    if len(liste_id2)==0:
+        newid=1
+    else:
+        newid=max(liste_id2)+1
+    con.close()
+
+    con = lite.connect(cheminbdd)
+    con.row_factory = lite.Row
+    cur = con.cursor()
+    if (nome!=""):
+        cur.execute("INSERT INTO production('id_vente', 'nom_kit', 'fini') Value (?,?,?)", (newid,num_kite,1))
+    con.commit()#enregistrer la requete de modification.
+    con.close()
 
     return contenu;
 
-@app.route('/accueil/agilog/initialisation/code_kit', methods=['GET', 'POST'])
-def Code_kit():
-
-    contenu=""
-    contenu += "<a href='/accueil/agilog/initialisation/'>retour à la page précédente</a><br/>"
-    contenu += "<br/>"
-    contenu += "Kit"
-    contenu += "<br/>"
-    contenu += "<form method='get' action='code_kit'>"
-    contenu += "<input type='str' name='Code_article' value=''>"
-    contenu += "<input type='submit' value='Envoyer'>"
-    contenu += "<br/>"
-    contenu +="Liste des pièces du Kit"
-    contenu +="<br/>"
-
-    code=request.args.get('Code_article','')
-    con = lite.connect('/Users/Nathan/Documents/GitHub/Kleiner/AgiWeb/Fonction/exemples.db')
-    con.row_factory = lite.Row
-    cur=con.cursor()
-    cur.execute("SELECT role FROM personnes;")
-    lignes = cur.fetchall()
-    if code in lignes  or code=='':
-        contenu += "<br/>"
-        contenu += "Erreur le code existe déjà"
-        contenu += "<br/>"
-    else :
-        contenu += "<br/>"
-        contenu += "Entrer le nom puis la quantite de pièce"
-        contenu += "<br/>"
-        contenu += "<form method='get' action='code_kit'>"
-        contenu += "<input type='str' name='nom_piece' value=''>"
-        contenu += "<input type='str' name='quantite' value=''>"
-        contenu += "<input type='submit' value='Valider'>"
-        contenu += "<input type='submit' value='Ajouter piece'>"
-    contenu += render_template('affichage_personnes.html', personnes = lignes)
-    return contenu
-
-
-#
-
-#La page pour passer une commande
-@app.route('/commande', methods=['GET'])
+@app.route('/Agilog/Encours/Aff_stock', methods=['GET']) #la page pour passer une commande
 def commande():
 
     contenu = ""
@@ -107,7 +67,12 @@ def commande():
         contenu += "bj"
     return contenu
 
-@app.route('/accueil/agilog/initialisation/ajout_piece', methods=['GET', 'POST'])#recupere 2 variable nom et prnom et les ajoutent a la base de données (a modifier pour mettre piece et quantite)
+#La page Initialisation
+@app.route('/Agilog/Initialisation')
+def initialisation ():
+    return render_template('initialisation_alog.html')
+
+@app.route('/Agilog/Initialisation/Ajout_piece', methods=['GET', 'POST'])#recupere 2 variable nom et prnom et les ajoutent a la base de données (a modifier pour mettre piece et quantite)
 def ajout_piece():
     # la demande du nom de la piece à rajouter et du stock à mettre
     contenu=""
@@ -123,7 +88,7 @@ def ajout_piece():
     quantitee=request.args.get('quantite','')
 
     # creation de l'id
-    con = lite.connect('/Users/Nathan/Documents/GitHub/Kleiner/Examples/flask-exemples/exemples.db') #attention chez toi c'est pas rangé au meme endroit
+    con = lite.connect(cheminbdd) #attention chez toi c'est pas rangé au meme endroit
     con.row_factory = lite.Row
     cur = con.cursor()
     cur.execute("SELECT id_piece FROM piece")
@@ -146,7 +111,7 @@ def ajout_piece():
             contenu += '<br/> le stock doit être un nombre entier'
         else:
             # on ajoute le nom l'id et le stock à la bdd
-            con = lite.connect('C:/Users/Nathan/Documents/GitHub/Kleiner/AgiWeb/AgiWeb_BDD.db')
+            con = lite.connect(cheminbdd)
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT nom FROM Piece;")
@@ -179,9 +144,9 @@ def ajout_piece():
     con.close()
     contenu += render_template('affichage_personnes.html', piece = lignes)#creer une fonction pour afficher les pieces deja existante
 
-    return contenu;
+    return contenu; # LES PROGRAMMEURS a retoucher / separer  fonctions
 
-@app.route('/accueil/agilog/initialisation/gestion_stock', methods=['GET', 'POST'])#recupere 2 variable nom et prnom et les ajoutent a la base de données (a modifier pour mettre piece et quantite)
+@app.route('/Agilog/Initialisation/Gestion_stock', methods=['GET', 'POST'])#recupere 2 variable nom et prnom et les ajoutent a la base de données (a modifier pour mettre piece et quantite)
 def gestion_stock():
     contenu=""
 
@@ -212,7 +177,7 @@ def gestion_stock():
     except:
         contenu += '<br/> Les stocks de sécurité, les delais de réapprovisionnement et le seuils de recompletement doivent être des nombres entier'
     else:
-        con = lite.connect('/Users/Nathan/Documents/GitHub/Kleiner/Examples/flask-exemples/exemples.db')
+        con = lite.connect(cheminbdd)
         con.row_factory = lite.Row
         cur = con.cursor()
 
@@ -231,41 +196,53 @@ def gestion_stock():
 
     return contenu;
 
-@app.route('/accueil/agilog/en_cours/declarer_kit', methods=['GET', 'POST'])#recupere 2 variable nom et prnom et les ajoutent a la base de données (a modifier pour mettre piece et quantite)
-def declarer_kit():
-
+@app.route('/Agilog/Initialisation/Code_kit', methods=['GET', 'POST'])
+def code_kit():
     contenu=""
-    contenu += "<form method='get' action='declarer_kit'>"
-    contenu += "num kit "
-    contenu += "<input type='text' name='num_kit' value=''>"
+    contenu += "<a href='/accueil/agilog/initialisation/'>retour à la page précédente</a><br/>"
+    contenu += "<br/>"
+    contenu += "Kit"
+    contenu += "<br/>"
+    contenu += "<form method='get' action='code_kit'>"
+    contenu += "<input type='str' name='Code_article' value=''>"
     contenu += "<input type='submit' value='Envoyer'>"
+    contenu += "<br/>"
+    contenu +="Liste des pièces du Kit"
+    contenu +="<br/>"
 
-    num_kite=request.args.get('num_kit','')
-    #génération de l'id
-    con = lite.connect('/Users/Nathan/Documents/GitHub/Kleiner/Examples/flask-exemples/exemples.db') #attention chez toi c'est pas rangé au meme endroit
+    code=request.args.get('Code_article','')
+    con = lite.connect(cheminbdd)
     con.row_factory = lite.Row
-    cur = con.cursor()
-    cur.execute("SELECT id_vente FROM production")
-    liste_id1 = cur.fetchall()
-    liste_id2=[]
-    for chaque in liste_id1:
-        liste_id2.append(chaque[0])
-    taille=len(liste_id2)
-    if taille==0:
-        ide=1
-    else:
-        ide=max(liste_id2)+1
-    con.close()
+    cur=con.cursor()
+    cur.execute("SELECT role FROM personnes;")
+    lignes = cur.fetchall()
+    if code in lignes  or code=='':
+        contenu += "<br/>"
+        contenu += "Erreur le code existe déjà"
+        contenu += "<br/>"
+    else :
+        contenu += "<br/>"
+        contenu += "Entrer le nom puis la quantite de pièce"
+        contenu += "<br/>"
+        contenu += "<form method='get' action='code_kit'>"
+        contenu += "<input type='str' name='nom_piece' value=''>"
+        contenu += "<input type='str' name='quantite' value=''>"
+        contenu += "<input type='submit' value='Valider'>"
+        contenu += "<input type='submit' value='Ajouter piece'>"
+    contenu += render_template('affichage_personnes.html', personnes = lignes)
+    return contenu #LES PROGRAMMEURS pas fait
 
-    con = lite.connect('/Users/Nathan/Desktop/Pjt base de donnéé/flask/flask-exemples/flask-exemples/exemples.db')
-    con.row_factory = lite.Row
-    cur = con.cursor()
-    if (nome!=""):
-        cur.execute("INSERT INTO production('id_vente', 'nom_kit', 'fini') Value (?,?,?)", (ide,num_kite,1))
-    con.commit()#enregistrer la requete de modification.
-    con.close()
+#La page pour Agilean
+@app.route('/Agilean')
+def agilean():
+    return render_template('agiLean_accueil.html');
 
-    return contenu;
+@app.route('/Agilean/Reception')
+def receptkit():
+    return render_template('recept_stock_alean.html')+"</br> page non faite"
+
+
+
 # se lance avec http:
 
 #//localhost:5678

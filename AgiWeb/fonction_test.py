@@ -1,4 +1,4 @@
-Nathanfrom flask import Flask, url_for, request, render_template, redirect
+from flask import Flask, url_for, request, render_template, redirect
 import sqlite3 as lite
 import time
 

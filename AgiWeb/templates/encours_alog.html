@@ -1,0 +1,37 @@
+<!-- page encours agilog (ref schema site trello) -->
+
+<html>
+{% include "head.html" %}
+
+	<body>
+
+		{% include "Navbar.html" %}
+
+
+		<!-- Contenu -->
+		<h2> Encours </h2>
+		<div id="content-agilog">
+			<ul>
+
+				<div class="leftbox">
+
+					<p class= "small "> Vous venez de recevoir un kit ? Déclarer le kit correspondant dans le menu déroulant </p>
+
+						<a href="{{url_for('declarer_kit')}}"> Déclarer kit </a>
+				</div>
+				<div class="rightbox">
+
+					<p class= "small "> Vous voulez voir le stock réel et encours ? Cliquez alors sur Stock </p>
+					<li class="bouton2">
+						<a href="{{url_for('commande')}}"> Stock </a>
+					</li>
+				</div>
+			</ul>
+		</div>
+		<!-- Pied de page -->
+		<footer>
+			<p> Copyright &copy; AgiWeb 2020 - All right reserved </p>
+		</footer>
+
+</body>
+</html>

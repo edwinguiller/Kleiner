@@ -1,0 +1,23 @@
+
+
+<!-- page agilog/initialisation (ref structure site trello) -->
+{% include "head.html" %}
+
+	<body>
+
+{% include "Navbar.html" %}
+
+	<ul>
+		<li>
+			<a href="{{url_for('ajout_piece')}}">Renseigner stock initial</a>
+		</li>
+		<li>
+			<a href="{{url_for('gestion_stock')}}">Gestion des stocks</a>`
+		</li>
+		<li>
+			<a href="{{url_for('code_kit')}}">Définir un kit </a>
+		</li>
+	</ul>
+
+</body>
+</html>

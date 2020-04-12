@@ -2,7 +2,8 @@
 
 .logo{
 	width:150px ;
-	height:50px
+	height:50px ;
+	float : left ;
 }
 
 div#content div{
@@ -12,12 +13,14 @@ div#content div{
 }
 div#content div#photo{
 
-
 }
+
 div#content div#proverbe{
 	vertical-align: top;
 
   }
+
+
 nav.menu-nav ul li.bouton{
 	list-style-type: none;
 	display :inline-block;
@@ -25,13 +28,13 @@ nav.menu-nav ul li.bouton{
 
 nav.menu-nav ul li.bouton a{
 	color:white;
-	background-color:orange;
+	background-color:FF7733;
 	text-decoration: none;
 	padding:10px;
 	font-size:20px;
 }
 nav.menu-nav ul li.bouton:hover a{
-	color:orange;
+	color:FF7733;
 	background-color:white;
 	transition: 0.5S all;
 }
@@ -45,9 +48,9 @@ h2{
 }
 
 
-}
+
 .small {
-	font.size: 15px
+	font-size : 15px
 
 }
 
@@ -99,3 +102,4 @@ div#content-agilog ul li.bouton2:hover a{
 	color:990066;
 	background-color:white;
 	transition: 0.5S all;
+}

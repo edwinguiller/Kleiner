@@ -1,49 +1,16 @@
 <html>
-	<head>
-		<title>AgiWeb - AgiLean</title>
-		<link rel="stylesheet" type="text/css" href="../static/accueil.css">
-		<meta charset="utf-8">
-	</head>
+{% include "head.html" %}
 
 	<body>
 
-		<!-- Haut de Page -->
-		<header>
-			<div id="content">
+		{% include "Navbar.html" %}
 
-				<div id="photo">
-					<img class="logo" src="../static/logo.jpg" alt="description" />
-				</div>
-				<div id="proverbe">
-					<p> La gestion c'est la vie </p>
-				</div>
-			</div>
-		</header>
-
-		<!-- Menu de navigation -->
-		<nav class="menu-nav">
-			<ul>
-				<li class="bouton">
-					<a href="/"> Accueil </a>
-				</li>
-				<li class="bouton">
-					<a href="/Agilog" rel="nofollow">
-					AgiLog </a>
-				</li>
-				<li class="bouton">
-					<a href="/Agilean" rel="nofollow">
-					AgiLean </a>
-				</li>
-
-			</ul>
-
-
-		</nav>
 		<!-- Contenu -->
 		<h2> Bienvenue sur la page d'acceuil de AgiLean </h2>
-		<p> <a href="Initialisation" rel="nofollow"> Clique ici pour declarer une réception de kit </a></p>
+		<p> <a href="{{url_for('receptkit')}}" rel="nofollow"> Clique ici pour declarer une réception de kit </a></p>
 		<!-- Pied de page -->
 		<footer>
 			<p> Copyright &copy; AgiWeb 2020 - All right reserved </p>
 		</footer>
 </body>
+</html>

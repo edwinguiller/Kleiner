@@ -1,45 +1,11 @@
 <html>
-	<head>
-		<title>AgiWeb - AgiLog</title>
-		<link rel="stylesheet" type="text/css" href="../static/accueil.css">
-		<meta charset="utf-8">
-	</head>
+{% include "head.html" %}
 
 	<body>
 
-		<!-- Haut de Page -->
-		<header>
-			<div id="content">
 
-				<div id="photo">
-					<img class="logo" src="../static/logo.jpg" alt="description" />
-				</div>
-				<div id="proverbe">
-					<p> La gestion c'est la vie </p>
-				</div>
-			</div>
-		</header>
+{% include "Navbar.html" %}
 
-
-		<!-- Menu de navigation -->
-		<nav class="menu-nav">
-			<ul>
-				<li class="bouton">
-					<a href="/"> Accueil </a>
-				</li>
-				<li class="bouton">
-					<a href="Agilog" rel="nofollow">
-					AgiLog </a>
-				</li>
-				<li class="bouton">
-					<a href="Agilean" rel="nofollow">
-					AgiLean </a>
-				</li>
-
-			</ul>
-
-
-		</nav>
 		<!-- Contenu -->
 		<h2> Bienvenue sur la page d'accueil de AgiLog </h2>
 		<div id="content-agilog">
@@ -49,14 +15,14 @@
 
 					<p class= "small "> Vous voulez lancez le run et initialiser les paramètres du jeux ? Cliquez alors sur Initialisation </p>
 					<li class="bouton2">
-						<a href="initialisation.html"> Initialisation </a>
+						<a href="{{url_for('initialisation')}}"> Initialisation </a>
 					</li>
 				</div>
 				<div class="rightbox">
 
-					<p class= "small "> L'initialisation est terminée ? Vous souhaitez maintenant voir le timer ? Visualiser les stocks ? Ou encore valider les commandes d'entrées de pièces et de sorties des kits ? Cliquez alors sur Encours </p>
+					<p class= "small "> Encours ? Cliquez alors sur Encours </p>
 					<li class="bouton2">
-						<a href="encours.html"> Encours </a>
+						<a href="{{url_for('encoursAlog')}}"> Encours </a>
 					</li>
 				</div>
 			</ul>
