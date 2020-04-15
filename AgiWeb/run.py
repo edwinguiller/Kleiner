@@ -83,8 +83,6 @@ def ajout_piece():
     con = lite.connect('AgiWeb_BDD.db') #attention chez toi c'est pas rangé au meme endroit
     con.row_factory = lite.Row
     cur = con.cursor()
-    cur.execute("SELECT nom, quantite FROM piece")
-    liste_piece = cur.fetchall()
     cur.execute("SELECT id_piece, nom, quantite FROM piece")
     liste_id = cur.fetchall()
     nome=request.form.get('nom','')
