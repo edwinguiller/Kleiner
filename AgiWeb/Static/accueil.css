@@ -6,6 +6,16 @@
 	float : left ;
 }
 
+table
+{
+	border-collapse: collapse;
+}
+td,th
+{
+	border-style: solid;
+	border: 1px, solid black;
+}
+
 div#content div{
 	display :inline-block;
 	width: 12%;

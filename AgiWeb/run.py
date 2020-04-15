@@ -72,46 +72,35 @@ def commande():
 def initialisation ():
     return render_template('initialisation_alog.html')
 
-@app.route('/Agilog/Initialisation/Ajout_piece', methods=['GET', 'POST'])#recupere 2 variable nom et prnom et les ajoutent a la base de données (a modifier pour mettre piece et quantite)
+@app.route('/Agilog/Initialisation/ajout_piece', methods=['GET', 'POST'])#recupere 2 variable nom et prnom et les ajoutent a la base de données (a modifier pour mettre piece et quantite)
 def ajout_piece():
-    # la demande du nom de la piece à rajouter et du stock à mettre
-    contenu=""
-    contenu += "<form method='get' action='ajout_piece'>"
-    contenu += "nom de la piece <br/>"
-    contenu += "<input type='text' name='nom' value=''>"
-    contenu += "<br/>"
-    contenu += "stock de depart <br/>"
-    contenu += "<input type='int' name='quantite' value=''>"
-    contenu += "<input type='submit' value='Envoyer'>"
 
-    nome=request.args.get('nom','')
-    quantitee=request.args.get('quantite','')
+    #variable message :
+    err_quant = ''
+    msg=''
 
-    # creation de l'id
-    con = lite.connect(cheminbdd) #attention chez toi c'est pas rangé au meme endroit
+    # affichage des pièces présente
+    con = lite.connect('AgiWeb_BDD.db') #attention chez toi c'est pas rangé au meme endroit
     con.row_factory = lite.Row
     cur = con.cursor()
-    cur.execute("SELECT id_piece FROM piece")
-    liste_id1 = cur.fetchall()
-    liste_id2=[]
-    for chaque in liste_id1:
-        liste_id2.append(chaque[0])
-    taille=len(liste_id2)
-    if taille==0:
-        ide=1
-    else:
-        ide=max(liste_id2)+1
+    cur.execute("SELECT id_piece, nom, quantite FROM piece")
+    liste_piece = cur.fetchall()
+    nome=request.form.get('nom','')
+    quantitee=request.form.get('quantite','')
+    ide = request.form.get('ide','')
     con.close()
+
 
     #test si le stock est un entier si qlq chose est rentré
     if (nome!="" or quantitee!="" ):
         try:
             quantitee=int(quantitee)
         except:
-            contenu += '<br/> le stock doit être un nombre entier'
+            err_quant = 'le stock doit être un nombre entier'
         else:
             # on ajoute le nom l'id et le stock à la bdd
-            con = lite.connect(cheminbdd)
+            err_quant = ''
+            con = lite.connect('AgiWeb_BDD.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT nom FROM Piece;")
@@ -122,29 +111,29 @@ def ajout_piece():
 
             if (nome!="" and quantitee!= ""):
                 if (nome in test):
-                    contenu += "Cette piece existe deja"
-                elif (nome!="" and quantitee>-1): #ajouter un createur d'id apres
+                    msg = "Cette piece existe deja"
+                elif (nome!="" and quantitee>=0): #ajouter un createur d'id apres
                     cur.execute("INSERT INTO piece('nom', 'quantite', id_piece) VALUES (?,?,?)", (nome,quantitee,ide))
+                    msg = ''
+                    con.close()
                 else:
-                    contenu += (" Il faut un nom et une quantité positive")
-
-    #delete
-    contenu += "<form method='get' action='gestion_stock'>"
-    contenu += "<br/><br/> quel est le nom de la piece que tu veux tu supprimer? <br/>"
-    contenu += "<input type='str' name='nomdel' value=''>"
-    contenu += "<input type='submit' value='Envoyer'>"
+                    msg += (" Il faut un nom et une quantité positive")
+                #return redirect(url_for('ajout_piece'))
 
     nomdele=request.args.get('nomdel','')
+    con = lite.connect('AgiWeb_BDD.db')
+    con.row_factory = lite.Row
+    cur = con.cursor()
     cur.execute ("DELETE FROM 'piece' WHERE nom=?", [nomdele])
 
     # a modifier, l'affichage des pieces
     cur.execute("SELECT nom, quantite FROM piece;")
-    lignes = cur.fetchall()
+    liste_piece = cur.fetchall()
     con.commit()
     con.close()
-    contenu += render_template('affichage_personnes.html', piece = lignes)#creer une fonction pour afficher les pieces deja existante
 
-    return contenu; # LES PROGRAMMEURS a retoucher / separer  fonctions
+
+    return render_template('ajout_piece.html', liste_piece=liste_piece , err_quant= err_quant, msg=msg); # LES PROGRAMMEURS a retoucher / separer  fonctions
 
 @app.route('/Agilog/Initialisation/Gestion_stock', methods=['GET', 'POST'])#recupere 2 variable nom et prnom et les ajoutent a la base de données (a modifier pour mettre piece et quantite)
 def gestion_stock():
