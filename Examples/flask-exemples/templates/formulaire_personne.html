@@ -14,11 +14,11 @@
 	<label for='prenom'>Prénom</label><input type='text' name='prenom' value='{{ prenom }}'>
 	<label for='role'>Rôle</label>
 		<select name='role'>
-			<option value='0'>Choisissez un rôle</option>
+			<option value='0' {% if role==0 %} active {% endif %}>Choisissez un rôle</option>
 			<option value='1' {% if role==1 %} active {% endif %}>BDD</option>
 			<option value='2' {% if role==2 %} active {% endif %}>HTML</option>
 			<option value='3' {% if role==3 %} active {% endif %}>Python</option>
-			
+
 		</select>
 	<input type='submit' value='ajouter'>
 	</form><br/>
