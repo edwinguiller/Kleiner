@@ -83,8 +83,10 @@ def ajout_piece():
     con = lite.connect('AgiWeb_BDD.db') #attention chez toi c'est pas rangé au meme endroit
     con.row_factory = lite.Row
     cur = con.cursor()
-    cur.execute("SELECT id_piece, nom, quantite FROM piece")
+    cur.execute("SELECT nom, quantite FROM piece")
     liste_piece = cur.fetchall()
+    cur.execute("SELECT id_piece, nom, quantite FROM piece")
+    liste_id = cur.fetchall()
     nome=request.form.get('nom','')
     quantitee=request.form.get('quantite','')
     ide = request.form.get('ide','')
@@ -103,7 +105,7 @@ def ajout_piece():
             con = lite.connect('AgiWeb_BDD.db')
             con.row_factory = lite.Row
             cur = con.cursor()
-            cur.execute("SELECT nom FROM Piece;")
+            cur.execute("SELECT nom FROM Piece")
             testnom = cur.fetchall()
             test=[]
             for testnom in testnom:
@@ -113,7 +115,7 @@ def ajout_piece():
                 if (nome in test):
                     msg = "Cette piece existe deja"
                 elif (nome!="" and quantitee>=0): #ajouter un createur d'id apres
-                    cur.execute("INSERT INTO piece('nom', 'quantite', id_piece) VALUES (?,?,?)", (nome,quantitee,ide))
+                    cur.execute("INSERT INTO piece('nom', 'quantite', 'id_piece') VALUES (?,?,?)", (nome,quantitee,ide))
                     msg = ''
                     con.close()
                 else:
@@ -133,7 +135,7 @@ def ajout_piece():
     con.close()
 
 
-    return render_template('ajout_piece.html', liste_piece=liste_piece , err_quant= err_quant, msg=msg); # LES PROGRAMMEURS a retoucher / separer  fonctions
+    return render_template('ajout_piece.html', liste_id=liste_id, liste_piece=liste_piece , err_quant= err_quant, msg=msg); # LES PROGRAMMEURS a retoucher / separer  fonctions
 
 @app.route('/Agilog/Initialisation/Gestion_stock', methods=['GET', 'POST'])#recupere 2 variable nom et prnom et les ajoutent a la base de données (a modifier pour mettre piece et quantite)
 def gestion_stock():

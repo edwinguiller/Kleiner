@@ -1,5 +1,4 @@
 
-<!DOCTYPE html>
 <html lang="en" dir="ltr">
 	{% include "head.html" %}
 
@@ -8,13 +7,15 @@
 	{% include "Navbar.html" %} <br/>
 
 	<h1>Stock actuel :</h1>
+
 	<table>
 		<tr>
 			<th>Id piece</th>
 			<th>nom Piece</th>
 			<th>quantité</th>
 		</tr>
-		{%for piece in liste_piece %}
+		{%for piece in liste_id %}
+		<p>{{piece['id_piece']}}</p>
 		<tr>
 			<th>{{piece['id_piece']}}</th>
 			<th>{{piece['nom']}}</th>
