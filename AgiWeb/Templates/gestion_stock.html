@@ -1,4 +1,6 @@
+
 <!doctype html>
+<!-- page agilog/init/gestion stock (reference schema site trello) -->
 <html>
 {% include "head.html" %}
 
@@ -14,7 +16,7 @@
   } -->
 
 <div class='contenu'>
-	<h1>Ajout d'une personne</h1><br/>
+	<h1>Ajout d'une piece dans un kit</h1><br/>
 	{% if msg!="" %}<strong>{{ msg }}</strong><br/><br/>{% endif %}
 	<form method='post' action='{{ url_for("ajouter_personne") }}'>
 	<label for='nom'>Nom de la pièce</label><input type='text' name='nom' value='{{ nom }}'>
