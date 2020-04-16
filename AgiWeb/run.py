@@ -108,7 +108,13 @@ def ajout_piece():
     cur = con.cursor()
 
     #test si le stock est un entier si qlq chose est rentré
+<<<<<<< Updated upstream
     if (nome!="" or quantitee!="" or ide!="" ):
+=======
+    if (nome!="" or quantitee!="" or ide!=""):
+        contenu = ""
+        contenu += "D"
+>>>>>>> Stashed changes
         try:
             quantitee=int(quantitee)
         except:
@@ -142,7 +148,14 @@ def ajout_piece():
     if (nomdele != ""):
         cur.execute ("DELETE FROM 'piece' WHERE nom=?", [nomdele])
 
+<<<<<<< Updated upstream
     con.commit()
+=======
+    # a modifier, l'affichage des pieces
+    cur.execute("SELECT nom, quantite FROM piece;")
+    liste_piece = cur.fetchall()
+    #con.commit()
+>>>>>>> Stashed changes
     con.close()
 
     return contenu; # LES PROGRAMMEURS a retoucher / separer  fonctions
