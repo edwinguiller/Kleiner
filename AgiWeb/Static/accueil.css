@@ -22,7 +22,7 @@ div#content div{
 
 }
 div#content div#photo{
-
+	float:left;
 }
 
 div#content div#proverbe{
