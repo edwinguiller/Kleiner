@@ -125,7 +125,7 @@ def ajout_piece():
                 if (nome in test):
                     msg = "Cette piece existe deja"
                 elif (nome!="" and quantitee>=0): #ajouter un createur d'id apres
-                    cur.execute("INSERT INTO piece('nom', 'quantite', 'id_piece') VALUES (?,?,?)", (nome,quantitee,ide))
+                    cur.execute("INSERT INTO piece('nom', 'quantite', 'id') VALUES (?,?,?)", (nome,quantitee,ide))
                     msg = ''
                     con.close()
                 else:
