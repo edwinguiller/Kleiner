@@ -17,10 +17,9 @@
 		<select name='Nom de la pièce'>
 			<option value='0'>Choisissez un fournisseur</option>
 			{%for nom in liste_nom%}
-			<option value='1' {% if role==1 %} active {% endif %}>fournisseur 1</option>
-			<option value='2' {% if role==2 %} active {% endif %}>fournisseur 2</option>
-			<option value='3' {% if role==3 %} active {% endif %}>fournisseur 3</option>
+			<option value='{{loop.index}}' {% if role==loop.index %} active {% endif %}>fournisseur 1</option>
 
+			{% endfor %}
 		</select>
 	<input type='submit' value='ajouter'>
 	</form><br/>
