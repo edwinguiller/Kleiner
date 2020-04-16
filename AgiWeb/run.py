@@ -24,8 +24,8 @@ def encoursAlog(): #à faire
 @app.route('/Agilog/Encours/Declarer_kit', methods=['GET', 'POST'])#recupere 2 variable nom et prnom et les ajoutent a la base de données (a modifier pour mettre piece et quantite)
 def declarer_kit():
 
-    contenu=""
-    contenu += "<form method='get' action='Declarer_kit'>"
+    contenu = ""
+    contenu += "<form method='get' action='declarer_kit'>"
     contenu += "num kit "
     contenu += "<input type='text' name='num_kit' value=''>"
     contenu += "<input type='submit' value='Envoyer'>"
@@ -84,47 +84,38 @@ def commande():
 def initialisation ():
     return render_template('initialisation_alog.html')
 
-@app.route('/Agilog/Initialisation/Ajout_piece', methods=['GET', 'POST'])#recupere 2 variable nom et prnom et les ajoutent a la base de données (a modifier pour mettre piece et quantite)
+@app.route('/Agilog/Initialisation/ajout_piece', methods=['GET', 'POST'])#recupere 2 variable nom et prnom et les ajoutent a la base de données (a modifier pour mettre piece et quantite)
 def ajout_piece():
-    # la demande du nom de la piece à rajouter et du stock à mettre
-    contenu=""
-    contenu += "<form method='get' action='Ajout_piece'>"
-    contenu += "nom de la piece <br/>"
-    contenu += "<input type='text' name='nom' value=''>"
-    contenu += "<br/>"
-    contenu += "stock de depart <br/>"
-    contenu += "<input type='int' name='quantite' value=''>"
-    contenu += "<br/>"
-    contenu += "ton id <br/>"
-    contenu += "<input type='text' name='id' value=''>"
-    contenu += "<input type='submit' value='Envoyer'>"
 
-    nome=request.args.get('nom','')
-    quantitee=request.args.get('quantite','')
-    ide=request.args.get('id','')
+    #variable message :
+    err_quant = ''
+    msg=''
 
-    con = lite.connect(cheminbdd) #attention chez toi c'est pas rangé au meme endroit
+    # affichage des pièces présente
+    con = lite.connect('AgiWeb_BDD.db') #attention chez toi c'est pas rangé au meme endroit
     con.row_factory = lite.Row
     cur = con.cursor()
+    cur.execute("SELECT id_piece, nom, quantite FROM piece")
+    liste_id = cur.fetchall()
+    nome=request.form.get('nom','')
+    quantitee=request.form.get('quantite','')
+    ide = request.form.get('ide','')
+    con.close()
+
 
     #test si le stock est un entier si qlq chose est rentré
-<<<<<<< Updated upstream
     if (nome!="" or quantitee!="" or ide!="" ):
-=======
-    if (nome!="" or quantitee!="" or ide!=""):
-        contenu = ""
-        contenu += "D"
->>>>>>> Stashed changes
         try:
             quantitee=int(quantitee)
         except:
-            contenu += '<br/> le stock doit être un nombre entier'
+            err_quant = 'le stock doit être un nombre entier'
         else:
             # on ajoute le nom l'id et le stock à la bdd
-            con = lite.connect(cheminbdd)
+            err_quant = ''
+            con = lite.connect('AgiWeb_BDD.db')
             con.row_factory = lite.Row
             cur = con.cursor()
-            cur.execute("SELECT nom FROM Piece;")
+            cur.execute("SELECT nom FROM Piece")
             testnom = cur.fetchall()
             test=[]
             for testnom in testnom:
@@ -132,76 +123,66 @@ def ajout_piece():
 
             if (nome!="" and quantitee!= ""):
                 if (nome in test):
-                    contenu += "Cette piece existe deja"
-                elif (nome!="" and quantitee>-1): #ajouter un createur d'id apres
-                    cur.execute("INSERT INTO piece('nom', 'quantite', id) VALUES (?,?,?)", (nome,quantitee,ide))
+                    msg = "Cette piece existe deja"
+                elif (nome!="" and quantitee>=0): #ajouter un createur d'id apres
+                    cur.execute("INSERT INTO piece('nom', 'quantite', 'id_piece') VALUES (?,?,?)", (nome,quantitee,ide))
+                    msg = ''
+                    con.close()
                 else:
-                    contenu += (" Il faut un nom et une quantité positive")
+                    msg += (" Il faut un nom et une quantité positive")
 
-    #delete
-    contenu += "<form method='get' action='gestion_stock'>"
-    contenu += "<br/><br/> quel est le nom de la piece que tu veux tu supprimer? <br/>"
-    contenu += "<input type='str' name='nomdel' value=''>"
-    contenu += "<input type='submit' value='Envoyer'>"
+    nomdele=request.form.get('nomdel','')
+    con = lite.connect('AgiWeb_BDD.db')
+    con.row_factory = lite.Row
+    cur = con.cursor()
+    cur.execute ("DELETE FROM 'piece' WHERE nom=?", [nomdele])
 
-    nomdele=request.args.get('nomdel','')
-    if (nomdele != ""):
-        cur.execute ("DELETE FROM 'piece' WHERE nom=?", [nomdele])
-
-<<<<<<< Updated upstream
-    con.commit()
-=======
     # a modifier, l'affichage des pieces
     cur.execute("SELECT nom, quantite FROM piece;")
     liste_piece = cur.fetchall()
+<<<<<<< HEAD
     #con.commit()
->>>>>>> Stashed changes
+=======
+    con.commit()
+>>>>>>> modif-bapt
     con.close()
 
-    return contenu; # LES PROGRAMMEURS a retoucher / separer  fonctions
+
+    return render_template('ajout_piece.html', liste_id=liste_id, err_quant= err_quant, msg=msg); # LES PROGRAMMEURS a retoucher / separer  fonctions
 
 @app.route('/Agilog/Initialisation/Gestion_stock', methods=['GET', 'POST'])#recupere 2 variable nom et prnom et les ajoutent a la base de données (a modifier pour mettre piece et quantite)
 def gestion_stock():
-    contenu=""
 
-    #demande le nom de la piece, le seuil de recompletement, le stock de secu et le delai de reapro a changer en fournisseur
-    contenu += "<form method='get' action='Gestion_stock'>"
-    contenu += "quel est le nom de ta piece <br/>"
-    contenu += "<input type='str' name='nom' value=''>"
-    contenu += "<br/> <br/>"
-    contenu += "quel est le seuil de recompletement <br/>"
-    contenu += "<input type='int' name='seuil' value=''>"
-    contenu += "<br/> <br/>"
-    contenu += "le stock de securite <br/>"
-    contenu += "<input type='int' name='secu' value=''>"
-    contenu += "<br/> <br/>"
-    contenu += "le delai de réapprovisionnement <br/>"
-    contenu += "<input type='int' name='delai' value=''>"
-    contenu += "<input type='submit' value='Envoyer'>"
+    #recupere nom des objets pour le vollet deroulant
 
-    nome=request.args.get('nom','')
-    seuile=request.args.get('seuil','')
-    secue=request.args.get('secu','')
-    delaie=request.args.get('delai','')
-    #test si ce sont bien des entiers
-    con = lite.connect(cheminbdd)
-    con.row_factory = lite.Row
+    con = lite.connect("AgiWeb_BDD.db")
+    con.row_factory = lite.row
     cur = con.cursor()
-    cur.execute ("SELECT nom FROM Piece;")
+    cur.execute("SELECT nom FROM piece")
+    liste_nom = cur.fetchall()
 
-    test = cur.fetchall()# pour vérifier si le nom existe bien
-    test_nom=[]
-    for tous in test:
-        test_nom.append(tous[0])
 
-    # si tout est bien rempli on met a jour la bdd
-    if (nome!="" and seuile!="" and secue!="" and delaie!=""):
-        try:
-            seuile=int(seuile)
-            secue=int(secue)
-            delaie=int(delaie)
-        except:
-            contenu += '<br/> Les stocks de sécurité, les delais de réapprovisionnement et le seuils de recompletement doivent être des nombres entier'
+    nome=request.form.get('nom','')
+    seuile=request.form.get('seuil','')
+    secue=request.form.get('secue','')
+    delaie=request.form.get('delai','')
+    #test si ce sont bien des entiers
+    try:
+        seuile=int(seuile)
+        secue=int(secue)
+        delaie=int(delaie)
+    except:
+        contenu += '<br/> Les stocks de sécurité, les delais de réapprovisionnement et le seuils de recompletement doivent être des nombres entier'
+    else:
+        con = lite.connect("AgiWeb_BDD.db")
+        con.row_factory = lite.Row
+        cur = con.cursor()
+
+        # si tout est bien rempli on met a jour la bdd
+        if (nome=="" and seuile=="" and secue=="" and delaie==""):
+            contenu += ""
+        elif (seuile<0 or secue<0 or delaie<0 or nome==""):
+            contenu += " <br/> Les nombres doivent être supérieur à 0"
         else:
             if (seuile<0 or secue<0 or delaie<0):
                 contenu += " <br/> Les nombres doivent être supérieur à 0"
@@ -224,7 +205,7 @@ def gestion_stock():
     con.close()
     #contenu += render_template('affichage_personnes.html', personnes = lignes)#une fonction html pour afficher un tableau
 
-    return contenu;
+    return render_template('gestion_stock.html', liste_nom=liste_nom)
 
 @app.route('/Agilog/Initialisation/Code_kit', methods=['GET', 'POST'])
 def code_kit():

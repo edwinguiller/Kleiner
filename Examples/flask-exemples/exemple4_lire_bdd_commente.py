@@ -23,7 +23,7 @@ def index():
 @app.route('/afficher_personnes', methods=['GET'])
 def afficher_personnes():
 
-	con = lite.connect('/Users/Nathan/Documents/GitHub/Kleiner/Examples/flask-exemples/exemples.db') #tu dis à quelle bdd tu te connectes
+	con = lite.connect('/Users/baba/Pictures/Kleiner/Kleiner/Examples/flask-exemples/exemples.db') #tu dis à quelle bdd tu te connectes
 	con.row_factory = lite.Row #truc pour que le lien bdd-python fonctionnel
 	cur = con.cursor() #placer le 'cuseur' de la bdd pret à recevoir des requetes
 	cur.execute("SELECT nom, prenom, role FROM personnes;") #executer la requete sql

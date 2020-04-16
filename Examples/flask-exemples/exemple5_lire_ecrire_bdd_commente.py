@@ -24,7 +24,7 @@ def index():
 @app.route('/afficher_personnes', methods=['GET'])
 def afficher_personnes():
 
-	con = lite.connect('/Users/Nathan/Documents/GitHub/Kleiner/Examples/flask-exemples/exemples.db') #attention chez toi c'est pas rangé au meme endroit
+	con = lite.connect('exemples.db') #attention chez toi c'est pas rangé au meme endroit
 	con.row_factory = lite.Row
 	cur = con.cursor()
 	cur.execute("SELECT nom, prenom, role FROM personnes")
@@ -38,12 +38,12 @@ def ajouter_personne():
 	if not request.method == 'POST': #ce if la on voit pas trop a quoi ça sert, mais c'est utile par secu au cas ou d'autres methodes sont utilisees je crois.
 		return render_template('formulaire_personne.html', msg = "", nom = "", prenom = "", role = 0)
 	else:
-		nom = request.form.get('nom', '') #on rentre les champs quoi
+		nom = request.form.get('nom','') #on rentre les champs quoi
 		prenom = request.form.get('prenom','')
 		role = request.form.get('role', 0, type=int) #0 par defaut et on oblige à etre un nb entier (cf les fichiers html de pk ça affiche autre chose)
 
-		if (nom != "" and prenom != "" and role > 0 and role < 4): #en gros si on a rempli tous les champs
-			con = lite.connect('/Users/Nathan/Documents/GitHub/Kleiner/Examples/flask-exemples/exemples.db') #bon la c'est du sql comme en tp
+		if (nom != "" and prenom != "" and role >= 0 and role < 4): #en gros si on a rempli tous les champs
+			con = lite.connect('exemples.db') #bon la c'est du sql comme en tp
 			con.row_factory = lite.Row
 			cur = con.cursor()
 			cur.execute("INSERT INTO personnes('nom', 'prenom', 'role') VALUES (?,?,?)", (nom,prenom,role))
