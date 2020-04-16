@@ -136,15 +136,17 @@ def ajout_piece():
 
 @app.route('/Agilog/Initialisation/Gestion_stock', methods=['GET', 'POST'])#recupere 2 variable nom et prnom et les ajoutent a la base de données (a modifier pour mettre piece et quantite)
 def gestion_stock():
+    #var
+
+    msg =""
 
     #recupere nom des objets pour le vollet deroulant
 
     con = lite.connect("AgiWeb_BDD.db")
-    con.row_factory = lite.row
+    con.row_factory = lite.Row
     cur = con.cursor()
     cur.execute("SELECT nom FROM piece")
     liste_nom = cur.fetchall()
-
 
     nome=request.form.get('nom','')
     seuile=request.form.get('seuil','')
@@ -156,24 +158,23 @@ def gestion_stock():
         secue=int(secue)
         delaie=int(delaie)
     except:
-        contenu += '<br/> Les stocks de sécurité, les delais de réapprovisionnement et le seuils de recompletement doivent être des nombres entier'
+        msg = "probleme"
     else:
         con = lite.connect("AgiWeb_BDD.db")
-        con.row_factory = lite.Row
+        con.row_factory = lite.row
         cur = con.cursor()
 
         # si tout est bien rempli on met a jour la bdd
         if (nome=="" and seuile=="" and secue=="" and delaie==""):
-            contenu += ""
+            msg +="attention vous n'avez rien saisi"
         elif (seuile<0 or secue<0 or delaie<0 or nome==""):
-            contenu += " <br/> Les nombres doivent être supérieur à 0"
+            msg+="attention etrez des valeurs positives !"
         else:
             cur.execute("UPDATE Piece SET seuil_recomp=?, stock_secu=?, delai_reappro=? WHERE nom=?", [seuile,secue,delaie,nome])
     cur.execute("SELECT nom, id_piece, quantite, seuil_recomp, stock_secu, delai_reappro FROM piece;")
     lignes = cur.fetchall()
     #con.commit()#enregistrer la requete de modification.
     con.close()
-    contenu += render_template('affichage_personnes.html', personnes = lignes)#une fonction html pour afficher un tableau
 
     return render_template('gestion_stock.html', liste_nom=liste_nom)
 

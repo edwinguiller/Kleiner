@@ -10,17 +10,16 @@
 <div class='contenu'>
 	<h1>Ajout d'une piece dans un kit</h1><br/>
 	{% if msg!="" %}<strong>{{ msg }}</strong><br/><br/>{% endif %}
-	<form method='post' action='{{ url_for("ajouter_personne") }}'>
-	<label for='nome'>Nom de la pièce</label><input type='text' name='nom' value='{{ nom }}'>
-	<label for='prenom'>Quantité</label><input type='text' name='prenom' value='{{ prenom }}'>
+	<form method='post' action='{{ url_for("gestion_stock") }}'>
+	<label for='seuile'>seuil de recompletement</label><input type='text' name='seuile' value='seuil'>
+	<label for='secue'>stock de secu</label><input type='text' name='secu' value='stoc de secu'>
+	<label for='delaie'>delai de reappro</label><input type='text' name='delaie' value='delai de reappro'>
 	<label for='nome'>nom de la pièce</label>
 		<select name='Nom de la pièce'>
-			<option value='0'>Choisissez un fournisseur</option>
+			<option value='0'>Choisissez une Piece</option>
 			{%for nom in liste_nom%}
-			<option value='1' {% if role==1 %} active {% endif %}>fournisseur 1</option>
-			<option value='2' {% if role==2 %} active {% endif %}>fournisseur 2</option>
-			<option value='3' {% if role==3 %} active {% endif %}>fournisseur 3</option>
-
+			<option value='{{loop.index}}' {% if role==loop.index %} active {% endif %}>{{nom['nom']}}</option>
+			{%endfor%}
 		</select>
 	<input type='submit' value='ajouter'>
 	</form><br/>
