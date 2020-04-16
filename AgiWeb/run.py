@@ -142,7 +142,16 @@ def ajout_piece():
     if (nomdele != ""):
         cur.execute ("DELETE FROM 'piece' WHERE nom=?", [nomdele])
 
-    con.commit()
+    cur.execute("SELECT nom, quantite, id FROM Piece;")
+    liste = cur.fetchall()
+    #
+    for chaque in liste:
+        contenu += "<br/>"
+        contenu += str(chaque[0]) + " "
+        contenu += str(chaque[1]) + " "
+        contenu += str(chaque[2]) + " "
+
+    #con.commit()
     con.close()
 
     return contenu; # LES PROGRAMMEURS a retoucher / separer  fonctions
