@@ -25,7 +25,7 @@ def encoursAlog(): #à faire
 def declarer_kit():
 
     contenu=""
-    contenu += "<form method='get' action='declarer_kit'>"
+    contenu += "<form method='get' action='Declarer_kit'>"
     contenu += "num kit "
     contenu += "<input type='text' name='num_kit' value=''>"
     contenu += "<input type='submit' value='Envoyer'>"
@@ -35,7 +35,7 @@ def declarer_kit():
     con = lite.connect(cheminbdd) #attention chez toi c'est pas rangé au meme endroit
     con.row_factory = lite.Row
     cur = con.cursor()
-    cur.execute("SELECT id_vente FROM production")
+    cur.execute("SELECT id FROM production")
     liste_id1 = cur.fetchall()
     liste_id2=[]
     for chaque in liste_id1:
@@ -49,9 +49,21 @@ def declarer_kit():
     con = lite.connect(cheminbdd)
     con.row_factory = lite.Row
     cur = con.cursor()
-    if (nome!=""):
-        cur.execute("INSERT INTO production('id_vente', 'nom_kit', 'fini') Value (?,?,?)", (newid,num_kite,1))
-    con.commit()#enregistrer la requete de modification.
+    a=0
+    d=cur.execute(" SELECT datetime('now')")
+    if (num_kite!=""):
+        d=cur.execute(" SELECT datetime('now')")
+        cur.execute("INSERT INTO production('id', 'kit', 'fini','date') VALUES (?,?,?,?)", [newid ,num_kite ,1, d ])
+    #con.commit()#enregistrer la requete de modification.
+    cur.execute("SELECT id, kit, fini, date FROM Production;")
+    liste = cur.fetchall()
+    #
+    for chaque in liste:
+        contenu += "<br/>"
+        contenu += str(chaque[0]) + " "
+        contenu += str(chaque[1]) + " "
+        contenu += str(chaque[2]) + " "
+        contenu += str(chaque[3]) + " "
     con.close()
 
     return contenu;
@@ -76,35 +88,27 @@ def initialisation ():
 def ajout_piece():
     # la demande du nom de la piece à rajouter et du stock à mettre
     contenu=""
-    contenu += "<form method='get' action='ajout_piece'>"
+    contenu += "<form method='get' action='Ajout_piece'>"
     contenu += "nom de la piece <br/>"
     contenu += "<input type='text' name='nom' value=''>"
     contenu += "<br/>"
     contenu += "stock de depart <br/>"
     contenu += "<input type='int' name='quantite' value=''>"
+    contenu += "<br/>"
+    contenu += "ton id <br/>"
+    contenu += "<input type='text' name='id' value=''>"
     contenu += "<input type='submit' value='Envoyer'>"
 
     nome=request.args.get('nom','')
     quantitee=request.args.get('quantite','')
+    ide=request.args.get('id','')
 
-    # creation de l'id
     con = lite.connect(cheminbdd) #attention chez toi c'est pas rangé au meme endroit
     con.row_factory = lite.Row
     cur = con.cursor()
-    cur.execute("SELECT id_piece FROM piece")
-    liste_id1 = cur.fetchall()
-    liste_id2=[]
-    for chaque in liste_id1:
-        liste_id2.append(chaque[0])
-    taille=len(liste_id2)
-    if taille==0:
-        ide=1
-    else:
-        ide=max(liste_id2)+1
-    con.close()
 
     #test si le stock est un entier si qlq chose est rentré
-    if (nome!="" or quantitee!="" ):
+    if (nome!="" or quantitee!="" or ide!="" ):
         try:
             quantitee=int(quantitee)
         except:
@@ -124,7 +128,7 @@ def ajout_piece():
                 if (nome in test):
                     contenu += "Cette piece existe deja"
                 elif (nome!="" and quantitee>-1): #ajouter un createur d'id apres
-                    cur.execute("INSERT INTO piece('nom', 'quantite', id_piece) VALUES (?,?,?)", (nome,quantitee,ide))
+                    cur.execute("INSERT INTO piece('nom', 'quantite', id) VALUES (?,?,?)", (nome,quantitee,ide))
                 else:
                     contenu += (" Il faut un nom et une quantité positive")
 
@@ -135,14 +139,11 @@ def ajout_piece():
     contenu += "<input type='submit' value='Envoyer'>"
 
     nomdele=request.args.get('nomdel','')
-    cur.execute ("DELETE FROM 'piece' WHERE nom=?", [nomdele])
+    if (nomdele != ""):
+        cur.execute ("DELETE FROM 'piece' WHERE nom=?", [nomdele])
 
-    # a modifier, l'affichage des pieces
-    cur.execute("SELECT nom, quantite FROM piece;")
-    lignes = cur.fetchall()
     con.commit()
     con.close()
-    contenu += render_template('affichage_personnes.html', piece = lignes)#creer une fonction pour afficher les pieces deja existante
 
     return contenu; # LES PROGRAMMEURS a retoucher / separer  fonctions
 
@@ -151,7 +152,7 @@ def gestion_stock():
     contenu=""
 
     #demande le nom de la piece, le seuil de recompletement, le stock de secu et le delai de reapro a changer en fournisseur
-    contenu += "<form method='get' action='gestion_stock'>"
+    contenu += "<form method='get' action='Gestion_stock'>"
     contenu += "quel est le nom de ta piece <br/>"
     contenu += "<input type='str' name='nom' value=''>"
     contenu += "<br/> <br/>"
@@ -167,32 +168,48 @@ def gestion_stock():
 
     nome=request.args.get('nom','')
     seuile=request.args.get('seuil','')
-    secue=request.args.get('secue','')
+    secue=request.args.get('secu','')
     delaie=request.args.get('delai','')
     #test si ce sont bien des entiers
-    try:
-        seuile=int(seuile)
-        secue=int(secue)
-        delaie=int(delaie)
-    except:
-        contenu += '<br/> Les stocks de sécurité, les delais de réapprovisionnement et le seuils de recompletement doivent être des nombres entier'
-    else:
-        con = lite.connect(cheminbdd)
-        con.row_factory = lite.Row
-        cur = con.cursor()
+    con = lite.connect(cheminbdd)
+    con.row_factory = lite.Row
+    cur = con.cursor()
+    cur.execute ("SELECT nom FROM Piece;")
 
-        # si tout est bien rempli on met a jour la bdd
-        if (nome=="" and seuile=="" and secue=="" and delaie==""):
-            contenu += ""
-        elif (seuile<0 or secue<0 or delaie<0 or nome==""):
-            contenu += " <br/> Les nombres doivent être supérieur à 0"
+    test = cur.fetchall()# pour vérifier si le nom existe bien
+    test_nom=[]
+    for tous in test:
+        test_nom.append(tous[0])
+
+    # si tout est bien rempli on met a jour la bdd
+    if (nome!="" and seuile!="" and secue!="" and delaie!=""):
+        try:
+            seuile=int(seuile)
+            secue=int(secue)
+            delaie=int(delaie)
+        except:
+            contenu += '<br/> Les stocks de sécurité, les delais de réapprovisionnement et le seuils de recompletement doivent être des nombres entier'
         else:
-            cur.execute("UPDATE Piece SET seuil_recomp=?, stock_secu=?, delai_reappro=? WHERE nom=?", [seuile,secue,delaie,nome])
-    cur.execute("SELECT nom, id_piece, quantite, seuil_recomp, stock_secu, delai_reappro FROM piece;")
-    lignes = cur.fetchall()
+            if (seuile<0 or secue<0 or delaie<0):
+                contenu += " <br/> Les nombres doivent être supérieur à 0"
+            elif (nome not in test_nom):
+                contenu += '<br/> le nom n est pas dans la liste des pieces <br/>'
+            else:
+                cur.execute("UPDATE Piece SET seuil_recomp=?, stock_secu=?, delai_reappro=? WHERE nom=?", [seuile,secue,delaie,nome])
     #con.commit()#enregistrer la requete de modification.
+    # ceci est juste un affichage basique de la bdd, a remplacer par un vrai tableau
+    cur.execute("SELECT nom, quantite, id, seuil_recomp, stock_secu, delai_reappro FROM Piece;")
+    liste = cur.fetchall()
+    for chaque in liste:
+        contenu += "<br/>"
+        contenu += str(chaque[0]) + " "
+        contenu += str(chaque[1]) + " "
+        contenu += str(chaque[2]) + " "
+        contenu += str(chaque[3]) + " "
+        contenu += str(chaque[4]) + " "
+        contenu += str(chaque[5])
     con.close()
-    contenu += render_template('affichage_personnes.html', personnes = lignes)#une fonction html pour afficher un tableau
+    #contenu += render_template('affichage_personnes.html', personnes = lignes)#une fonction html pour afficher un tableau
 
     return contenu;
 

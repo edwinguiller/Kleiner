@@ -73,30 +73,30 @@ def ajouter_piece_dans_kit (x=0,contenu=""):
 #        cur.execute("UPDATE ;")#à modifier, on insert la nouvelle piece dans le kit
 =======
         if nom_piece not in ligne :
-			try:
-				quantite=int(quantite)
-				quantite>0
-			except:
-				contenu += "<br/>"
-				contenu += "Erreur la quantite est n'est pas bonne"
-				contenu += "<br/>"
-				contenu += "on recommence l'enregistrement de cette pièce ensemble mon chou dans quelques secondes"#time.sleep()
-				contenu += "<br/>"
-				time.sleep(5)
-				return(ajouter_piece_dans_kit(code,))
-			else:
-				con = lite.connect('/Users/Nathan/Documents/GitHub/Kleiner/AgiWeb/Fonction/exemples.db')#à modifier
-				con.row_factory = lite.Row
-				cur=con.cursor()
-				cur.execute("UPDATE ;")#à modifier, on insert la nouvelle piece dans le kit
-		else:
-			contenu += "<br/>"
-			contenu += "Erreur la pièce n'existe pas"
-			contenu += "<br/>"
-			contenu += "on recommence l'enregistrement de cette pièce ensemble mon chou dans quelques secondes"#time.sleep()
-			contenu += "<br/>"
-			time.sleep(5)
-			return(ajouter_piece_dans_kit(x,))
+            try:
+                quantite=int(quantite)
+                quantite>0
+            except:
+                contenu += "<br/>"
+                contenu += "Erreur la quantite est n'est pas bonne"
+                contenu += "<br/>"
+                contenu += "on recommence l'enregistrement de cette pièce ensemble mon chou dans quelques secondes"#time.sleep()
+                contenu += "<br/>"
+                time.sleep(5)
+                return(ajouter_piece_dans_kit(code,))
+            else:
+                con = lite.connect('/Users/Nathan/Documents/GitHub/Kleiner/AgiWeb/Fonction/exemples.db')#à modifier
+                con.row_factory = lite.Row
+                cur=con.cursor()
+                cur.execute("UPDATE ;")#à modifier, on insert la nouvelle piece dans le kit
+        else:
+            contenu += "<br/>"
+            contenu += "Erreur la pièce n'existe pas"
+            contenu += "<br/>"
+            contenu += "on recommence l'enregistrement de cette pièce ensemble mon chou dans quelques secondes"#time.sleep()
+            contenu += "<br/>"
+            time.sleep(5)
+            return(ajouter_piece_dans_kit(x,))
 
 >>>>>>> c79d95d98be4fce91b05071a2b51be92414ca68b
 
@@ -220,6 +220,23 @@ def aff_stock():
     con.close()
 
     return contenu
+
+     # creation de l'id
+    #con = lite.connect(cheminbdd) #attention chez toi c'est pas rangé au meme endroit
+    #con.row_factory = lite.Row
+    #cur = con.cursor()
+    #cur.execute("SELECT id FROM piece")
+    #liste_id1 = cur.fetchall()
+    #liste_id2=[]
+    #for chaque in liste_id1:
+    #    liste_id2.append(chaque[0])
+    #taille=len(liste_id2)
+    #print (liste_id2)
+    #if taille==0:
+    #    ide=1
+    #else:
+    #    ide=max(liste_id2)+1
+    #con.close()
 
 if __name__ == '__main__':
     app.run(debug=True, port=5678)
