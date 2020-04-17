@@ -163,7 +163,7 @@ def gestion_stock():
         secue=int(secue)
         delaie=int(delaie)
     except:
-        msg += "probleme"
+        return render_template('gestion_stock.html', liste_nom=liste_nom, msg = "salut")
     else:
         con = lite.connect("AgiWeb_BDD.db")
         con.row_factory = lite.row
