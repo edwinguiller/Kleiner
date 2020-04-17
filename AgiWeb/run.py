@@ -85,39 +85,41 @@ def ajout_piece():
     cur = con.cursor()
     cur.execute("SELECT id_piece, nom, quantite FROM piece")
     liste_id = cur.fetchall()
-    nome=request.form.get('nom','')
-    quantitee=request.form.get('quantite','')
-    ide = request.form.get('ide','')
-    con.close()
 
+    if not request.method == 'POST':
+        return render_tempate('ajout_piece.html',liste_id=liste_id, err_quant= "", msg="")
+    else:
+        nome=request.form.get('nom','')
+        quantitee=request.form.get('quantite','')
+        ide = request.form.get('ide','')
+        con.close()
+        #test si le stock est un entier si qlq chose est rentré
+        if (nome!="" or quantitee!="" ):
+            try:
+                quantitee=int(quantitee)
+            except:
+                err_quant = 'le stock doit être un nombre entier'
+            else:
+                # on ajoute le nom l'id et le stock à la bdd
+                err_quant = ''
+                con = lite.connect('AgiWeb_BDD.db')
+                con.row_factory = lite.Row
+                cur = con.cursor()
+                cur.execute("SELECT nom FROM Piece")
+                testnom = cur.fetchall()
+                test=[]
+                for testnom in testnom:
+                    test.append(testnom[0]) # une liste pour ensuite voir si la piece demandé n'existe pas deja
 
-    #test si le stock est un entier si qlq chose est rentré
-    if (nome!="" or quantitee!="" ):
-        try:
-            quantitee=int(quantitee)
-        except:
-            err_quant = 'le stock doit être un nombre entier'
-        else:
-            # on ajoute le nom l'id et le stock à la bdd
-            err_quant = ''
-            con = lite.connect('AgiWeb_BDD.db')
-            con.row_factory = lite.Row
-            cur = con.cursor()
-            cur.execute("SELECT nom FROM Piece")
-            testnom = cur.fetchall()
-            test=[]
-            for testnom in testnom:
-                test.append(testnom[0]) # une liste pour ensuite voir si la piece demandé n'existe pas deja
-
-            if (nome!="" and quantitee!= ""):
-                if (nome in test):
-                    msg = "Cette piece existe deja"
-                elif (nome!="" and quantitee>=0): #ajouter un createur d'id apres
-                    cur.execute("INSERT INTO piece('nom', 'quantite', 'id_piece') VALUES (?,?,?)", (nome,quantitee,ide))
-                    msg = ''
-                    con.close()
-                else:
-                    msg += (" Il faut un nom et une quantité positive")
+                if (nome!="" and quantitee!= ""):
+                    if (nome in test):
+                        msg = "Cette piece existe deja"
+                    elif (nome!="" and quantitee>=0): #ajouter un createur d'id apres
+                        cur.execute("INSERT INTO piece('nom', 'quantite', 'id_piece') VALUES (?,?,?)", (nome,quantitee,ide))
+                        msg = ''
+                        con.close()
+                    else:
+                        msg += (" Il faut un nom et une quantité positive")
 
     nomdele=request.form.get('nomdel','')
     con = lite.connect('AgiWeb_BDD.db')
