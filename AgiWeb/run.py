@@ -77,7 +77,7 @@ def ajout_piece():
 
     #variable message :
     err_quant = ''
-    msg='bb'
+    msg=''
 
     # affichage des pièces présente
     con = lite.connect('AgiWeb_BDD.db') #attention chez toi c'est pas rangé au meme endroit
@@ -88,7 +88,7 @@ def ajout_piece():
 
     if not request.method == 'POST':
         con.close()
-        return render_template('ajout_piece.html',liste_id=liste_id, err_quant= "", msg="bb", testnom=request.method)
+        return render_template('ajout_piece.html',liste_id=liste_id, err_quant= "", msg="")
     else:
         nome = request.form.get('nome','')
         quantitee = request.form.get('quantitee','')
@@ -97,18 +97,15 @@ def ajout_piece():
         #test si le stock est un entier si qlq chose est rentré
         try:
             quantitee=int(quantitee)
-        except:
+            assert quantitee>=0
+        except ValueError:
             con.close()
             return render_template('ajout_piece.html',liste_id=liste_id, err_quant= err_quant, msg='le stock doit être un nombre entier')
-        else :
-            try:
-                quantitee>=0
-            except :
-                con.close()
-                return render_template('ajout_piece.html',liste_id=liste_id, err_quant= "", msg="Il faut une quantité positive")
+        except AssertionError :
+            con.close()
+            return render_template('ajout_piece.html',liste_id=liste_id, err_quant= "", msg="Il faut une quantité positive")
 
         if (nome!="" and quantitee!="" and ide!="" and quantitee>=0):
-
             # on ajoute le nom l'id et le stock à la bdd
             cur.execute("SELECT id_piece FROM Piece")
             testnom = cur.fetchall()
