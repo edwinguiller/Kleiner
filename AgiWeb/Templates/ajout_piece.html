@@ -34,7 +34,12 @@
 
 	<h1>Supprimer pièce :</h1>
 	<form action="{{url_for('ajout_piece')}}" method="post">
-			<label for="nom a supprimer">nom à supprimer :</label><input type="text" name="nomdele" value="nomdele">
+			<select name='Nom de la pièce'>
+				<option value='0'>Choisissez une Piece à Supprimer</option>
+				{%for piece in liste_id%}
+				<option value='{{loop.index}}' {% if role==loop.index %} active {% endif %}>{{piece['nom']}}</option>
+				{%endfor%}
+			</select>
 			<input type="submit" value="supprimer">
 	</form>
 

@@ -68,7 +68,7 @@ def commande():
     return contenu
 
 #La page Initialisation
-@app.route('/Agilog/Initialisation')
+@app.route('/Agilog/Initialisation/')
 def initialisation ():
     return render_template('initialisation_alog.html')
 
@@ -87,51 +87,62 @@ def ajout_piece():
     liste_id = cur.fetchall()
 
     if not request.method == 'POST':
-        return render_tempate('ajout_piece.html',liste_id=liste_id, err_quant= "", msg="")
+        return render_template('ajout_piece.html',liste_id=liste_id, err_quant= "", msg="")
     else:
         nome=request.form.get('nom','')
         quantitee=request.form.get('quantite','')
         ide = request.form.get('ide','')
         con.close()
         #test si le stock est un entier si qlq chose est rentré
-        if (nome!="" or quantitee!="" ):
+        if (nome!="" and quantitee!="" and ide!=""):
             try:
                 quantitee=int(quantitee)
             except:
                 err_quant = 'le stock doit être un nombre entier'
-            else:
-                # on ajoute le nom l'id et le stock à la bdd
-                err_quant = ''
+                return render_template('ajout_piece.html',liste_id=liste_id, err_quant= "", msg="")
+            try:
+                quantitee<0
+            except :
+                msg += (" Il faut un nom et une quantité positive")
+                return render_template('ajout_piece.html',liste_id=liste_id, err_quant= "", msg="")
+            # on ajoute le nom l'id et le stock à la bdd
+            con = lite.connect('AgiWeb_BDD.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT nom FROM Piece")
+            con.close()
+            testnom = cur.fetchall()
+            test=[]
+            for testnom in testnom:
+                test.append(testnom[0]) # une liste pour ensuite voir si la piece demandé n'existe pas deja
+            if (nome in test):
+                msg += "Cette piece existe deja"
+                return render_tempate('ajout_piece.html',liste_id=liste_id, err_quant= "", msg="")
+            else : #ajouter un createur d'id apres
                 con = lite.connect('AgiWeb_BDD.db')
                 con.row_factory = lite.Row
                 cur = con.cursor()
-                cur.execute("SELECT nom FROM Piece")
-                testnom = cur.fetchall()
-                test=[]
-                for testnom in testnom:
-                    test.append(testnom[0]) # une liste pour ensuite voir si la piece demandé n'existe pas deja
+                cur.execute("INSERT INTO piece('nom', 'quantite', 'id_piece') VALUES (?,?,?)", (nome,quantitee,ide))
+                msg = ''
+                con.close()
+                return(redirect(url_for('ajout_piece')))
 
-                if (nome!="" and quantitee!= ""):
-                    if (nome in test):
-                        msg = "Cette piece existe deja"
-                    elif (nome!="" and quantitee>=0): #ajouter un createur d'id apres
-                        cur.execute("INSERT INTO piece('nom', 'quantite', 'id_piece') VALUES (?,?,?)", (nome,quantitee,ide))
-                        msg = ''
-                        con.close()
-                    else:
-                        msg += (" Il faut un nom et une quantité positive")
 
-    nomdele=request.form.get('nomdel','')
-    con = lite.connect('AgiWeb_BDD.db')
-    con.row_factory = lite.Row
-    cur = con.cursor()
-    cur.execute ("DELETE FROM 'piece' WHERE nom=?", [nomdele])
+    if not request.method == 'POST':
+        return render_template('ajout_piece.html',liste_id=liste_id, err_quant= "", msg="")
+    else :
+        nomdele=request.form.get('nomdel','')
+        con = lite.connect('AgiWeb_BDD.db')
+        con.row_factory = lite.Row
+        cur = con.cursor()
+        cur.execute ("DELETE FROM 'piece' WHERE nom=?", [nomdele])
+        return(redirect(url_for('ajout_piece')))
 
     # a modifier, l'affichage des pieces
-    cur.execute("SELECT nom, quantite FROM piece;")
-    liste_piece = cur.fetchall()
-    con.commit()
-    con.close()
+    #cur.execute("SELECT nom, quantite FROM piece;")
+    #liste_piece = cur.fetchall()
+    #con.commit()
+    #con.close()
 
 
     return render_template('ajout_piece.html', liste_id=liste_id, err_quant= err_quant, msg=msg); # LES PROGRAMMEURS a retoucher / separer  fonctions
