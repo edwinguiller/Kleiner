@@ -126,18 +126,6 @@ def ajout_piece():
                 con.close()
                 msg = ''
                 return(redirect(url_for('ajout_piece')))
-
-
-    if not request.method == 'POST':
-        con.close()
-        return render_template('ajout_piece.html',liste_id=liste_id, err_quant= "", msg="",testnom="la methode n'est pas post")
-    else :
-        nomdele=request.form.get('nomdele','')
-        cur.execute ("DELETE FROM 'piece' WHERE nom=?", [nomdele])
-        con.commit()
-        con.close()
-        return(redirect(url_for('ajout_piece')))
-
     #a modifier, l'affichage des pieces
     #cur.execute("SELECT nom, quantite FROM piece;")
     #liste_piece = cur.fetchall()
@@ -145,7 +133,22 @@ def ajout_piece():
     #con.close()
 
 
-    return render_template('ajout_piece.html', testnom= nome, liste_id=liste_id, err_quant= err_quant, msg=msg); # LES PROGRAMMEURS a retoucher / separer  fonctions
+    return render_template('ajout_piece.html', liste_id=liste_id, err_quant= err_quant, msg=msg,testnom="dernier rtemplate"); # LES PROGRAMMEURS a retoucher / separer  fonctions
+
+@app.route('/Agilog/Initialisation/supp', methods=['GET', 'POST'])
+def supprimer_piece() :
+    if not request.method == 'POST':
+        return render_template('ajout_piece.html',liste_id=liste_id, err_quant= "", msg="",testnom="la methode n'est pas post")
+    else :
+        nomdele=request.form.get('nomdele','')
+        con = lite.connect('AgiWeb_BDD.db') #attention chez toi c'est pas rangé au meme endroit
+        con.row_factory = lite.Row
+        cur = con.cursor()
+        cur.execute ("DELETE FROM 'piece' WHERE nom=?", [nomdele])
+        con.commit()
+        con.close()
+        return(redirect(url_for('ajout_piece')))
+    return(redirect(url_for('ajout_piece')))
 
 @app.route('/Agilog/Initialisation/Gestion_stock', methods=['GET', 'POST'])#recupere 2 variable nom et prnom et les ajoutent a la base de données (a modifier pour mettre piece et quantite)
 def gestion_stock():
