@@ -17,5 +17,20 @@ def compare_nom(a,b):#On regarde si a est dans b, b est une liste
 	for i in range(len(b)):
 		B.append(transformation(b[i])) 
 	if A in B:
-		return(print(True))
-	return(print(False))
+		return(True)
+	return(False)
+
+def liste(b):#transforme un dictionnaire en liste
+	c=[]
+	for chaque in b:
+		c.append(chaque[0])
+	return(c)
+
+def creer_id(b):#créé un id
+	c=liste(b)
+	taille=len(c)
+	if taille==0:
+		ide=1
+	else:
+		ide=max(c)+1
+	return(ide)
