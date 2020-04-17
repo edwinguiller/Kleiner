@@ -132,7 +132,7 @@ def ajout_piece():
         con.close()
         return render_template('ajout_piece.html',liste_id=liste_id, err_quant= "", msg="",testnom="la methode n'est pas post")
     else :
-        nomdele=request.form.get('nomdel','')
+        nomdele=request.form.get('nomdele','')
         cur.execute ("DELETE FROM 'piece' WHERE nom=?", [nomdele])
         con.commit()
         con.close()
