@@ -176,43 +176,21 @@ def gestion_stock():
     #con.commit()#enregistrer la requete de modification.
     con.close()
 
-    return render_template('gestion_stock.html', liste_nom=liste_nom)
+    return render_template('gestion_stock.html', liste_nom=liste_nom, msg = msg)
 
 @app.route('/Agilog/Initialisation/Code_kit', methods=['GET', 'POST'])
 def code_kit():
-    contenu=""
-    contenu += "<a href='/accueil/agilog/initialisation/'>retour à la page précédente</a><br/>"
-    contenu += "<br/>"
-    contenu += "Kit"
-    contenu += "<br/>"
-    contenu += "<form method='get' action='code_kit'>"
-    contenu += "<input type='str' name='Code_article' value=''>"
-    contenu += "<input type='submit' value='Envoyer'>"
-    contenu += "<br/>"
-    contenu +="Liste des pièces du Kit"
-    contenu +="<br/>"
 
-    code=request.args.get('Code_article','')
-    con = lite.connect(cheminbdd)
+    code=request.form.get('code_kit','')
+    con = lite.connect("AgiWeb_BDD.db")
     con.row_factory = lite.Row
     cur=con.cursor()
     cur.execute("SELECT role FROM personnes;")
     lignes = cur.fetchall()
-    if code in lignes  or code=='':
-        contenu += "<br/>"
-        contenu += "Erreur le code existe déjà"
-        contenu += "<br/>"
-    else :
-        contenu += "<br/>"
-        contenu += "Entrer le nom puis la quantite de pièce"
-        contenu += "<br/>"
-        contenu += "<form method='get' action='code_kit'>"
-        contenu += "<input type='str' name='nom_piece' value=''>"
-        contenu += "<input type='str' name='quantite' value=''>"
-        contenu += "<input type='submit' value='Valider'>"
-        contenu += "<input type='submit' value='Ajouter piece'>"
-    contenu += render_template('affichage_personnes.html', personnes = lignes)
-    return contenu #LES PROGRAMMEURS pas fait
+    con.close()
+
+
+    return render_tempate("Code_kit_init.html", liste_kit)#LES PROGRAMMEURS pas fait
 
 #La page pour Agilean
 @app.route('/Agilean')
