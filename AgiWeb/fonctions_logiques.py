@@ -1,10 +1,11 @@
 # coding: utf-8
+from flask import Flask, url_for, request, render_template, redirect
 import sqlite3 as lite
 import time
 from constantes import *
 
 def transformation(a):#on transforme la chaine pour qu'elle soit traitable
-    c=a
+    c=str(a)
     supprimable = ['é', 'è', 'ê', 'à', 'ù', 'û', 'ç', 'ô', 'î', 'ï', 'â',' ', '-', '_','.', ',',"'",'!' ,':', '/']
     correct = ['e', 'e', 'e', 'a', 'u', 'u', 'c', 'o', 'i', 'i', 'a', '', '', '', '', '','', '', '', '']
     for i in range(len(supprimable)):
@@ -35,16 +36,28 @@ def creer_id(b):#créé un id
     else:
         ide=max(c)+1
     return(ide)
-
+	
+def demande_interaction(n,contenu):
+	for i in range(n):
+		contenu += "<form method='get' action='code_kit'>"
+		contenu += "<input type='str' name='nom_kit"+str(i)+"' value=''>"
+	contenu += "<input type='submit' value='Envoyer'>"
+	return(contenu)
+def recupere_interraction(n,contenu):
+	L=[]
+	for i in range(n):
+		nom=str(request.args.get('nom_kit'+str(i),''))
+		L.append(nom)
+	return(L)
 def ajouter_piece_dans_kit (x=0):
     if x==0 :
-        #on crée un id
+        #on sélectionne les id
         contenu =""
         con = lite.connect(cheminbdd)
         con.row_factory = lite.Row
         cur=con.cursor()
         cur.execute("SELECT id FROM kit;")
-        ide = creer_id(liste(cur.fetchall()))
+        ids=liste(cur.fetchall())
         con.close()
         #On choisit et vérifier le nom du kit
         con = lite.connect(cheminbdd)
@@ -53,26 +66,28 @@ def ajouter_piece_dans_kit (x=0):
         con = lite.connect(cheminbdd)
         con.row_factory = lite.Row
         cur=con.cursor()
-        cur.execute("SELECT nom FROM piece;")
+        cur.execute("SELECT nom_kit FROM kit;")
         base=liste(cur.fetchall())
         contenu += "<br/>"
         contenu += "<form method='get' action='code_kit'>"
         contenu += "<input type='str' name='nom_kit' value=''>"
+        contenu += "<form method='get' action='code_kit'>"
+        contenu += "<input type='str' name='id_kit' value=''>"
         print(contenu)
         nom_kit=str(request.args.get('nom_kit',''))
+        id_kit=str(request.args.get('id_kit',''))
         c=compare_nom(nom_kit,base)
-        if c:#le nom du kit est déjà existant, on revient au départ
+        d=compare_nom(id_kit,ids)
+        if c or d:#le nom du kit est déjà existant, on revient au départ
             contenu += "<br/>"
             contenu += "Erreur le nom existe déjà"
             contenu += "<br/>"
             contenu += "on recommence l'enregistrement de cette pièce ensemble mon chou dans quelques secondes"
-            print(contenu)
-            time.sleep(5)
             return(ajouter_piece_dans_kit())
         else:
             #le nom est bon, on crée le kit dans la base kit
-            cur.execute("INSERT INTO kit('id_kit', 'nom_kit') VALUES (?,?)", (ide,nom))
-            return(ajouter_piece_dans_kit(ide))
+            cur.execute("INSERT INTO kit('id', 'nom_kit') VALUES (?,?)", (id_kit,nom_kit))
+            return(ajouter_piece_dans_kit(id_kit))
     #Maintenant que le kit est créé on va le modifier
     else:
         contenu += "<br/>"
@@ -128,7 +143,7 @@ def ajouter_piece_dans_kit (x=0):
         con.close()
         contenu += render_template('affichage_personnes.html', personnes = lignes)
 
-def ajout_bdd(base, colonne, entree, types): # prend en argument  une base (ex: piece), les colonnes que l'on veut modifier (une liste ex: [id, nom...]), les entrées (valeurs) et le type de ces valeurs
+def ajouter_piece(base, colonne, entree, types): # prend en argument  une base (ex: piece), les colonnes que l'on veut modifier (une liste ex: [id, nom...]), les entrées (valeurs) et le type de ces valeurs
 
     con = lite.connect(cheminbdd) #attention chez toi c'est pas rangé au meme endroit
     con.row_factory = lite.Row
@@ -145,11 +160,27 @@ def ajout_bdd(base, colonne, entree, types): # prend en argument  une base (ex: 
     selection= selection + ") VALUES (" + valu +")"
 
     taille=len(entree)
-    if (test_rien(entree)==0):
-        if test_types(entree,types)==0:
-            cur.execute(selection, (entree))
-    con.commit()
-    con.close()
+    for i in range (0,taille):
+        if (entree[i]==""):
+            print ("ok boomer")
+    #test si le stock est un entier si qlq chose est rentré
+    #if (nome!="" or quantitee!="" or ide!="" ):
+    #    try:
+    #        quantitee=int(quantitee)
+    #    except:
+    #        contenu += '<br/> le stock doit être un nombre entier'
+    #    else:
+    #        # on ajoute le nom l'id et le stock à la bdd
+    #        if (nome!="" and quantitee!= ""):
+    #            if (testin('piece', 'nom', nome)==1 or testin('piece', 'id', ide)==1): # verifie si l'id ou le nom n'existent pas deja
+    #                contenu += "Cette piece existe deja"
+    #            elif (nome!="" and quantitee>-1): #ajouter un createur d'id apres
+    #                cur.execute("INSERT INTO piece('nom', 'quantite', id) VALUES (?,?,?)", (nome,quantitee,ide))
+    #            else:
+    #                contenu += (" Il faut un nom et une quantité positive")
+    #con.commit()
+    #con.close()
+    return contenu
 
 def delete (base, colonne, entree): #prend en argument une base (ex: piece), une colonne dans cette base (ex: nom) et supprime la ligne quand la valeur de la colonne vaut nomdele
 
@@ -162,7 +193,7 @@ def delete (base, colonne, entree): #prend en argument une base (ex: piece), une
     con.commit()
     con.close()
 
-def testin (base, colonne, entree): # test si l entree (une seule) est deja dans la bdd pour la colonne (une valeur) return 1 si il y'est et 0 si il n'y est pas
+def testin (base, colonne, entree): # test si la entree est deja dans la bdd return 1 si il y'est et 0 si il n'y est pas
 
     con = lite.connect(cheminbdd) #attention chez toi c'est pas rangé au meme endroit
     con.row_factory = lite.Row
@@ -181,28 +212,4 @@ def testin (base, colonne, entree): # test si l entree (une seule) est deja dans
         return error
     return retour
 
-def test_rien(entree): # test si les entree (tableau) ne sont pas vide, renvois 1 si une valeur est vide et 0 sinon
-
-    taille=len(entree)
-    for i in range (0,taille):
-        if (entree[i]==""):
-            return 1
-    return 0
-
-def test_types(entree,types): #test le type des entrées (tableau) et les entrées (tableau) et renvois 0 si tout est bon et 1 si il y'a un problème
-
-    taille=len(entree)
-    for i in range (0, taille):
-        if (types[i]==str):
-            try:
-                entree[i]=str(entree[i])
-            except:
-                print ("str")
-                return 1
-        elif (types[i]==int):
-            try:
-                entree[i]=int(entree[i])
-            except:
-                return 1
-
-    return (0)
+#def test_rien(entree) #test si les entree ne sont pas vide renvois
