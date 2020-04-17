@@ -158,30 +158,31 @@ def gestion_stock():
     secue=request.form.get('secue','')
     delaie=request.form.get('delaie','')
     #test si ce sont bien des entiers
-    try:
-        seuile=int(seuile)
-        secue=int(secue)
-        delaie=int(delaie)
-    except:
-        return render_template('gestion_stock.html', liste_nom=liste_nom, msg = "salut")
-    else:
-        con = lite.connect("AgiWeb_BDD.db")
-        con.row_factory = lite.row
-        cur = con.cursor()
-
-        # si tout est bien rempli on met a jour la bdd
-        if (nome=="" and seuile=="" and secue=="" and delaie==""):
-            msg +="attention vous n'avez rien saisi"
-        elif (seuile<0 or secue<0 or delaie<0 or nome==""):
-            msg+="attention etrez des valeurs positives !"
-        else:
+    if not request.method == 'POST':
+        con.close()
+        return render_template('gestion_stock.html', liste_nom=liste_nom, msg = "")
+    else :
+        if (nome!="" and seuile!="" and secue!="" and delaie!=""):
+            try:
+                seuile=int(seuile)
+                secue=int(secue)
+                delaie=int(delaie)
+                assert seuile >= 0 and secue>=0 and delaie>=0
+            except ValueError:
+                con.close()
+                return render_template('gestion_stock.html', liste_nom=liste_nom, msg = "attention il faut saisir un entier !")
+            except AssertionError:
+                con.close()
+                return render_template('gestion_stock.html', liste_nom=liste_nom, msg = "attention il faut saisir un entier positif !")
             cur.execute("UPDATE Piece SET seuil_recomp=?, stock_secu=?, delai_reappro=? WHERE nom=?", [seuile,secue,delaie,nome])
-    cur.execute("SELECT nom, id_piece, quantite, seuil_recomp, stock_secu, delai_reappro FROM piece;")
-    lignes = cur.fetchall()
-    #con.commit()#enregistrer la requete de modification.
-    con.close()
+            con.commit()
+            con.close()
+            return redirect(url_for('gestion_stock'))
+        else:
+            con.close()
+            return render_template('gestion_stock.html', liste_nom=liste_nom, msg = "attention vous n'avez rien saisi")
 
-    return render_template('gestion_stock.html', liste_nom=liste_nom, msg = "salut")
+    return render_template('gestion_stock.html', liste_nom=liste_nom, msg = "")
 
 @app.route('/Agilog/Initialisation/Code_kit', methods=['GET', 'POST'])
 def code_kit():

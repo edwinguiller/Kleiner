@@ -14,7 +14,7 @@
 	<label for='secue'>stock de secu</label><input type='text' name='secue' value=''>
 	<label for='delaie'>delai de reappro</label><input type='text' name='delaie' value=''>
 	<label for='nome'>nom de la pièce</label>
-		<select name='Nom de la pièce'>
+		<select name='nome'>
 			<option value='0'>Choisissez une Piece</option>
 			{%for nom in liste_nom%}
 			<option value='{{nom['nom']}}' {% if role==loop.index %} active {% endif %}>{{nom['nom']}}</option>
