@@ -57,15 +57,15 @@ def ajouter_piece_dans_kit (x=0):
         contenu += "<br/>"
         contenu += "<form method='get' action='code_kit'>"
         contenu += "<input type='str' name='nom_kit' value=''>"
+        print(contenu)
         nom_kit=str(request.args.get('nom_kit',''))
         c=compare_nom(nom_kit,base)
-        if c:
-			#le nom du kit est déjà existant, on revient au départ
+        if c:#le nom du kit est déjà existant, on revient au départ
 			contenu += "<br/>"
 			contenu += "Erreur le nom existe déjà"
 			contenu += "<br/>"
 			contenu += "on recommence l'enregistrement de cette pièce ensemble mon chou dans quelques secondes"
-			contenu += "<br/>"
+			print(contenu)
 			time.sleep(5)
 			return(ajouter_piece_dans_kit())
 		else:
