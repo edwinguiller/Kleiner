@@ -95,20 +95,19 @@ def ajout_piece():
         ide = request.form.get('ide','')
 
         #test si le stock est un entier si qlq chose est rentré
+        try:
+            quantitee=int(quantitee)
+        except:
+            con.close()
+            return render_template('ajout_piece.html',liste_id=liste_id, err_quant= err_quant, msg='le stock doit être un nombre entier')
+        try:
+            quantitee>=0
+        except :
+            con.close()
+            return render_template('ajout_piece.html',liste_id=liste_id, err_quant= "", msg="Il faut une quantité positive")
 
-        if (nome!="" and quantitee!="" and ide!=""):
-            try:
-                quantitee=int(quantitee)
-            except:
-                err_quant = 'le stock doit être un nombre entier'
-                con.close()
-                return render_template('ajout_piece.html',liste_id=liste_id, err_quant= err_quant, msg="")
-            try:
-                quantitee>=0
-            except :
-                msg += "Il faut une quantité positive"
-                con.close()
-                return render_template('ajout_piece.html',liste_id=liste_id, err_quant= "", msg=msg)
+        if (nome!="" and quantitee!="" and ide!="" and quantitee>=0):
+
             # on ajoute le nom l'id et le stock à la bdd
             cur.execute("SELECT id_piece FROM Piece")
             testnom = cur.fetchall()
@@ -116,8 +115,7 @@ def ajout_piece():
             for testnom in testnom:
                 test.append(testnom[0]) # une liste pour ensuite voir si la piece demandé n'existe pas deja
             if (ide in test):
-                msg += "Cette piece existe deja"
-                return render_template('ajout_piece.html',liste_id=liste_id, err_quant= err_quant, msg=msg)
+                return render_template('ajout_piece.html',liste_id=liste_id, err_quant= err_quant, msg="Cette piece existe deja")
             else : #ajouter un createur d'id apres
                 cur.execute("INSERT INTO piece('nom', 'quantite', 'id_piece') VALUES (?,?,?)", (nome,quantitee,ide))
                 con.commit()
