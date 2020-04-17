@@ -50,13 +50,10 @@ def declarer_kit():
     con.row_factory = lite.Row
     cur = con.cursor()
     a=0
-    cur.execute(" SELECT datetime('now')")
-    d=cur.fetchall()[0][0]
-    e=str(d)
-
+    d=cur.execute(" SELECT datetime('now')")
     if (num_kite!=""):
         d=cur.execute(" SELECT datetime('now')")
-        cur.execute("INSERT INTO production('id', 'kit', 'fini','date',  'quantite') VALUES (?,?,?,?,?)", [newid ,num_kite ,1, e, 18 ])
+        cur.execute("INSERT INTO production('id', 'kit', 'fini','date') VALUES (?,?,?,?)", [newid ,num_kite ,1, d ])
     #con.commit()#enregistrer la requete de modification.
     cur.execute("SELECT id, kit, fini, date FROM Production;")
     liste = cur.fetchall()
@@ -107,14 +104,6 @@ def ajout_piece():
     nome=request.args.get('nom','')
     quantitee=request.args.get('quantite','')
     ide=request.args.get('id','')
-<<<<<<< HEAD
-    base="piece"
-    colonne=["nom", "id", "quantite"]
-    entree=[nome, ide, quantitee]
-    types=[str, str, int]
-    ajouter_piece(base, colonne, entree, types)
-=======
->>>>>>> 6435fb875cd7ff5d387f8739826846bc5146026d
 
     con = lite.connect(cheminbdd) #attention chez toi c'est pas rangé au meme endroit
     con.row_factory = lite.Row
