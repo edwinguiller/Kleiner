@@ -1,58 +1,128 @@
 # coding: utf-8
 import sqlite3 as lite
-from constantes import *
 import time
 
-def ajouter_piece(nome, quantitee, ide): # prend en argument  un nom une quantité et un id et les rajoute a la bdd piece apres avoir fait des test dessus+
+def transformation(a):#on transforme la chaine pour qu'elle soit traitable
+	c=a
+	supprimable = ['é', 'è', 'ê', 'à', 'ù', 'û', 'ç', 'ô', 'î', 'ï', 'â',' ', '-', '_','.', ',',"'",'!' ,':', '/']
+	correct = ['e', 'e', 'e', 'a', 'u', 'u', 'c', 'o', 'i', 'i', 'a', '', '', '', '', '','', '', '', '']
+	for i in range(len(supprimable)):
+		c=c.replace(supprimable[i],correct[i])
+	c=c.lower()
+	return(c)
+	
+def compare_nom(a,b):#On regarde si a est dans b, b est une liste
+	A=transformation(a)
+	B=[]
+	for i in range(len(b)):
+		B.append(transformation(b[i])) 
+	if A in B:
+		return(True)
+	return(False)
 
-    con = lite.connect(cheminbdd) #attention chez toi c'est pas rangé au meme endroit
-    con.row_factory = lite.Row
-    cur = con.cursor()
-    contenu =''
-    #test si le stock est un entier si qlq chose est rentré
-    if (nome!="" or quantitee!="" or ide!="" ):
-        try:
-            quantitee=int(quantitee)
-        except:
-            contenu += '<br/> le stock doit être un nombre entier'
-        else:
-            # on ajoute le nom l'id et le stock à la bdd
-            if (nome!="" and quantitee!= ""):
-                if (testin('piece', 'nom', nome)==1 or testin('piece', 'id', ide)==1): # verifie si l'id ou le nom n'existent pas deja
-                    contenu += "Cette piece existe deja"
-                elif (nome!="" and quantitee>-1): #ajouter un createur d'id apres
-                    cur.execute("INSERT INTO piece('nom', 'quantite', id) VALUES (?,?,?)", (nome,quantitee,ide))
-                else:
-                    contenu += (" Il faut un nom et une quantité positive")
-    con.commit()
-    con.close()
-    return contenu
+def liste(b):#transforme un dictionnaire en liste
+	c=[]
+	for chaque in b:
+		c.append(chaque[0])
+	return(c)
 
-def delete (base, source, nom): #prend en argument une base (ex: piece), une colonne dans cette base (ex: nom) et supprime la ligne quand la valeur de la colonne vaut nomdele
+def creer_id(b):#créé un id
+	c=liste(b)
+	taille=len(c)
+	if taille==0:
+		ide=1
+	else:
+		ide=max(c)+1
+	return(ide)
 
-    con = lite.connect(cheminbdd) #attention chez toi c'est pas rangé au meme endroit
-    con.row_factory = lite.Row
-    cur = con.cursor()
-    suppr="DELETE FROM " + base + " WHERE " +source+ "=?"
-    if (nom != ""):
-        cur.execute (suppr, [nom])
-    con.commit()
-    con.close()
-
-def testin (base, source, variable): # test si la variable est deja dans la bdd return 1 si il y'est et 0 si il n'y est pas
-    con = lite.connect(cheminbdd) #attention chez toi c'est pas rangé au meme endroit
-    con.row_factory = lite.Row
-    cur = con.cursor()
-    selection="SELECT " + source + " FROM " + base + ";"
-    cur.execute(selection)
-    recuperer=cur.fetchall()
-    test=[]
-    for valeur in recuperer:
-        test.append(valeur[0])
-    if (variable in test):
-        retour=1
-    elif (variable not in test):
-        retour=0
+def ajouter_piece_dans_kit (x=0):
+    if x==0 :
+        #on crée un id
+        contenu =""
+        con = lite.connect(cheminbdd)
+        con.row_factory = lite.Row
+        cur=con.cursor()
+        cur.execute("SELECT id FROM kit;")
+        ide = creer_id(liste(cur.fetchall()))
+        con.close()
+        #On choisit et vérifier le nom du kit
+        con = lite.connect(cheminbdd)
+        con.row_factory = lite.Row
+        cur=con.cursor()
+        con = lite.connect(cheminbdd)
+        con.row_factory = lite.Row
+        cur=con.cursor()
+        cur.execute("SELECT nom FROM piece;")
+        base=liste(cur.fetchall())
+        contenu += "<br/>"
+        contenu += "<form method='get' action='code_kit'>"
+        contenu += "<input type='str' name='nom_kit' value=''>"
+        nom_kit=str(request.args.get('nom_kit',''))
+        c=compare_nom(nom_kit,base)
+        if c:
+			#le nom du kit est déjà existant, on revient au départ
+			contenu += "<br/>"
+			contenu += "Erreur le nom existe déjà"
+			contenu += "<br/>"
+			contenu += "on recommence l'enregistrement de cette pièce ensemble mon chou dans quelques secondes"
+			contenu += "<br/>"
+			time.sleep(5)
+			return(ajouter_piece_dans_kit())
+		else:
+			#le nom est bon, on crée le kit dans la base kit
+			cur.execute("INSERT INTO kit('id_kit', 'nom_kit') VALUES (?,?)", (ide,nom))
+			return(ajouter_piece_dans_kit(ide))
+    #Maintenant que le kit est créé on va le modifier
     else:
-        return error
-    return retour
+        contenu += "<br/>"
+        contenu += "Entrer le nom puis la quantite de pièce"
+        contenu += "<br/>"
+        contenu += "<form method='get' action='code_kit'>"
+        contenu += "<input type='str' name='nom_piece' value=''>"
+        contenu += "<input type='str' name='quantite' value=''>"
+        contenu += "<input type='submit' value='Valider'>"
+        nom_piece=str(request.args.get('nom_piece',''))
+        quantite=request.args.get('quantite','')
+        con = lite.connect(cheminbdd)
+        con.row_factory = lite.Row
+        cur=con.cursor()
+        cur.execute("SELECT nom FROM piece")
+        ligne=liste(cur.fetchall())
+        c=compare_nom(nom_piece,ligne)
+        if c :
+			#le nom est existe
+			try:
+				quantite=int(quantite)
+				quantite>0
+			except:	
+				#la quantite n'est pas bonne
+				contenu += "<br/>"
+				contenu += "Erreur la quantite est n'est pas bonne"
+				contenu += "<br/>"
+				contenu += "on recommence l'enregistrement de cette pièce ensemble mon chou dans quelques secondes"
+				contenu += "<br/>"
+				time.sleep(5)
+				return(ajouter_piece_dans_kit(x))
+			else:
+				#la quantité est un entier positif
+				con = lite.connect(cheminbdd)
+				con.row_factory = lite.Row
+				cur=con.cursor()
+				cur.execute("INSERT INTO compo_kit('kit', 'piece','quantite') VALUES (?,?,?)", (x,nom_piece,quantite))#On insert la nouvelle piece dans le kit
+		else:
+			#le nom de la pièce n'est pas bon
+			contenu += "<br/>"
+			contenu += "Erreur la pièce n'existe pas"
+			contenu += "<br/>"
+			contenu += "on recommence l'enregistrement de cette pièce ensemble mon chou dans quelques secondes"
+			contenu += "<br/>"
+			time.sleep(5)
+			return(ajouter_piece_dans_kit(x))
+		#On affiche la composition du kit
+		con = lite.connect(cheminbdd)
+        con.row_factory = lite.Row
+        cur=con.cursor()
+        cur.execute("SELECT kit, piece, quantite FROM compo_kit")
+        lignes=cur.fetchall()
+        con.close()
+        contenu += render_template('affichage_personnes.html', personnes = lignes)
