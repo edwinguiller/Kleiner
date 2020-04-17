@@ -102,30 +102,30 @@ def ajout_piece():
             except:
                 err_quant = 'le stock doit être un nombre entier'
                 con.close()
-                return render_template('ajout_piece.html',liste_id=liste_id, err_quant= "", msg="")
+                return render_template('ajout_piece.html',liste_id=liste_id, err_quant= err_quant, msg="")
             try:
-                quantitee<0
+                quantitee>=0
             except :
-                msg += " Il faut un nom et une quantité positive"
-                msg += "<br/>"
+                msg += "Il faut une quantité positive"
                 con.close()
-                return render_template('ajout_piece.html',liste_id=liste_id, err_quant= "", msg="",testnom=nome)
+                return render_template('ajout_piece.html',liste_id=liste_id, err_quant= "", msg=msg)
             # on ajoute le nom l'id et le stock à la bdd
-            cur.execute("SELECT nom FROM Piece")
+            cur.execute("SELECT id_piece FROM Piece")
             testnom = cur.fetchall()
             test=[]
             for testnom in testnom:
                 test.append(testnom[0]) # une liste pour ensuite voir si la piece demandé n'existe pas deja
-            if (nome in test):
+            if (ide in test):
                 msg += "Cette piece existe deja"
-                msg += "<br/>"
-                return render_template('ajout_piece.html',liste_id=liste_id, err_quant= "", msg="",testnom=nome)
+                return render_template('ajout_piece.html',liste_id=liste_id, err_quant= err_quant, msg=msg)
             else : #ajouter un createur d'id apres
                 cur.execute("INSERT INTO piece('nom', 'quantite', 'id_piece') VALUES (?,?,?)", (nome,quantitee,ide))
                 con.commit()
                 con.close()
                 msg = ''
                 return(redirect(url_for('ajout_piece')))
+
+
     #a modifier, l'affichage des pieces
     #cur.execute("SELECT nom, quantite FROM piece;")
     #liste_piece = cur.fetchall()
@@ -133,7 +133,7 @@ def ajout_piece():
     #con.close()
 
 
-    return render_template('ajout_piece.html', liste_id=liste_id, err_quant= err_quant, msg=msg,testnom="dernier rtemplate"); # LES PROGRAMMEURS a retoucher / separer  fonctions
+    return render_template('ajout_piece.html', liste_id=liste_id, err_quant= err_quant, msg=msg); # LES PROGRAMMEURS a retoucher / separer  fonctions
 
 @app.route('/Agilog/Initialisation/supp', methods=['GET', 'POST'])
 def supprimer_piece() :
@@ -164,17 +164,17 @@ def gestion_stock():
     cur.execute("SELECT nom FROM piece")
     liste_nom = cur.fetchall()
 
-    nome=request.form.get('nom','')
-    seuile=request.form.get('seuil','')
+    nome=request.form.get('nome','')
+    seuile=request.form.get('seuile','')
     secue=request.form.get('secue','')
-    delaie=request.form.get('delai','')
+    delaie=request.form.get('delaie','')
     #test si ce sont bien des entiers
     try:
         seuile=int(seuile)
         secue=int(secue)
         delaie=int(delaie)
     except:
-        msg = "probleme"
+        msg += "probleme"
     else:
         con = lite.connect("AgiWeb_BDD.db")
         con.row_factory = lite.row
@@ -192,7 +192,7 @@ def gestion_stock():
     #con.commit()#enregistrer la requete de modification.
     con.close()
 
-    return render_template('gestion_stock.html', liste_nom=liste_nom, msg = msg)
+    return render_template('gestion_stock.html', liste_nom=liste_nom, msg = "salut")
 
 @app.route('/Agilog/Initialisation/Code_kit', methods=['GET', 'POST'])
 def code_kit():
