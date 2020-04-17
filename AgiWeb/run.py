@@ -77,7 +77,7 @@ def ajout_piece():
 
     #variable message :
     err_quant = ''
-    msg=''
+    msg='bb'
 
     # affichage des pièces présente
     con = lite.connect('AgiWeb_BDD.db') #attention chez toi c'est pas rangé au meme endroit
@@ -88,7 +88,7 @@ def ajout_piece():
 
     if not request.method == 'POST':
         con.close()
-        return render_template('ajout_piece.html',liste_id=liste_id, err_quant= "", msg="", testnom=request.method)
+        return render_template('ajout_piece.html',liste_id=liste_id, err_quant= "", msg="bb", testnom=request.method)
     else:
         nome = request.form.get('nome','')
         quantitee = request.form.get('quantitee','')
@@ -100,11 +100,12 @@ def ajout_piece():
         except:
             con.close()
             return render_template('ajout_piece.html',liste_id=liste_id, err_quant= err_quant, msg='le stock doit être un nombre entier')
-        try:
-            quantitee>=0
-        except :
-            con.close()
-            return render_template('ajout_piece.html',liste_id=liste_id, err_quant= "", msg="Il faut une quantité positive")
+        else :
+            try:
+                quantitee>=0
+            except :
+                con.close()
+                return render_template('ajout_piece.html',liste_id=liste_id, err_quant= "", msg="Il faut une quantité positive")
 
         if (nome!="" and quantitee!="" and ide!="" and quantitee>=0):
 
@@ -122,15 +123,8 @@ def ajout_piece():
                 con.close()
                 msg = ''
                 return(redirect(url_for('ajout_piece')))
-
-
-    #a modifier, l'affichage des pieces
-    #cur.execute("SELECT nom, quantite FROM piece;")
-    #liste_piece = cur.fetchall()
-    #con.commit()
-    #con.close()
-
-
+        else :
+            return render_template('ajout_piece.html',liste_id=liste_id, err_quant= err_quant, msg="il faut saisir un nom et un id")
     return render_template('ajout_piece.html', liste_id=liste_id, err_quant= err_quant, msg=msg); # LES PROGRAMMEURS a retoucher / separer  fonctions
 
 @app.route('/Agilog/Initialisation/supp', methods=['GET', 'POST'])
