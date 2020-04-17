@@ -87,65 +87,65 @@ def ajout_piece():
     liste_id = cur.fetchall()
 
     if not request.method == 'POST':
-        return render_template('ajout_piece.html',liste_id=liste_id, err_quant= "", msg="")
-    else:
-        nome=request.form.get('nom','')
-        quantitee=request.form.get('quantite','')
-        ide = request.form.get('ide','')
         con.close()
+        return render_template('ajout_piece.html',liste_id=liste_id, err_quant= "", msg="", testnom=request.method)
+    else:
+        nome = request.form.get('nome','')
+        quantitee = request.form.get('quantitee','')
+        ide = request.form.get('ide','')
+
         #test si le stock est un entier si qlq chose est rentré
+
         if (nome!="" and quantitee!="" and ide!=""):
             try:
                 quantitee=int(quantitee)
             except:
                 err_quant = 'le stock doit être un nombre entier'
+                con.close()
                 return render_template('ajout_piece.html',liste_id=liste_id, err_quant= "", msg="")
             try:
                 quantitee<0
             except :
-                msg += (" Il faut un nom et une quantité positive")
-                return render_template('ajout_piece.html',liste_id=liste_id, err_quant= "", msg="")
+                msg += " Il faut un nom et une quantité positive"
+                msg += "<br/>"
+                con.close()
+                return render_template('ajout_piece.html',liste_id=liste_id, err_quant= "", msg="",testnom=nome)
             # on ajoute le nom l'id et le stock à la bdd
-            con = lite.connect('AgiWeb_BDD.db')
-            con.row_factory = lite.Row
-            cur = con.cursor()
             cur.execute("SELECT nom FROM Piece")
-            con.close()
             testnom = cur.fetchall()
             test=[]
             for testnom in testnom:
                 test.append(testnom[0]) # une liste pour ensuite voir si la piece demandé n'existe pas deja
             if (nome in test):
                 msg += "Cette piece existe deja"
-                return render_tempate('ajout_piece.html',liste_id=liste_id, err_quant= "", msg="")
+                msg += "<br/>"
+                return render_template('ajout_piece.html',liste_id=liste_id, err_quant= "", msg="",testnom=nome)
             else : #ajouter un createur d'id apres
-                con = lite.connect('AgiWeb_BDD.db')
-                con.row_factory = lite.Row
-                cur = con.cursor()
                 cur.execute("INSERT INTO piece('nom', 'quantite', 'id_piece') VALUES (?,?,?)", (nome,quantitee,ide))
-                msg = ''
+                con.commit()
                 con.close()
+                msg = ''
                 return(redirect(url_for('ajout_piece')))
 
 
     if not request.method == 'POST':
-        return render_template('ajout_piece.html',liste_id=liste_id, err_quant= "", msg="")
+        con.close()
+        return render_template('ajout_piece.html',liste_id=liste_id, err_quant= "", msg="",testnom="la methode n'est pas post")
     else :
         nomdele=request.form.get('nomdel','')
-        con = lite.connect('AgiWeb_BDD.db')
-        con.row_factory = lite.Row
-        cur = con.cursor()
         cur.execute ("DELETE FROM 'piece' WHERE nom=?", [nomdele])
+        con.commit()
+        con.close()
         return(redirect(url_for('ajout_piece')))
 
-    # a modifier, l'affichage des pieces
+    #a modifier, l'affichage des pieces
     #cur.execute("SELECT nom, quantite FROM piece;")
     #liste_piece = cur.fetchall()
     #con.commit()
     #con.close()
 
 
-    return render_template('ajout_piece.html', liste_id=liste_id, err_quant= err_quant, msg=msg); # LES PROGRAMMEURS a retoucher / separer  fonctions
+    return render_template('ajout_piece.html', testnom= nome, liste_id=liste_id, err_quant= err_quant, msg=msg); # LES PROGRAMMEURS a retoucher / separer  fonctions
 
 @app.route('/Agilog/Initialisation/Gestion_stock', methods=['GET', 'POST'])#recupere 2 variable nom et prnom et les ajoutent a la base de données (a modifier pour mettre piece et quantite)
 def gestion_stock():
