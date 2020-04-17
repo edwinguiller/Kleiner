@@ -83,6 +83,8 @@ def commande():
 @app.route('/Agilog/Initialisation')
 def initialisation ():
     return render_template('initialisation_alog.html')
+    
+
 
 @app.route('/Agilog/Initialisation/Ajout_piece', methods=['GET', 'POST'])#recupere 2 variable nom et prnom et les ajoutent a la base de données (a modifier pour mettre piece et quantite)
 def ajout_piece():

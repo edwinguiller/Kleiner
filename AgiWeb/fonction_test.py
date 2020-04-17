@@ -18,36 +18,38 @@ def index():
     contenu += "<a href='/accueil/agilog/initialisation/ajout_piece'>Lien direct</a><br/><br/>"
     return contenu;
 
-
 def ajouter_piece_dans_kit (x=0,contenu=""):
-    if x==0 or contenu=="":
-        contenu += "<a href='/accueil/agilog/initialisation/'>retour à la page précédente</a><br/>"
-        contenu += "<br/>"
-        contenu += "Kit"
-        contenu += "<br/>"
-        contenu += "<form method='get' action='code_kit'>"
-        contenu += "<input type='str' name='Code_article' value=''>"
-        contenu += "<input type='submit' value='Envoyer'>"
-        code=int(request.args.get('Code_article',''))
-        con = lite.connect('/Users/Nathan/Documents/GitHub/Kleiner/AgiWeb/Fonction/exemples.db')#à modifier
+    contenu += "<a href='/accueil/agilog/initialisation/'>retour à la page précédente</a><br/>"
+    contenu += "<br/>"
+    contenu += "Kit"
+    contenu += "<br/>"
+    if x==0 or contenu=="":#.lower()
+        #on crée le Kit
+        con = lite.connect(cheminbdd)
         con.row_factory = lite.Row
         cur=con.cursor()
-        cur.execute("SELECT role FROM personnes;")#à modifier
-        lignes = cur.fetchall()
-        if code in lignes  or code=='':
-            contenu += "<br/>"
-            contenu += "Erreur le code existe déjà"
-            contenu += "<br/>"
-            return (ajouter_piece_dans_kit(,contenu))#on recommence, attention comme ça, ça m'arche pas "type submit"
-        else :
-            con = lite.connect('/Users/Nathan/Documents/GitHub/Kleiner/AgiWeb/Fonction/exemples.db')#à modifier
-            con.row_factory = lite.Row
-            cur=con.cursor()
-            cur.execute("INSERT INTO ;")#à modifier, on crée le kit vierge
-            return(ajouter_piece_dans_kit(code,contenu))
+        cur.execute("SELECT id FROM kit;")
+        lignes1 = cur.fetchall()
+        lignes2 = []
+        for chaque in lignes1:
+			lignes2.append(chaque[0])
+		taille=len(lignes2)
+		if taille==0:
+			ide=1
+		else:
+			ide=max(lignes2)+1
+		con.close()
+        con = lite.connect(cheminbdd)
+        con.row_factory = lite.Row
+        cur=con.cursor()
+        nom="Kit n°"+str(ide)
+        cur.execute("INSERT INTO kit('id_kit', 'nom_kit') VALUES (?,?)", (ide,nom))#on crée le kit dans la base kit
+        cur.execute("INSERT INTO compo_kit('kit') VALUES (?)", (ide))#on crée le kit dans la base compo_kit
+        return(ajouter_piece_dans_kit(ide,))
     else:
+		#On modifie le kit créé précédemment
         contenu += "<br/>"
-        contenu += "Vous etes entrain de créer le Kit n°"+str(x)
+        contenu += "Vous etes entrain de modifier le Kit n°"+str(x)
         contenu += "<br/>"
         contenu += "<br/>"
         contenu += "Entrer le nom puis la quantite de pièce"
@@ -56,47 +58,50 @@ def ajouter_piece_dans_kit (x=0,contenu=""):
         contenu += "<input type='str' name='nom_piece' value=''>"
         contenu += "<input type='str' name='quantite' value=''>"
         contenu += "<input type='submit' value='Valider'>"
-        nom_piece=str(request.args.get('nom_piece','')
-        quantite=int(request.args.get('quantite','')
-        con = lite.connect('/Users/Nathan/Documents/GitHub/Kleiner/AgiWeb/Fonction/exemples.db')#à modifier
+        nom_piece=str(request.args.get('nom_piece',''))
+        quantite=request.args.get('quantite','')
+        con = lite.connect(cheminbdd)
         con.row_factory = lite.Row
         cur=con.cursor()
         cur.execute("SELECT nom FROM piece")
         lignes=cur.fetchall()
-<<<<<<< HEAD
-        if nom_piece not in ligne or quantite=<0 :
-            contenu += "<br/>"
-            contenu += "Erreur la pièce n'existe pas ou la quantite est nulle"
-            contenu += "<br/>"
-
-
-#        cur.execute("UPDATE ;")#à modifier, on insert la nouvelle piece dans le kit
-=======
+        ligne=[]
+        for chaque in lignes:
+			ligne.append(chaque[0])#la fonction not in ne marche pas avec un fetchall mais avec une liste
         if nom_piece not in ligne :
-            try:
-                quantite=int(quantite)
-                quantite>0
-            except:
-                contenu += "<br/>"
-                contenu += "Erreur la quantite est n'est pas bonne"
-                contenu += "<br/>"
-                contenu += "on recommence l'enregistrement de cette pièce ensemble mon chou dans quelques secondes"#time.sleep()
-                contenu += "<br/>"
-                time.sleep(5)
-                return(ajouter_piece_dans_kit(code,))
-            else:
-                con = lite.connect('/Users/Nathan/Documents/GitHub/Kleiner/AgiWeb/Fonction/exemples.db')#à modifier
-                con.row_factory = lite.Row
-                cur=con.cursor()
-                cur.execute("UPDATE ;")#à modifier, on insert la nouvelle piece dans le kit
-        else:
-            contenu += "<br/>"
-            contenu += "Erreur la pièce n'existe pas"
-            contenu += "<br/>"
-            contenu += "on recommence l'enregistrement de cette pièce ensemble mon chou dans quelques secondes"#time.sleep()
-            contenu += "<br/>"
-            time.sleep(5)
-            return(ajouter_piece_dans_kit(x,))
+			try:
+				quantite=int(quantite)
+				quantite>0
+			except:	
+				contenu += "<br/>"
+				contenu += "Erreur la quantite est n'est pas bonne"
+				contenu += "<br/>"
+				contenu += "on recommence l'enregistrement de cette pièce ensemble mon chou dans quelques secondes"
+				contenu += "<br/>"
+				time.sleep(5)
+				return(ajouter_piece_dans_kit(x,))
+			else:
+				con = lite.connect(cheminbdd)
+				con.row_factory = lite.Row
+				cur=con.cursor()
+				cur.execute("UPDATE  compo_kit  SET =? WHERE =?", [,])#à modifier, on insert la nouvelle piece dans le kit
+		else:
+			contenu += "<br/>"
+			contenu += "Erreur la pièce n'existe pas"
+			contenu += "<br/>"
+			contenu += "on recommence l'enregistrement de cette pièce ensemble mon chou dans quelques secondes"
+			contenu += "<br/>"
+			time.sleep(5)
+			return(ajouter_piece_dans_kit(x,))
+		#On affiche la composition du kit
+		con = lite.connect(cheminbdd)
+        con.row_factory = lite.Row
+        cur=con.cursor()
+        cur.execute("SELECT kit, piece, quantite FROM compo_kit")
+        lignes=cur.fetchall()
+        con.close()
+        contenu += render_template('affichage_personnes.html', personnes = lignes)
+
 
 >>>>>>> c79d95d98be4fce91b05071a2b51be92414ca68b
 
