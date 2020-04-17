@@ -106,7 +106,11 @@ def ajout_piece():
     nome=request.args.get('nom','')
     quantitee=request.args.get('quantite','')
     ide=request.args.get('id','')
-    ajouter_piece(nome, quantitee, ide)
+    base="piece"
+    colonne=["nom", "id", "quantite"]
+    entree=[nome, ide, quantitee]
+    types=[str, str, int]
+    ajouter_piece(base, colonne, entree, types)
 
     contenu += "<form method='get' action='gestion_stock'>"
     contenu += "<br/><br/> quel est le nom de la piece que tu veux tu supprimer? <br/>"
