@@ -1,6 +1,7 @@
 # coding: utf-8
 import sqlite3 as lite
 import time
+from constantes import *
 
 def transformation(a):#on transforme la chaine pour qu'elle soit traitable
     c=a
@@ -127,7 +128,7 @@ def ajouter_piece_dans_kit (x=0):
         con.close()
         contenu += render_template('affichage_personnes.html', personnes = lignes)
 
-def ajouter_piece(base, colonne, entree, types): # prend en argument  une base (ex: piece), les colonnes que l'on veut modifier (une liste ex: [id, nom...]), les entrées (valeurs) et le type de ces valeurs
+def ajout_bdd(base, colonne, entree, types): # prend en argument  une base (ex: piece), les colonnes que l'on veut modifier (une liste ex: [id, nom...]), les entrées (valeurs) et le type de ces valeurs
 
     con = lite.connect(cheminbdd) #attention chez toi c'est pas rangé au meme endroit
     con.row_factory = lite.Row
@@ -144,27 +145,11 @@ def ajouter_piece(base, colonne, entree, types): # prend en argument  une base (
     selection= selection + ") VALUES (" + valu +")"
 
     taille=len(entree)
-    for i in range (0,taille):
-        if (entree[i]==""):
-            print ("ok boomer")
-    #test si le stock est un entier si qlq chose est rentré
-    #if (nome!="" or quantitee!="" or ide!="" ):
-    #    try:
-    #        quantitee=int(quantitee)
-    #    except:
-    #        contenu += '<br/> le stock doit être un nombre entier'
-    #    else:
-    #        # on ajoute le nom l'id et le stock à la bdd
-    #        if (nome!="" and quantitee!= ""):
-    #            if (testin('piece', 'nom', nome)==1 or testin('piece', 'id', ide)==1): # verifie si l'id ou le nom n'existent pas deja
-    #                contenu += "Cette piece existe deja"
-    #            elif (nome!="" and quantitee>-1): #ajouter un createur d'id apres
-    #                cur.execute("INSERT INTO piece('nom', 'quantite', id) VALUES (?,?,?)", (nome,quantitee,ide))
-    #            else:
-    #                contenu += (" Il faut un nom et une quantité positive")
-    #con.commit()
-    #con.close()
-    return contenu
+    if (test_rien(entree)==0):
+        if test_types(entree,types)==0:
+            cur.execute(selection, (entree))
+    con.commit()
+    con.close()
 
 def delete (base, colonne, entree): #prend en argument une base (ex: piece), une colonne dans cette base (ex: nom) et supprime la ligne quand la valeur de la colonne vaut nomdele
 
@@ -177,7 +162,7 @@ def delete (base, colonne, entree): #prend en argument une base (ex: piece), une
     con.commit()
     con.close()
 
-def testin (base, colonne, entree): # test si la entree est deja dans la bdd return 1 si il y'est et 0 si il n'y est pas
+def testin (base, colonne, entree): # test si l entree (une seule) est deja dans la bdd pour la colonne (une valeur) return 1 si il y'est et 0 si il n'y est pas
 
     con = lite.connect(cheminbdd) #attention chez toi c'est pas rangé au meme endroit
     con.row_factory = lite.Row
@@ -196,4 +181,28 @@ def testin (base, colonne, entree): # test si la entree est deja dans la bdd ret
         return error
     return retour
 
-def test_rien(entree) # test si les entree ne sont pas vide renvois
+def test_rien(entree): # test si les entree (tableau) ne sont pas vide, renvois 1 si une valeur est vide et 0 sinon
+
+    taille=len(entree)
+    for i in range (0,taille):
+        if (entree[i]==""):
+            return 1
+    return 0
+
+def test_types(entree,types): #test le type des entrées (tableau) et les entrées (tableau) et renvois 0 si tout est bon et 1 si il y'a un problème
+
+    taille=len(entree)
+    for i in range (0, taille):
+        if (types[i]==str):
+            try:
+                entree[i]=str(entree[i])
+            except:
+                print ("str")
+                return 1
+        elif (types[i]==int):
+            try:
+                entree[i]=int(entree[i])
+            except:
+                return 1
+
+    return (0)
