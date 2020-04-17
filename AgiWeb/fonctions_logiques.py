@@ -1,6 +1,5 @@
 # coding: utf-8
 import sqlite3 as lite
-from constantes import *
 import time
 
 def ajouter_piece(base, colonne, entree, types): # prend en argument  une base (ex: piece), les colonnes que l'on veut modifier (une liste ex: [id, nom...]), les entrées (valeurs) et le type de ces valeurs
