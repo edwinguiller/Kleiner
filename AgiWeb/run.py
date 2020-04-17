@@ -86,6 +86,8 @@ def commande():
 @app.route('/Agilog/Initialisation')
 def initialisation ():
     return render_template('initialisation_alog.html')
+    
+
 
 @app.route('/Agilog/Initialisation/Ajout_piece', methods=['GET', 'POST'])#recupere 2 variable nom et prnom et les ajoutent a la base de données (a modifier pour mettre piece et quantite)
 def ajout_piece():
@@ -102,29 +104,57 @@ def ajout_piece():
     contenu += "<input type='text' name='id' value=''>"
     contenu += "<input type='submit' value='Envoyer'>"
 
-    # On ajoute la pièce à la base de donnée
     nome=request.args.get('nom','')
     quantitee=request.args.get('quantite','')
     ide=request.args.get('id','')
+<<<<<<< HEAD
     base="piece"
     colonne=["nom", "id", "quantite"]
     entree=[nome, ide, quantitee]
     types=[str, str, int]
     ajouter_piece(base, colonne, entree, types)
+=======
+>>>>>>> 6435fb875cd7ff5d387f8739826846bc5146026d
 
+    con = lite.connect(cheminbdd) #attention chez toi c'est pas rangé au meme endroit
+    con.row_factory = lite.Row
+    cur = con.cursor()
+
+    #test si le stock est un entier si qlq chose est rentré
+    if (nome!="" or quantitee!="" or ide!="" ):
+        try:
+            quantitee=int(quantitee)
+        except:
+            contenu += '<br/> le stock doit être un nombre entier'
+        else:
+            # on ajoute le nom l'id et le stock à la bdd
+            con = lite.connect(cheminbdd)
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT nom FROM Piece;")
+            testnom = cur.fetchall()
+            test=[]
+            for testnom in testnom:
+                test.append(testnom[0]) # une liste pour ensuite voir si la piece demandé n'existe pas deja
+
+            if (nome!="" and quantitee!= ""):
+                if (nome in test):
+                    contenu += "Cette piece existe deja"
+                elif (nome!="" and quantitee>-1): #ajouter un createur d'id apres
+                    cur.execute("INSERT INTO piece('nom', 'quantite', id) VALUES (?,?,?)", (nome,quantitee,ide))
+                else:
+                    contenu += (" Il faut un nom et une quantité positive")
+
+    #delete
     contenu += "<form method='get' action='gestion_stock'>"
     contenu += "<br/><br/> quel est le nom de la piece que tu veux tu supprimer? <br/>"
     contenu += "<input type='str' name='nomdel' value=''>"
     contenu += "<input type='submit' value='Envoyer'>"
 
-    # on supprime une piece de la bdd
     nomdele=request.args.get('nomdel','')
-    delete('piece', 'nom', nomdele)
+    if (nomdele != ""):
+        cur.execute ("DELETE FROM 'piece' WHERE nom=?", [nomdele])
 
-    # un affichage des stocks rapide pour tester
-    con = lite.connect(cheminbdd) #attention chez toi c'est pas rangé au meme endroit
-    con.row_factory = lite.Row
-    cur = con.cursor()
     cur.execute("SELECT nom, quantite, id FROM Piece;")
     liste = cur.fetchall()
     #
@@ -134,7 +164,7 @@ def ajout_piece():
         contenu += str(chaque[1]) + " "
         contenu += str(chaque[2]) + " "
 
-    con.commit()
+    #con.commit()
     con.close()
 
     return contenu; # LES PROGRAMMEURS a retoucher / separer  fonctions
@@ -207,40 +237,12 @@ def gestion_stock():
 
 @app.route('/Agilog/Initialisation/Code_kit', methods=['GET', 'POST'])
 def code_kit():
-    contenu=""
-    contenu += "<a href='/accueil/agilog/initialisation/'>retour à la page précédente</a><br/>"
-    contenu += "<br/>"
-    contenu += "Kit"
-    contenu += "<br/>"
-    contenu += "<form method='get' action='code_kit'>"
-    contenu += "<input type='str' name='Code_article' value=''>"
-    contenu += "<input type='submit' value='Envoyer'>"
-    contenu += "<br/>"
-    contenu +="Liste des pièces du Kit"
-    contenu +="<br/>"
-
-    code=request.args.get('Code_article','')
-    con = lite.connect(cheminbdd)
-    con.row_factory = lite.Row
-    cur=con.cursor()
-    cur.execute("SELECT role FROM personnes;")
-    lignes = cur.fetchall()
-    if code in lignes  or code=='':
-        contenu += "<br/>"
-        contenu += "Erreur le code existe déjà"
-        contenu += "<br/>"
-    else :
-        contenu += "<br/>"
-        contenu += "Entrer le nom puis la quantite de pièce"
-        contenu += "<br/>"
-        contenu += "<form method='get' action='code_kit'>"
-        contenu += "<input type='str' name='nom_piece' value=''>"
-        contenu += "<input type='str' name='quantite' value=''>"
-        contenu += "<input type='submit' value='Valider'>"
-        contenu += "<input type='submit' value='Ajouter piece'>"
-    contenu += render_template('affichage_personnes.html', personnes = lignes)
-    return contenu #LES PROGRAMMEURS pas fait
-
+	contenu=""
+	contenu += "<a href='/accueil/agilog/initialisation/'>retour à la page précédente</a><br/>"
+	contenu += "<br/>"
+	contenu += "Kit"
+	contenu += "<br/>"
+	return(ajouter_piece_dans_kit())
 #La page pour Agilean
 @app.route('/Agilean')
 def agilean():
