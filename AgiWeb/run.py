@@ -186,15 +186,34 @@ def gestion_stock():
 
 @app.route('/Agilog/Initialisation/Code_kit', methods=['GET', 'POST'])
 def code_kit():
-
-    code=request.form.get('code_kit','')
-    con = lite.connect("AgiWeb_BDD.db")
+    #On crée un kit ou on en choisit un
+    contenu=""
+    contenu += "<a href='/accueil/agilog/initialisation/'>retour à la page précédente</a><br/>"
+    contenu += "<br/>"
+    contenu += "Kit"
+    contenu += "<br/>"
+    contenu = demande_interaction(2,contenu)
+    kit= recupere_interraction(2,contenu)
+    #On choisit un kit existant
+    con = lite.connect(cheminbdd)
     con.row_factory = lite.Row
     cur=con.cursor()
-    cur.execute("SELECT role FROM personnes;")
-    lignes = cur.fetchall()
+    cur.execute("SELECT nom_kit FROM kit;")
+    base=cur.fetchall()#variable pour le menu déroulant
+    #historique des kit existant
+    cur.execute("SELECT id FROM kit;")
+    id_kit=cur.fetchall()
+    c=compare_nom(request.arg.get('nom_kit1',''),base)
+    d=compare_nom(request.arg.get('nom_kit2',''),id_kit)
+    if c or d:#le nom du kit est déjà existant, on revient au départ
+        contenu += "erreur"
+        return(contenu)
+    historique=[]
+    for chose in id_kit :
+        cur.execute('SELECT piece, quantite FROM compo_kit WHERE kit=?;',[chose[0]])
+        historique.append(cur.fetchall())#historique est une liste de dictionnaire ou chaque dictionnaire est un kit
     con.close()
-
+    return(contenu)
 
     return render_tempate("Code_kit_init.html", liste_kit)#LES PROGRAMMEURS pas fait
 
