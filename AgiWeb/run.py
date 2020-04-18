@@ -192,19 +192,19 @@ def code_kit():
     contenu += "<br/>"
     contenu += "Kit"
     contenu += "<br/>"
-    contenu = demande_interaction(2,contenu)
-    kit= recupere_interraction(2,contenu)
+    contenu = demande_interaction(1,contenu)
+    kit= recupere_interraction(1,contenu)
     #On choisit un kit existant
-    con = lite.connect(cheminbdd)
+    con = lite.connect('AgiWeb_BDD.db')
     con.row_factory = lite.Row
     cur=con.cursor()
     cur.execute("SELECT nom_kit FROM kit;")
     base=cur.fetchall()#variable pour le menu déroulant
     #historique des kit existant
-    cur.execute("SELECT id FROM kit;")
+    cur.execute("SELECT id_kit FROM kit;")
     id_kit=cur.fetchall()
-    c=compare_nom(request.arg.get('nom_kit1',''),base)
-    d=compare_nom(request.arg.get('nom_kit2',''),id_kit)
+    c=compare_nom(request.form.get('nom_kit1',''),base)
+    d=compare_nom(request.form.get('nom_kit2',''),id_kit)
     if c or d:#le nom du kit est déjà existant, on revient au départ
         contenu += "erreur"
         return(contenu)
