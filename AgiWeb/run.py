@@ -215,7 +215,7 @@ def code_kit():
     con.close()
     return(contenu)
 
-    return render_tempate("Code_kit_init.html", liste_kit)#LES PROGRAMMEURS pas fait
+    return render_template("Code_kit_init.html", liste_kit)#LES PROGRAMMEURS pas fait
 
 #La page pour Agilean
 @app.route('/Agilean')
