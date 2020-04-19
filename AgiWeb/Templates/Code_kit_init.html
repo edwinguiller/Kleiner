@@ -4,6 +4,7 @@
     {%include 'navbar.html'%}
     <h1>saisi d'un nouveau kit :</h1>
     {%include 'elements/demande_interaction.html'%}
+    <strong>{{msg}}</strong>
     <h1>choix d'un kit existant :</h1>
     <form action="{{url_for('code_kit')}}" method="post">
       <select name="nom_kit1">

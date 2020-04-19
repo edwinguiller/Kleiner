@@ -214,9 +214,9 @@ def code_kit():
     else:
         c=compare_nom(request.form.get('nom_kit1'),base)
         d=compare_nom(request.form.get('id_kit'),id_kit)
-        if c or d:#le nom du kit est déjà existant, on revient au départ
+        if not c or d:#le nom du kit est déjà existant, on revient au départ
             con.close()
-            return(render_template("Code_kit_init.html", msg ="attention le kit existe deja ",tab_piece=dico_kit,liste_kit=base,liste_id=id_kit))
+            return(render_template("Code_kit_init.html", msg ="attention le kit existe deja ou vous avez oubliez de saisir l'une des entrées ",tab_piece=dico_kit,liste_kit=base,liste_id=id_kit))
         else :
             kit_a_modif=request.form.get('nom_kit1')
             con.close()
@@ -225,8 +225,7 @@ def code_kit():
 
 @app.route('/Agilog/Initialisation/Code_kit/modif_kit', methods=['GET', 'POST'])
 def modif_kit(kit_a_modif,d):
-    print(d)
-    return(render_template('modif_kit_init.html'))
+    return(render_template('modif_kit_init.html',d=d))
 
 #La page pour Agilean
 @app.route('/Agilean')
