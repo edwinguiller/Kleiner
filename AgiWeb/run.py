@@ -207,9 +207,9 @@ def code_kit():
         dico_kit.append(cur.fetchall())#historique est une liste de dictionnaire ou chaque dictionnaire est un kit
     if c or d:#le nom du kit est déjà existant, on revient au départ
         con.close()
-        return(render_template("Code_kit_init.html", i = 1, msg ="attention le kit existe deja ",tab_piece=dico_kit,liste_kit=base,liste_id=id_kit))
-    
-    return(render_template("Code_kit_init.html", i=1, msg ="",tab_piece=dico_kit,liste_kit=base,liste_id=id_kit))
+        return(render_template("Code_kit_init.html", msg ="attention le kit existe deja ",tab_piece=dico_kit,liste_kit=base,liste_id=id_kit))
+
+    return(render_template("Code_kit_init.html", msg ="",tab_piece=dico_kit,liste_kit=base,liste_id=id_kit))
 
 #La page pour Agilean
 @app.route('/Agilean')
