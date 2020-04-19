@@ -9,25 +9,52 @@
 
 
 		<!-- Contenu -->
-		<h2> Encours </h2>
-		<div id="content-agilog">
-			<ul>
 
-				<div class="leftbox">
+		<div id="content-stock">
+			<h1>Stocks</h1>
 
-					<p class= "small "> Vous venez de recevoir un kit ? Déclarer le kit correspondant dans le menu déroulant </p>
+			<table>
+				<caption>Stock des pièces encours</caption>
+				<tr>
+					<th>Id piece</th>
+					<th>Nom piece</th>
+					<th>Quantité</th>
+					<th>Délai</th>
+					<th>Valider réception</th>
+				</tr>
+				{%for piece in liste_id %}
+				<tr>
+					<th>{{piece['id_piece']}}</th>
+					<th>{{piece['nom']}}</th>
+					<th>{{piece['quantite']}}</th>
+					<th>{{piece['delai']}}</th>
+					<th>
+						<li class="bouton_valider">
+				      <a href="{{url_for('bouton_val')}}" rel="nofollow">
+				      Oui </a>
+				    </li>
+					</th>
+				</tr>
+				{%endfor%}
+			</table>
 
-						<a href="{{url_for('declarer_kit')}}"> Déclarer kit </a>
+			<table>
+				<caption>Stock des pièces réel</caption>
+				<tr>
+					<th>Id piece</th>
+					<th>nom Piece</th>
+					<th>quantité</th>
+				</tr>
+				{%for piece in liste_id %}
+				<tr>
+					<th>{{piece['id_piece']}}</th>
+					<th>{{piece['nom']}}</th>
+					<th>{{piece['quantite']}}</th>
+				</tr>
+				{%endfor%}
+			</table>
+
 				</div>
-				<div class="rightbox">
-
-					<p class= "small "> Vous voulez voir le stock réel et encours ? Cliquez alors sur Stock </p>
-					<li class="bouton2">
-						<a href="{{url_for('commande')}}"> Stock </a>
-					</li>
-				</div>
-			</ul>
-		</div>
 		<!-- Pied de page -->
 		<footer>
 			<p> Copyright &copy; AgiWeb 2020 - All right reserved </p>
