@@ -3,7 +3,32 @@
   <body>
     {%include 'navbar.html'%}
     <h1>saisi d'un nouveau kit :</h1>
-    {{contenu}}
+    {%include 'elements/demande_interaction.html'%}
     <h1>choix d'un kit existant :</h1>
+    <form action="{{url_for('code_kit')}}" method="post">
+      <select name="nom_kit1">
+
+      </select>
+    </form>
+    <h1>Tabeaux deja renseigné :</h1>
+    <table>
+      <tr>
+        <th>id kit</th>
+        <th>piece dans kit</th>
+      </tr>
+      {%for kit in liste_id%}
+      <tr>
+        <th>{{kit[0]}}</th>
+        <th>
+          <ul>
+            </br>
+            {%for piece in tab_piece[loop.index0]%}
+            <li>{{piece['piece']}} : {{piece['quantite'] }} </li>
+            {%endfor%}
+          </ul>
+        </th>
+      </tr>
+      {%endfor%}
+    </table>
   </body>
 </html>

@@ -186,8 +186,9 @@ def gestion_stock():
 
 @app.route('/Agilog/Initialisation/Code_kit', methods=['GET', 'POST'])
 def code_kit():
+    #variable
+    contenu=""
     #On crée un kit ou on en choisit un
-    contenu = demande_interaction(1,contenu)
     kit= recupere_interraction(1,contenu)
     #On choisit un kit existant
     con = lite.connect('AgiWeb_BDD.db')
@@ -199,15 +200,16 @@ def code_kit():
     cur.execute("SELECT id_kit FROM kit;")
     id_kit=cur.fetchall()
     c=compare_nom(request.form.get('nom_kit1',''),base)
-    d=compare_nom(request.form.get('nom_kit2',''),id_kit)
-    if c or d:#le nom du kit est déjà existant, on revient au départ
-        return(render_template("Code_kit_init.html", contenu = contenu, msg ="attention le kit existe deja "))
-    historique=[]
+    d=compare_nom(request.form.get('id_kit',''),id_kit)
+    dico_kit=[]
     for chose in id_kit :
         cur.execute('SELECT piece, quantite FROM compo_kit WHERE kit=?;',[chose[0]])
-        historique.append(cur.fetchall())#historique est une liste de dictionnaire ou chaque dictionnaire est un kit
-    con.close()
-    return(render_template("Code_kit_init.html", contenu = contenu, msg =""))
+        dico_kit.append(cur.fetchall())#historique est une liste de dictionnaire ou chaque dictionnaire est un kit
+    if c or d:#le nom du kit est déjà existant, on revient au départ
+        con.close()
+        return(render_template("Code_kit_init.html", i = 1, msg ="attention le kit existe deja ",tab_piece=dico_kit,liste_kit=base,liste_id=id_kit))
+    
+    return(render_template("Code_kit_init.html", i=1, msg ="",tab_piece=dico_kit,liste_kit=base,liste_id=id_kit))
 
 #La page pour Agilean
 @app.route('/Agilean')

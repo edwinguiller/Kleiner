@@ -40,8 +40,8 @@ def creer_id(b):#créé un id
 def demande_interaction(n,contenu):
 	for i in range(n):
 		contenu += "<form method='post' action='code_kit'>"
-		contenu += "<input type='str' name='nom_kit"+str(i)+"' value=''>"
-	contenu += "<input type='submit' value='Envoyer'>"
+		contenu += "<input type='str' name='nom_kit'+str(i)+'' value='' />"
+	contenu += "<input type='submit' value='Envoyer'/> </form>"
 	return(contenu)
 def recupere_interraction(n,contenu):
 	L=[]
