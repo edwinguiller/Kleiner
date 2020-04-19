@@ -39,8 +39,6 @@ nav.menu-nav ul li.bouton:hover a{
 }
 
 
-
-
 footer{
 	color:blue;
  }
@@ -50,8 +48,8 @@ h2{
 }
 
 .cssmarche {
-	color:red
-	font-size:35px
+	color:green;
+	font-size:35px;
 }
 
 .small {
@@ -134,6 +132,11 @@ div#content-commande ul li.bouton_commande a{
 	text-decoration: none;
 	padding:10px;
 	font-size:20px;
+}
+div#content-commande ul li.bouton_commande:hover a{
+	color:990066;
+	background-color:white;
+	transition: 0.5S all;
 }
 
 div#content-stock div{
