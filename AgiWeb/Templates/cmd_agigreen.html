@@ -9,3 +9,22 @@
 
 
 		<!-- Contenu -->
+		<h1>Commande AgiGreen</h1>
+		<table>
+			<tr>
+				<th>Id piece</th>
+				<th>Nom piece</th>
+				<th>Quantité</th>
+
+			</tr>
+			{%for piece in liste_commande_green %}
+			<tr>
+				<td>{{piece['id_piece']}}</td>
+				<td>{{piece['nom']}}</td>
+				<td>{{piece['quantite']}}</td>
+
+			</tr>
+			{%endfor%}
+		</table>
+	<p>Cliquer sur valider pour valider la commande sélectionnée</p>
+	<a href="{{url_for('valider_cmd_green')}}"> Valider </a>

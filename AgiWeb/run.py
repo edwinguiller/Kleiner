@@ -29,6 +29,15 @@ def commandepart(): #à faire
 def commandegreen(): #à faire
     return render_template('cmd_agigreen.html')
 
+@app.route('/Agilog/Encours')
+def valider_cmd_green(): #à faire
+    return render_template('encours_alog.html')
+
+@app.route('/Agilog/Encours')
+def valider_cmd_part(): #à faire
+    return render_template('encours_alog.html')
+
+
 @app.route('/Agilog/Encours/Declarer_kit', methods=['GET', 'POST'])#recupere 2 variable nom et prnom et les ajoutent a la base de données (a modifier pour mettre piece et quantite)
 def declarer_kit():
 

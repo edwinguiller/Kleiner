@@ -12,57 +12,69 @@
 		<p class="cssmarche"> css marche t'il ? </p>
 		<div id="content-stock">
 			<h1>Stocks</h1>
+			<div class="leftbox">
 
-			<table>
-				<caption>Stock des pièces encours</caption>
-				<tr>
-					<th>Id piece</th>
-					<th>Nom piece</th>
-					<th>Quantité</th>
-					<th>Délai</th>
-					<th>Valider réception</th>
-				</tr>
-				{%for piece in liste_id %}
-				<tr>
-					<th>{{piece['id_piece']}}</th>
-					<th>{{piece['nom']}}</th>
-					<th>{{piece['quantite']}}</th>
-					<th>{{piece['delai']}}</th>
-					<th>
-						<li class="bouton_valider">
-				      <a href="{{url_for('bouton_val')}}" rel="nofollow">
-				      Oui </a>
-				    </li>
-					</th>
-				</tr>
-				{%endfor%}
-			</table>
+				<table>
+					<caption>Stock des pièces encours</caption>
+					<tr>
+						<th>Id piece</th>
+						<th>Nom piece</th>
+						<th>Quantité</th>
+						<th>Délai</th>
+						<th>Valider réception</th>
+					</tr>
+					<tr>
+						<td>1602</td>
+						<td>bricks 2*2</td>
+						<td>3</td>
+						<td>3min<td>
+						<td>Oui</td>
+					</tr>
+					{%for piece in stock_encours %}
+					<tr>
+						<td>{{piece['id_piece']}}</td>
+						<td>{{piece['nom']}}</td>
+						<td>{{piece['quantite']}}</td>
+						<td>{{piece['delai']}}</td>
+						<td>Oui	</td>
+					</tr>
+					{%endfor%}
+				</table>
+			</div>
+			<div class="rightbox">
+				<table>
+					<caption>Stock des pièces réel</caption>
+					<tr>
+						<th>Id piece</th>
+						<th>Nom Piece</th>
+						<th>Quantité</th>
+						<th>A recompléter ?</th>
+					</tr>
+						<td>1602</td>
+						<td>bricks 2*2</td>
+						<td>3</td>
+						<td>Oui ou non suivant le seuil de recompletement</td>
 
-			<table>
-				<caption>Stock des pièces réel</caption>
-				<tr>
-					<th>Id piece</th>
-					<th>Nom Piece</th>
-					<th>Quantité</th>
-					<th>A recompléter ?</th>
-				</tr>
-				{%for piece in liste_id %}
-				<tr>
-					<th>{{piece['id_piece']}}</th>
-					<th>{{piece['nom']}}</th>
-					<th>{{piece['quantite']}}</th>
-					<th>Oui ou non suivant le seuil de recompletement</th>
-				</tr>
-				{%endfor%}
-			</table>
+					{%for piece in stock_réel %}
+					<tr>
+						<td>{{piece['id_piece']}}</td>
+						<td>{{piece['nom']}}</td>
+						<td>{{piece['quantite']}}</td>
+						<td>Oui ou non suivant le seuil de recompletement</td>
+					</tr>
+					{%endfor%}
+				</table>
+			</div>
+			<br/>
+			<br/>
 
-				</div>
+			</div>
 				<div id="content-commande">
 					<ul>
-
+						<p>Le seuil de recompletement n'est pas complet ?</p>
 						<div class="leftbox">
 
-							<p class= "small "> Vous voulez passer une commande chez AgiGreen ? </p>
+							<p class= "small ">  Vous voulez passer une commande chez AgiGreen ? </p>
 							<li class="bouton_commande">
 								<a href="{{url_for('commandegreen')}}"> Oui </a>
 							</li>

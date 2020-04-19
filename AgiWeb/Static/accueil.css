@@ -42,7 +42,7 @@ nav.menu-nav ul li.bouton:hover a{
 
 
 footer{
-	color:red;
+	color:blue;
  }
 
 h2{
@@ -108,6 +108,14 @@ div#content-agilog ul li.bouton2:hover a{
 }
 
 /*AgiLog Encours*/
+table
+{
+    border-collapse: collapse; /* Les bordures du tableau seront collées  */
+}
+td,th
+{
+    border: 1px solid black;
+}
 div#content-stock ul li.bouton_valider{
 	list-style-type: none;
 }
@@ -117,10 +125,10 @@ div#content-stock ul li.bouton_valider a{
 }
 
 
-div#content-stock ul li.bouton_commande{
+div#content-commande ul li.bouton_commande{
 	list-style-type: none;
 }
-div#content-stock ul li.bouton_commande a{
+div#content-commande ul li.bouton_commande a{
 	color:white;
 	background-color:990066;
 	text-decoration: none;
@@ -128,6 +136,10 @@ div#content-stock ul li.bouton_commande a{
 	font-size:20px;
 }
 
+div#content-stock div{
+	display :inline-block;
+	width:48%;
+}
 div#content-commande div{
 	display :inline-block;
 	width:48%;
