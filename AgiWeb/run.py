@@ -201,28 +201,31 @@ def code_kit():
     #historique des kit existant
     cur.execute("SELECT id_kit FROM kit;")
     id_kit=cur.fetchall()
+
+    #création dico_kit
+    dico_kit=[]
+    for chose in id_kit :
+        cur.execute('SELECT piece, quantite FROM compo_kit WHERE kit=?;',[chose[0]])
+        dico_kit.append(cur.fetchall())#historique est une liste de dictionnaire ou chaque dictionnaire est un kit
+
     if not request.method == 'POST':
         con.close()
-        return render_template('ajout_piece.html',liste_id=liste_id, err_quant= "", msg="")
+        return render_template("Code_kit_init.html", msg ="",tab_piece=dico_kit,liste_kit=base,liste_id=id_kit)
     else:
         c=compare_nom(request.form.get('nom_kit1'),base)
         d=compare_nom(request.form.get('id_kit'),id_kit)
-        dico_kit=[]
-        for chose in id_kit :
-            cur.execute('SELECT piece, quantite FROM compo_kit WHERE kit=?;',[chose[0]])
-            dico_kit.append(cur.fetchall())#historique est une liste de dictionnaire ou chaque dictionnaire est un kit
         if c or d:#le nom du kit est déjà existant, on revient au départ
             con.close()
             return(render_template("Code_kit_init.html", msg ="attention le kit existe deja ",tab_piece=dico_kit,liste_kit=base,liste_id=id_kit))
         else :
             kit_a_modif=request.form.get('nom_kit1')
             con.close()
-            return(modif_kit(kit_a_modif))
+            return(modif_kit(kit_a_modif,d))
     return(render_template("Code_kit_init.html", msg ="",tab_piece=dico_kit,liste_kit=base,liste_id=id_kit))
 
 @app.route('/Agilog/Initialisation/Code_kit/modif_kit', methods=['GET', 'POST'])
-def modif_kit(kit_a_modif):
-
+def modif_kit(kit_a_modif,d):
+    print(d)
     return(render_template('modif_kit_init.html'))
 
 #La page pour Agilean
