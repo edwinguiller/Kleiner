@@ -7,6 +7,7 @@
     <h1>choix d'un kit existant :</h1>
     <form action="{{url_for('code_kit')}}" method="post">
       <select name="nom_kit1">
+        <option value="">selectionnez une entrée</option>
         {%for kit in liste_kit%}
         <option value="{{kit['nom_kit']}}">{{kit['nom_kit']}}</option>
         {%endfor%}
