@@ -52,8 +52,7 @@ def recupere_interraction(n,contenu):
 def ajouter_piece_dans_kit (x=0):
     if x==0 :
         #on sélectionne les id
-        contenu =""
-        con = lite.connect(cheminbdd)
+        con = lite.connect('AgiWeb_BDD.db')
         con.row_factory = lite.Row
         cur=con.cursor()
         cur.execute("SELECT id FROM kit;")

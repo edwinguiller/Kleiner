@@ -190,6 +190,7 @@ def code_kit():
     contenu=""
     c= False
     d= False
+    kit_a_modif="vierge"
     #On crée un kit ou on en choisit un
     kit= recupere_interraction(1,contenu)
     #On choisit un kit existant
@@ -212,20 +213,22 @@ def code_kit():
         con.close()
         return render_template("Code_kit_init.html", msg ="",tab_piece=dico_kit,liste_kit=base,liste_id=id_kit)
     else:
-        c=compare_nom(request.form.get('nom_kit1'),base)
-        d=compare_nom(request.form.get('id_kit'),id_kit)
+        c=True #compare_nom(request.form.get('nom_kit1'),base)
+        d=True #compare_nom(request.form.get('id_kit'),id_kit)
+        kit_a_modif = request.form.get('nom_kit1')
         if c == False or d == False  :#le nom du kit est déjà existant, on revient au départ
             con.close()
             return(render_template("Code_kit_init.html", msg ="attention le kit existe deja ou vous avez oubliez de saisir l'une des entrées "+str(c)+str(d),tab_piece=dico_kit,liste_kit=base,liste_id=id_kit))
         else :
-            kit_a_modif=request.form.get('nom_kit1')
+            if kit_a_modif == "vierge" :
+                kit_a_modif = request.form.get('nom_kit_a_modif')
             con.close()
-            return(modif_kit(kit_a_modif,d))
-    return(render_template("Code_kit_init.html", msg ="",tab_piece=dico_kit,liste_kit=base,liste_id=id_kit))
+            return(modif_kit(kit_a_modif))
+    return(render_template("Code_kit_init.html", msg="" ,tab_piece=dico_kit ,liste_kit=base ,liste_id=id_kit ))
 
 @app.route('/Agilog/Initialisation/Code_kit/modif_kit', methods=['GET', 'POST'])
-def modif_kit(kit_a_modif,d):
-    return(render_template('modif_kit_init.html',d=d))
+def modif_kit(kit_a_modif):
+    return(render_template('modif_kit_init.html',d=kit_a_modif))
 
 #La page pour Agilean
 @app.route('/Agilean')

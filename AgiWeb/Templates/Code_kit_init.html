@@ -7,12 +7,13 @@
     <strong>{{msg}}</strong>
     <h1>choix d'un kit existant :</h1>
     <form action="{{url_for('code_kit')}}" method="post">
-      <select name="nom_kit1">
-        <option value="">selectionnez une entrée</option>
+      <select name="nom_kit_a_modif">
+        <option value="vierge">selectionnez une entrée</option>
         {%for kit in liste_kit%}
         <option value="{{kit['nom_kit']}}">{{kit['nom_kit']}}</option>
         {%endfor%}
       </select>
+      <input type="submit" value="Modifier">
     </form>
     <h1>Tabeaux deja renseigné :</h1>
     <table>
