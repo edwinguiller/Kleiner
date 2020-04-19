@@ -21,6 +21,14 @@ def agilog():
 def encoursAlog(): #à faire
     return render_template('encours_alog.html')
 
+@app.route('/Agilog/Encours/Commande_agipart')
+def commandepart(): #à faire
+    return render_template('cmd_agipart.html')
+
+@app.route('/Agilog/Encours/Commande_agigreen')
+def commandegreen(): #à faire
+    return render_template('cmd_agigreen.html')
+
 @app.route('/Agilog/Encours/Declarer_kit', methods=['GET', 'POST'])#recupere 2 variable nom et prnom et les ajoutent a la base de données (a modifier pour mettre piece et quantite)
 def declarer_kit():
 
@@ -83,7 +91,7 @@ def commande():
 @app.route('/Agilog/Initialisation')
 def initialisation ():
     return render_template('initialisation_alog.html')
-    
+
 
 
 @app.route('/Agilog/Initialisation/Ajout_piece', methods=['GET', 'POST'])#recupere 2 variable nom et prnom et les ajoutent a la base de données (a modifier pour mettre piece et quantite)

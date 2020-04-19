@@ -9,7 +9,7 @@
 
 
 		<!-- Contenu -->
-
+		<p class="cssmarche"> css marche t'il ? </p>
 		<div id="content-stock">
 			<h1>Stocks</h1>
 
@@ -42,18 +42,39 @@
 				<caption>Stock des pièces réel</caption>
 				<tr>
 					<th>Id piece</th>
-					<th>nom Piece</th>
-					<th>quantité</th>
+					<th>Nom Piece</th>
+					<th>Quantité</th>
+					<th>A recompléter ?</th>
 				</tr>
 				{%for piece in liste_id %}
 				<tr>
 					<th>{{piece['id_piece']}}</th>
 					<th>{{piece['nom']}}</th>
 					<th>{{piece['quantite']}}</th>
+					<th>Oui ou non suivant le seuil de recompletement</th>
 				</tr>
 				{%endfor%}
 			</table>
 
+				</div>
+				<div id="content-commande">
+					<ul>
+
+						<div class="leftbox">
+
+							<p class= "small "> Vous voulez passer une commande chez AgiGreen ? </p>
+							<li class="bouton_commande">
+								<a href="{{url_for('commandegreen')}}"> Oui </a>
+							</li>
+						</div>
+						<div class="rightbox">
+
+							<p class= "small ">Vous voulez passer une commande chez AgiPart ? </p>
+							<li class="bouton_commande">
+								<a href="{{url_for('commandepart')}}"> Oui </a>
+							</li>
+						</div>
+					</ul>
 				</div>
 		<!-- Pied de page -->
 		<footer>
