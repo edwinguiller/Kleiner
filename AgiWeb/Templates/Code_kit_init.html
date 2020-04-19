@@ -3,8 +3,7 @@
   <body>
     {%include 'navbar.html'%}
     <h1>saisi d'un nouveau kit :</h1>
-    <form action="{{url_for('code_kit')}}" method="post">
-      <label for="nome">Saisissez le nom du nouveau kit</label>
-    </form>
+    {{contenu}}
+    <h1>choix d'un kit existant :</h1>
   </body>
 </html>
