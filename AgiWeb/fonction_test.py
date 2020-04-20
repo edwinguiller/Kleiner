@@ -17,88 +17,35 @@ def index():
     contenu += "<input type='submit' value='Envoyer'>"
     contenu += "<a href='/accueil/agilog/initialisation/ajout_piece'>Lien direct</a><br/><br/>"
     return contenu;
+from fonctions_logiques import *
+
+def modif_kit(kit_a_modif,piece_a_ajouter,quantite):
+	contenu=""
+	con = lite.connect('AgiWeb_BDD.db')
+	con.row_factory = lite.Row
+	cur=con.cursor()
+	cur.execute("SELECT nom FROM piece;")
+	pieces=cur.fetchall()#variable pour le menu déroulant pour le choix des pieces
+	cur.execute("SELECT id_kit FROM kit wHERE nom_kit=?;",[kit_a_modif])#car dans la base compo_kit, kit correspond à des id
+	kit_a_modifier=liste(cur.fetchall())#variable pour travailler dans la base compo_kit
+	cur.execute("SELECT piece FROM compo_kit WHERE kit=?;",[kit_a_modifier[0]])
+	piece_du_kit=liste(cur.fetchall())#cette liste nous permet de vérifier que la nouvelle pièce à ajouter n'est pas déjà présente
+	#Si on veut supprimer une piece du kit
+	if piece_a_ajouter[0]:
+		cur.execute("DELETE FROM compo_kit WHERE kit=?,piece=?;",[kit_a_modifier[0],piece_a_ajouter[1]])
+	#Si on veut ajouter une piece au kit
+	else:
+		if piece_a_ajouter not in piece_du_kit:#la pièce n'est pas présente dans le kit
+			if quantite[1]==True:#la quantite est bonne donc on ajoute la piece simplement au kit
+				cur.execute("INSERT INTO compo_kit(kit,piece,quantite) VALUES (?,?,?);",[kit_a_modifier[0],piece_a_ajouter[1],quantite[0]])
+			else:#la quantite entrée n'est pas bonne
+				print("la quantite n'est pas bonne")
+		else:#la piece est présente dans le kit, on modifie donc juste la quantite
+			cur.execute("UPDATE compo_kit SET quantite=? WHERE kit=?,piece=?;",[quantite[0],kit_a_modifier[0],piece_a_ajouter[1]])
 
 
-def ajouter_piece_dans_kit (x=0,contenu=""):
-    if x==0 or contenu=="":
-        contenu += "<a href='/accueil/agilog/initialisation/'>retour à la page précédente</a><br/>"
-        contenu += "<br/>"
-        contenu += "Kit"
-        contenu += "<br/>"
-        contenu += "<form method='get' action='code_kit'>"
-        contenu += "<input type='str' name='Code_article' value=''>"
-        contenu += "<input type='submit' value='Envoyer'>"
-        code=int(request.args.get('Code_article',''))
-        con = lite.connect('/Users/Nathan/Documents/GitHub/Kleiner/AgiWeb/Fonction/exemples.db')#à modifier
-        con.row_factory = lite.Row
-        cur=con.cursor()
-        cur.execute("SELECT role FROM personnes;")#à modifier
-        lignes = cur.fetchall()
-        if code in lignes  or code=='':
-            contenu += "<br/>"
-            contenu += "Erreur le code existe déjà"
-            contenu += "<br/>"
-            return (ajouter_piece_dans_kit(,contenu))#on recommence, attention comme ça, ça m'arche pas "type submit"
-        else :
-            con = lite.connect('/Users/Nathan/Documents/GitHub/Kleiner/AgiWeb/Fonction/exemples.db')#à modifier
-            con.row_factory = lite.Row
-            cur=con.cursor()
-            cur.execute("INSERT INTO ;")#à modifier, on crée le kit vierge
-            return(ajouter_piece_dans_kit(code,contenu))
-    else:
-        contenu += "<br/>"
-        contenu += "Vous etes entrain de créer le Kit n°"+str(x)
-        contenu += "<br/>"
-        contenu += "<br/>"
-        contenu += "Entrer le nom puis la quantite de pièce"
-        contenu += "<br/>"
-        contenu += "<form method='get' action='code_kit'>"
-        contenu += "<input type='str' name='nom_piece' value=''>"
-        contenu += "<input type='str' name='quantite' value=''>"
-        contenu += "<input type='submit' value='Valider'>"
-        nom_piece=str(request.args.get('nom_piece','')
-        quantite=int(request.args.get('quantite','')
-        con = lite.connect('/Users/Nathan/Documents/GitHub/Kleiner/AgiWeb/Fonction/exemples.db')#à modifier
-        con.row_factory = lite.Row
-        cur=con.cursor()
-        cur.execute("SELECT nom FROM piece")
-        lignes=cur.fetchall()
-<<<<<<< HEAD
-        if nom_piece not in ligne or quantite=<0 :
-            contenu += "<br/>"
-            contenu += "Erreur la pièce n'existe pas ou la quantite est nulle"
-            contenu += "<br/>"
 
 
-#        cur.execute("UPDATE ;")#à modifier, on insert la nouvelle piece dans le kit
-=======
-        if nom_piece not in ligne :
-			try:
-				quantite=int(quantite)
-				quantite>0
-			except:
-				contenu += "<br/>"
-				contenu += "Erreur la quantite est n'est pas bonne"
-				contenu += "<br/>"
-				contenu += "on recommence l'enregistrement de cette pièce ensemble mon chou dans quelques secondes"#time.sleep()
-				contenu += "<br/>"
-				time.sleep(5)
-				return(ajouter_piece_dans_kit(code,))
-			else:
-				con = lite.connect('/Users/Nathan/Documents/GitHub/Kleiner/AgiWeb/Fonction/exemples.db')#à modifier
-				con.row_factory = lite.Row
-				cur=con.cursor()
-				cur.execute("UPDATE ;")#à modifier, on insert la nouvelle piece dans le kit
-		else:
-			contenu += "<br/>"
-			contenu += "Erreur la pièce n'existe pas"
-			contenu += "<br/>"
-			contenu += "on recommence l'enregistrement de cette pièce ensemble mon chou dans quelques secondes"#time.sleep()
-			contenu += "<br/>"
-			time.sleep(5)
-			return(ajouter_piece_dans_kit(x,))
-
->>>>>>> c79d95d98be4fce91b05071a2b51be92414ca68b
 
 @app.route('/accueil/agilog/initialisation/ajout_piece', methods=['GET', 'POST'])#recupere 2 variable nom et prnom et les ajoutent a la base de données (a modifier pour mettre piece et quantite)
 def ajout_piece():

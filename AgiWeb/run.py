@@ -224,6 +224,7 @@ def code_kit():
             return modif_kit(kit_a_modif,id_kit_a_modif,kit_a_creer)
         c=True #compare_nom(request.form.get('nom_kit1'),base)
         d=True #compare_nom(request.form.get('id_kit'),id_kit)
+<<<<<<< HEAD
         if c == False or d == False  :#le nom du kit est déjà existant, on revient au départ
             con.close()
             return(render_template("Code_kit_init.html", msg ="attention le kit existe deja ou vous avez oubliez de saisir l'une des entrées "+str(c)+str(d),tab_piece=dico_kit,liste_kit=base,liste_id=id_kit))
@@ -235,6 +236,53 @@ def code_kit():
 @app.route('/Agilog/Initialisation/Code_kit/modif_kit', methods=['GET', 'POST'])
 def modif_kit(kit_a_modif,id):
     return(render_template('modif_kit_init.html',d=kit_a_modif,id = id))
+=======
+        kit_a_modif = request.form.get('nom_kit1')
+    if c == False or d == False  :#le nom du kit est déjà existant, on revient au départ
+        con.close()
+        return(render_template("Code_kit_init.html", msg ="attention le kit existe deja ou vous avez oubliez de saisir l'une des entrées "+str(c)+str(d),tab_piece=dico_kit,liste_kit=base,liste_id=id_kit))
+    else :
+        if kit_a_modif == "vierge" :
+             kit_a_modif = request.form.get('nom_kit_a_modif')
+        con.close()
+        return(modif_kit(kit_a_modif))
+    return(render_template("Code_kit_init.html", msg="" ,tab_piece=dico_kit ,liste_kit=base ,liste_id=id_kit ))
+
+@app.route('/Agilog/Initialisation/Code_kit/modif_kit', methods=['GET', 'POST'])
+def modif_kit(kit_a_modif):
+	
+	#J'ai testé la fonction, les fonctionnalités marchent, 
+	#si tu as un problème, tu peux retrouver dans fonction_test la fonction que j'ai testé qui marche
+	 
+	contenu=""
+	piece_a_ajouter=[]#piece=[True/false,nom de la piece à ajouter]
+	con = lite.connect('AgiWeb_BDD.db')
+	con.row_factory = lite.Row
+	cur=con.cursor()
+	cur.execute("SELECT nom FROM piece;")
+	pieces=cur.fetchall()#variable pour le menu déroulant pour le choix des pieces
+	cur.execute("SELECT id FROM kit WHERE nom_kit=?;",[kit_a_modif])#car dans la base compo_kit, kit correspond à des id
+	kit_a_modifier=liste(cur.fetchall())#variable pour travailler dans la base compo_kit
+	quantite=quantite_bonne(recupere_interraction(1,contenu))#on récupère et vérifie la quantite=[quantite,True/False]
+	cur.execute("SELECT piece FROM compo_kit WHERE kit=?;",[kit_a_modifier[0]])
+	piece_du_kit=liste(cur.fetchall())#cette liste nous permet de vérifier que la nouvelle pièce à ajouter n'est pas déjà présente
+	#Si on veut supprimer une piece du kit
+	if piece_a_ajouter[0]:
+		cur.execute("DELETE FROM compo_kit WHERE kit=?,piece=?;",[kit_a_modifier[0],piece_a_ajouter[1]])
+	#Si on veut ajouter une piece au kit
+	else:
+		if piece_a_ajouter not in piece_du_kit:#la pièce n'est pas présente dans le kit
+			if quantite[1]==True:#la quantite est bonne donc on ajoute la piece simplement au kit
+				cur.execute("INSERT INTO compo_kit(kit,piece,quantite) VALUES (?,?,?);",[kit_a_modifier[0],piece_a_ajouter[1],quantite[0]])
+			else:#la quantite entrée n'est pas bonne
+		else:#la piece est présente dans le kit, on modifie donc juste la quantite
+			cur.execute("UPDATE compo_kit SET quantite=? WHERE kit=?,piece=?;",[quantite[0],kit_a_modifier[0],piece_a_ajouter[1]])
+		
+		
+		
+	
+    return(render_template('modif_kit_init.html',d=kit_a_modif))
+>>>>>>> d76f38763f10fe535c8efbe97ba75161bba3f750
 
 #La page pour Agilean
 @app.route('/Agilean')
