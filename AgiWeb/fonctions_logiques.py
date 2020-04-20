@@ -143,7 +143,6 @@ def ajouter_piece_dans_kit (x=0):
         con.close()
         contenu += render_template('affichage_personnes.html', personnes = lignes)
 
-
 def ajout_bdd(base, colonne, entree, types): # prend en argument  une base (ex: piece), les colonnes que l'on veut modifier (une liste ex: [id, nom...]), les entrées (valeurs) et le type de ces valeurs et rajoute ces valeurs sur une nouvelles ligne
 
     con = lite.connect(cheminbdd) #attention chez toi c'est pas rangé au meme endroit
@@ -238,6 +237,7 @@ def mise_a_jour_bdd (base, colonne, entree, types): # prend en argument  une bas
         else:
             selection= selection + i + "=?, "
 
+    print (selection)
 
     if (test_rien(entree)==0):
         if test_types(entree,types)==0:

@@ -18,8 +18,26 @@ def agilog():
 
 
 @app.route('/Agilog/Encours')
-def encoursAlog(): #à faire
+def encoursAlog():
     return render_template('encours_alog.html')
+
+@app.route('/Agilog/Encours/<id>')  # route pour passer la pièce (dont l'idéee est séléctionnée) du stock encours à stock réel: Programmeur à faire
+def actualize_id(id): #Programmeur à faire
+    # TODO: handle the id in the sql
+
+
+    # return render_template('encours_alog.html')
+
+    return redirect(url_for('encoursAlog'))
+
+@app.route('/Agilog/Encours/Commande_agipart')
+def commandepart(): #à faire
+    return render_template('cmd_agipart.html')
+
+@app.route('/Agilog/Encours/Commande_agigreen')
+def commandegreen(): #à faire
+    return render_template('cmd_agigreen.html')
+
 
 @app.route('/Agilog/Encours/Declarer_kit', methods=['GET', 'POST'])#recupere 2 variable nom et prnom et les ajoutent a la base de données (a modifier pour mettre piece et quantite)
 def declarer_kit():
@@ -88,36 +106,9 @@ def commande():
     cur.execute("SELECT seuil_recomp FROM piece")
     seuil = cur.fetchall()
     liste_seuil=liste(seuil)
-    cur.execute("SELECT id FROM piece")
-    ide = cur.fetchall()
-    liste_id=liste(ide)
-
-    #données du tableau reel
-    colonne_reel=["nom", "quantite", "id"]
-    reel=tableau("piece",colonne_reel)
-    #données du tableau en cours jointure compliqué a finir
-    #cur.execute("SELECT compo_commande.commande, compo_commande.piece, compo_commande.quantite, fournisseur.delai
-
-    #(SELECT fournisseur.delai FROM fournsseur JOIN piece ON piece.fournisseur=fournisseur.nom)
-    for i in range (0,len(reel)):
-        for j in range (0,len(reel[i])):
-            contenu += str(reel[i][j])
-            contenu += "<br/>"
-        contenu += "<br/> <br/>"
 
     seuil_commande (liste_quantite,liste_seuil,liste_nom)
 
-    # Selection piece AgiGreen à commander
-    #cur.execute("SELECT nom FROM piece WHERE a_commander=? and fournisseur=?) VALUE(?,?)",(1,"AgiGreen"))
-    #liste_G=cur.fetchall
-    #liste_AgiGreen=[]
-    #liste_AgiGreen[0]=liste(liste_G[0])
-    #liste_AgiGreen[1]=liste(liste_G[1])
-
-    # Selection piece AgiPart à commander
-
-
-    # c'est pour voir si ca marche c'est tout
     cur.execute("SELECT a_commander FROM piece")
     commande = cur.fetchall()
     liste_commande=liste(commande)
@@ -129,10 +120,14 @@ def commande():
     con.close
 
     return contenu
+
+    
 #La page Initialisation
 @app.route('/Agilog/Initialisation')
 def initialisation ():
     return render_template('initialisation_alog.html')
+
+
 
 @app.route('/Agilog/Initialisation/Ajout_piece', methods=['GET', 'POST'])#recupere 2 variable nom et prnom et les ajoutent a la base de données (a modifier pour mettre piece et quantite)
 def ajout_piece():
@@ -189,10 +184,11 @@ def ajout_piece():
 
     return contenu; # LES PROGRAMMEURS a retoucher / separer  fonctions
 
+
 @app.route('/Agilog/Initialisation/Gestion_stock', methods=['GET', 'POST'])#recupere 2 variable nom et prnom et les ajoutent a la base de données (a modifier pour mettre piece et quantite)
 def gestion_stock():
-    contenu=""
 
+    contenu=""
     #demande le nom de la piece, le seuil de recompletement, le stock de secu et le delai de reapro a changer en fournisseur
     contenu += "<form method='get' action='Gestion_stock'>"
     contenu += "quel est le nom de ta piece <br/>"
@@ -238,48 +234,42 @@ def gestion_stock():
         contenu += str(chaque[4]) + " "
         contenu += str(chaque[5])
     con.close()
-    #contenu += render_template('affichage_personnes.html', personnes = lignes)#une fonction html pour afficher un tableau
 
     return contenu;
 
 @app.route('/Agilog/Initialisation/Code_kit', methods=['GET', 'POST'])
 def code_kit():
+    #On crée un kit ou on en choisit un
     contenu=""
     contenu += "<a href='/accueil/agilog/initialisation/'>retour à la page précédente</a><br/>"
     contenu += "<br/>"
     contenu += "Kit"
     contenu += "<br/>"
-    contenu += "<form method='get' action='code_kit'>"
-    contenu += "<input type='str' name='Code_article' value=''>"
-    contenu += "<input type='submit' value='Envoyer'>"
-    contenu += "<br/>"
-    contenu +="Liste des pièces du Kit"
-    contenu +="<br/>"
-
-    code=request.args.get('Code_article','')
+    contenu = demande_interaction(2,contenu)
+    kit= recupere_interraction(2,contenu)
+    #On choisit un kit existant
     con = lite.connect(cheminbdd)
     con.row_factory = lite.Row
     cur=con.cursor()
-    cur.execute("SELECT role FROM personnes;")
-    lignes = cur.fetchall()
-    if code in lignes  or code=='':
-        contenu += "<br/>"
-        contenu += "Erreur le code existe déjà"
-        contenu += "<br/>"
-    else :
-        contenu += "<br/>"
-        contenu += "Entrer le nom puis la quantite de pièce"
-        contenu += "<br/>"
-        contenu += "<form method='get' action='code_kit'>"
-        contenu += "<input type='str' name='nom_piece' value=''>"
-        contenu += "<input type='str' name='quantite' value=''>"
-        contenu += "<input type='submit' value='Valider'>"
-        contenu += "<input type='submit' value='Ajouter piece'>"
-    contenu += render_template('affichage_personnes.html', personnes = lignes)
-    return contenu #LES PROGRAMMEURS pas fait
-
+    cur.execute("SELECT nom_kit FROM kit;")
+    base=cur.fetchall()#variable pour le menu déroulant
+    #historique des kit existant
+    cur.execute("SELECT id FROM kit;")
+    id_kit=cur.fetchall()
+    c=compare_nom(request.arg.get('nom_kit1',''),base)
+    d=compare_nom(request.arg.get('nom_kit2',''),id_kit)
+    if c or d:#le nom du kit est déjà existant, on revient au départ
+        contenu += "erreur"
+        return(contenu)
+    historique=[]
+    for chose in id_kit :
+        cur.execute('SELECT piece, quantite FROM compo_kit WHERE kit=?;',[chose[0]])
+        historique.append(cur.fetchall())#historique est une liste de dictionnaire ou chaque dictionnaire est un kit
+    con.close()
+    return(contenu)
 #La page pour Agilean
 @app.route('/Agilean')
+
 def agilean():
     return render_template('agiLean_accueil.html');
 
