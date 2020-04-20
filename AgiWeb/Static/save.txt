@@ -1,0 +1,12 @@
+<!-- {%for piece in stock_encours %}
+<tr>
+  <td>{{piece['id_piece']}}</td>
+  <td>{{piece['nom']}}</td>
+  <td>{{piece['quantite']}}</td>
+  <td class="timer" timer="{{piece['delai']}}"></td>
+  <td>
+    <a href="{{url_for('{{piece['id_piece']}}')}}">
+
+    Oui</td>
+</tr>
+{%endfor%} -->

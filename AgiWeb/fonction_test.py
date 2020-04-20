@@ -45,6 +45,102 @@ def modif_kit(kit_a_modif,piece_a_ajouter,quantite):
 
 
 
+def ajouter_piece_dans_kit (x=0):
+    contenu += "<a href='/accueil/agilog/initialisation/'>retour à la page précédente</a><br/>"
+    contenu += "<br/>"
+    contenu += "Kit"
+    contenu += "<br/>"
+    if x==0 :
+        #on crée un id
+        con = lite.connect(cheminbdd)
+        con.row_factory = lite.Row
+        cur=con.cursor()
+        cur.execute("SELECT id FROM kit;")
+        ide = creer_id(liste(cur.fetchall()))
+        con.close()
+        #On choisit et vérifier le nom du kit
+        con = lite.connect(cheminbdd)
+        con.row_factory = lite.Row
+        cur=con.cursor()
+        con = lite.connect(cheminbdd)
+        con.row_factory = lite.Row
+        cur=con.cursor()
+        cur.execute("SELECT nom FROM piece;")
+        base=liste(cur.fetchall())
+        contenu += "<br/>"
+        contenu += "<form method='get' action='code_kit'>"
+        contenu += "<input type='str' name='nom_kit' value=''>"
+        nom_kit=str(request.args.get('nom_kit',''))
+        c=compare_nom(nom_kit,base)
+        if c:
+			#le nom du kit est déjà existant, on revient au départ
+			contenu += "<br/>"
+			contenu += "Erreur le nom existe déjà"
+			contenu += "<br/>"
+			contenu += "on recommence l'enregistrement de cette pièce ensemble mon chou dans quelques secondes"
+			contenu += "<br/>"
+			time.sleep(5)
+			return(ajouter_piece_dans_kit())
+		else:
+			#le nom est bon, on crée le kit dans la base kit
+			cur.execute("INSERT INTO kit('id_kit', 'nom_kit') VALUES (?,?)", (ide,nom))
+			return(ajouter_piece_dans_kit(ide))
+    #Maintenant que le kit est créé on va le modifier
+    else:
+        contenu += "<br/>"
+        contenu += "Entrer le nom puis la quantite de pièce"
+        contenu += "<br/>"
+        contenu += "<form method='get' action='code_kit'>"
+        contenu += "<input type='str' name='nom_piece' value=''>"
+        contenu += "<input type='str' name='quantite' value=''>"
+        contenu += "<input type='submit' value='Valider'>"
+        nom_piece=str(request.args.get('nom_piece',''))
+        quantite=request.args.get('quantite','')
+        con = lite.connect(cheminbdd)
+        con.row_factory = lite.Row
+        cur=con.cursor()
+        cur.execute("SELECT nom FROM piece")
+        ligne=liste(cur.fetchall())
+        c=compare_nom(nom_piece,ligne)
+        if c :
+			#le nom est existe
+			try:
+				quantite=int(quantite)
+				quantite>0
+			except:
+				#la quantite n'est pas bonne
+				contenu += "<br/>"
+				contenu += "Erreur la quantite est n'est pas bonne"
+				contenu += "<br/>"
+				contenu += "on recommence l'enregistrement de cette pièce ensemble mon chou dans quelques secondes"
+				contenu += "<br/>"
+				time.sleep(5)
+				return(ajouter_piece_dans_kit(x))
+			else:
+				#la quantité est un entier positif
+				con = lite.connect(cheminbdd)
+				con.row_factory = lite.Row
+				cur=con.cursor()
+				cur.execute("INSERT INTO compo_kit('kit', 'piece','quantite') VALUES (?,?,?)", (x,nom_piece,quantite))#On insert la nouvelle piece dans le kit
+		else:
+			#le nom de la pièce n'est pas bon
+			contenu += "<br/>"
+			contenu += "Erreur la pièce n'existe pas"
+			contenu += "<br/>"
+			contenu += "on recommence l'enregistrement de cette pièce ensemble mon chou dans quelques secondes"
+			contenu += "<br/>"
+			time.sleep(5)
+			return(ajouter_piece_dans_kit(x))
+		#On affiche la composition du kit
+		con = lite.connect(cheminbdd)
+        con.row_factory = lite.Row
+        cur=con.cursor()
+        cur.execute("SELECT kit, piece, quantite FROM compo_kit")
+        lignes=cur.fetchall()
+        con.close()
+        contenu += render_template('affichage_personnes.html', personnes = lignes)
+
+
 
 
 @app.route('/accueil/agilog/initialisation/ajout_piece', methods=['GET', 'POST'])#recupere 2 variable nom et prnom et les ajoutent a la base de données (a modifier pour mettre piece et quantite)
@@ -167,6 +263,23 @@ def aff_stock():
     con.close()
 
     return contenu
+
+     # creation de l'id
+    #con = lite.connect(cheminbdd) #attention chez toi c'est pas rangé au meme endroit
+    #con.row_factory = lite.Row
+    #cur = con.cursor()
+    #cur.execute("SELECT id FROM piece")
+    #liste_id1 = cur.fetchall()
+    #liste_id2=[]
+    #for chaque in liste_id1:
+    #    liste_id2.append(chaque[0])
+    #taille=len(liste_id2)
+    #print (liste_id2)
+    #if taille==0:
+    #    ide=1
+    #else:
+    #    ide=max(liste_id2)+1
+    #con.close()
 
 if __name__ == '__main__':
     app.run(debug=True, port=5678)

@@ -27,8 +27,7 @@ div#content div#photo{
 
 div#content div#proverbe{
 	vertical-align: top;
-
-  }
+}
 
 
 nav.menu-nav ul li.bouton{
@@ -49,6 +48,7 @@ nav.menu-nav ul li.bouton:hover a{
 	transition: 0.5S all;
 }
 
+
 footer{
 	color:blue;
  }
@@ -57,10 +57,13 @@ h2{
 	padding:30px;
 }
 
-
+.cssmarche {
+	color:green;
+	font-size:35px;
+}
 
 .small {
-	font-size : 15px
+	font-size:15px
 
 }
 
@@ -84,7 +87,7 @@ div.rightbox{
 
   }
 
-/*AgiLog*/
+/*AgiLog acceuil*/
 div#content-agilog div{
 	display :inline-block;
 	width:48%;
@@ -98,9 +101,7 @@ div.rightbox{
 
 div#content-agilog ul li.bouton2{
 	list-style-type: none;
-
 }
-
 div#content-agilog ul li.bouton2 a{
 	color:white;
 	background-color:990066;
@@ -112,4 +113,48 @@ div#content-agilog ul li.bouton2:hover a{
 	color:990066;
 	background-color:white;
 	transition: 0.5S all;
+}
+
+/*AgiLog Encours*/
+table
+{
+    border-collapse: collapse; /* Les bordures du tableau seront collées  */
+}
+td,th
+{
+    border: 1px solid black;
+}
+div#content-stock ul li.bouton_valider{
+	list-style-type: none;
+}
+div#content-stock ul li.bouton_valider a{
+	color:red;
+	text-decoration: none;
+}
+
+
+div#content-commande ul li.bouton_commande{
+	list-style-type: none;
+}
+div#content-commande ul li.bouton_commande a{
+	color:white;
+	background-color:990066;
+	text-decoration: none;
+	padding:10px;
+	font-size:20px;
+}
+div#content-commande ul li.bouton_commande:hover a{
+	color:990066;
+	background-color:white;
+	transition: 0.5S all;
+}
+
+div#content-stock div{
+	display :inline-block;
+	width:48%;
+}
+div#content-commande div{
+	display :inline-block;
+	width:48%;
+
 }
