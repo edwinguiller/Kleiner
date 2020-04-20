@@ -21,6 +21,10 @@ def agilog():
 def encoursAlog(): #à faire
     return render_template('encours_alog.html')
 
+@app.route('/landingpage/<id>')  # route pour passer la pièce (dont l'idéee est séléctionnée) du stock encours à stock réel: Programmeur à faire
+def landing_page(id): #Programmeur à faire
+    return 1
+
 @app.route('/Agilog/Encours/Commande_agipart')
 def commandepart(): #à faire
     return render_template('cmd_agipart.html')
