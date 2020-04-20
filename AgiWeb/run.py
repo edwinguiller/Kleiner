@@ -244,7 +244,8 @@ def code_kit():
     contenu=""
     c= False
     d= False
-    kit_a_modif="vierge"
+    kit_a_modif = ""
+    kit_a_creer = ""
     #On crée un kit ou on en choisit un
     kit= recupere_interraction(1,contenu)
     #On choisit un kit existant
@@ -267,6 +268,14 @@ def code_kit():
         con.close()
         return render_template("Code_kit_init.html", msg ="",tab_piece=dico_kit,liste_kit=base,liste_id=id)
     else:
+        kit_a_creer = request.form.get('nom_kit1')
+        id_kit_a_creer = request.form.get('id_Kit')
+        if kit_a_creer == "" :
+            kit_a_creer="gaga"
+            kit_a_modif = request.form.get('nom_kit_a_modif')
+            cur.execute("select id_kit from kit WHERE nom_kit=?;",kit_a_modif)
+            id_kit_a_modif = cur.fetchone()
+            return modif_kit(kit_a_modif,id_kit_a_modif,kit_a_creer)
         c=True #compare_nom(request.form.get('nom_kit1'),base)
         d=True #compare_nom(request.form.get('id'),id)
         kit_a_modif = request.form.get('nom_kit1')
@@ -282,9 +291,6 @@ def code_kit():
 
 @app.route('/Agilog/Initialisation/Code_kit/modif_kit', methods=['GET', 'POST'])
 def modif_kit(kit_a_modif):
-
-	#J'ai testé la fonction, les fonctionnalités marchent,
-	#si tu as un problème, tu peux retrouver dans fonction_test la fonction que j'ai testé qui marche
 
 #J'ai testé la fonction, les fonctionnalités marchent,
 	#si tu as un problème, tu peux retrouver dans fonction_test la fonction que j'ai testé qui marche

@@ -17,7 +17,7 @@
 		<select name='nome'>
 			<option value='0'>Choisissez une Piece</option>
 			{%for nom in liste_nom%}
-			<option value='{{nom['nom']}}' {% if role==loop.index %} active {% endif %}>{{nom['nom']}}</option>
+			<option value='{{nom['nom']}}'>{{nom['nom']}}</option>
 			{%endfor%}
 		</select>
 	<input type='submit' value='ajouter'>

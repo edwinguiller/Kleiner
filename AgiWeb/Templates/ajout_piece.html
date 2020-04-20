@@ -35,7 +35,7 @@
 			<select name='nomdele'>
 				<option value='0'>Choisissez une Piece à Supprimer</option>
 				{%for piece in liste_id%}
-				<option value='{{piece['nom']}}' {% if role==loop.index %} active {% endif %}>{{piece['nom']}}</option>
+				<option value='{{piece['nom']}}'>{{piece['nom']}}</option>
 				{%endfor%}
 			</select>
 			<input type="submit" value="supprimer">
