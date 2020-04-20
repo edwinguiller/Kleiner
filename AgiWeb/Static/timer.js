@@ -9,7 +9,7 @@ let deadlines = []
 
 for (var timerHtml of timersHtml) {
   console.log(timerHtml.getAttribute("timer"))
-  
+
   var deadline = now + parseInt(timerHtml.getAttribute("timer"))*1000
   deadlines.push(deadline)
 }

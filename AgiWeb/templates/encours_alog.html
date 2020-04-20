@@ -28,9 +28,31 @@
 						<td>1602</td>
 						<td>bricks 2*2</td>
 						<td>3</td>
-						<td class=timer timer="210"></td>
+						<td class=timer timer="10"></td>
+						<td>
+								<a href="{{url_for('actualize_id', id=3)}}"> Oui </a>
+
+						</td>
+					</tr>
+					<tr>
+						<td>1800</td>
+						<td>bricks 4</td>
+						<td>3</td>
+						<td class=timer timer="20"></td>
 						<td>Oui</td>
 					</tr>
+					{%for piece in stock_encours %}
+					<tr>
+					  <td>{{piece['id_piece']}}</td>
+					  <td>{{piece['nom']}}</td>
+					  <td>{{piece['quantite']}}</td>
+					  <td class="timer" timer="{{piece['delai']}}"></td>
+					  <td>
+
+
+					    Oui</td>
+					</tr>
+					{%endfor%}
 
 				</table>
 			</div>
