@@ -1,5 +1,4 @@
 <!-- page agilog/init/gestion stock (reference schema site trello) -->
-<!doctype html>
 
 <html>
 {% include "head.html" %}
@@ -11,14 +10,14 @@
 	<h1>Ajout d'une piece dans un kit</h1><br/>
 	{% if msg!="" %}<strong>{{ msg }}</strong><br/><br/>{% endif %}
 	<form method='post' action='{{ url_for("gestion_stock") }}'>
-	<label for='seuile'>seuil de recompletement</label><input type='text' name='seuile' value='seuil'>
-	<label for='secue'>stock de secu</label><input type='text' name='secu' value='stoc de secu'>
-	<label for='delaie'>delai de reappro</label><input type='text' name='delaie' value='delai de reappro'>
+	<label for='seuile'>seuil de recompletement</label><input type='text' name='seuile' value=''>
+	<label for='secue'>stock de secu</label><input type='text' name='secue' value=''>
+	<label for='delaie'>delai de reappro</label><input type='text' name='delaie' value=''>
 	<label for='nome'>nom de la pièce</label>
-		<select name='Nom de la pièce'>
+		<select name='nome'>
 			<option value='0'>Choisissez une Piece</option>
 			{%for nom in liste_nom%}
-			<option value='{{loop.index}}' {% if role==loop.index %} active {% endif %}>{{nom['nom']}}</option>
+			<option value='{{nom['nom']}}'>{{nom['nom']}}</option>
 			{%endfor%}
 		</select>
 	<input type='submit' value='ajouter'>

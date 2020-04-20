@@ -17,6 +17,33 @@ def index():
     contenu += "<input type='submit' value='Envoyer'>"
     contenu += "<a href='/accueil/agilog/initialisation/ajout_piece'>Lien direct</a><br/><br/>"
     return contenu;
+from fonctions_logiques import *
+
+def modif_kit(kit_a_modif,piece_a_ajouter,quantite):
+	contenu=""
+	con = lite.connect('AgiWeb_BDD.db')
+	con.row_factory = lite.Row
+	cur=con.cursor()
+	cur.execute("SELECT nom FROM piece;")
+	pieces=cur.fetchall()#variable pour le menu déroulant pour le choix des pieces
+	cur.execute("SELECT id_kit FROM kit wHERE nom_kit=?;",[kit_a_modif])#car dans la base compo_kit, kit correspond à des id
+	kit_a_modifier=liste(cur.fetchall())#variable pour travailler dans la base compo_kit
+	cur.execute("SELECT piece FROM compo_kit WHERE kit=?;",[kit_a_modifier[0]])
+	piece_du_kit=liste(cur.fetchall())#cette liste nous permet de vérifier que la nouvelle pièce à ajouter n'est pas déjà présente
+	#Si on veut supprimer une piece du kit
+	if piece_a_ajouter[0]:
+		cur.execute("DELETE FROM compo_kit WHERE kit=?,piece=?;",[kit_a_modifier[0],piece_a_ajouter[1]])
+	#Si on veut ajouter une piece au kit
+	else:
+		if piece_a_ajouter not in piece_du_kit:#la pièce n'est pas présente dans le kit
+			if quantite[1]==True:#la quantite est bonne donc on ajoute la piece simplement au kit
+				cur.execute("INSERT INTO compo_kit(kit,piece,quantite) VALUES (?,?,?);",[kit_a_modifier[0],piece_a_ajouter[1],quantite[0]])
+			else:#la quantite entrée n'est pas bonne
+				print("la quantite n'est pas bonne")
+		else:#la piece est présente dans le kit, on modifie donc juste la quantite
+			cur.execute("UPDATE compo_kit SET quantite=? WHERE kit=?,piece=?;",[quantite[0],kit_a_modifier[0],piece_a_ajouter[1]])
+
+
 
 def ajouter_piece_dans_kit (x=0):
     contenu += "<a href='/accueil/agilog/initialisation/'>retour à la page précédente</a><br/>"
@@ -114,7 +141,7 @@ def ajouter_piece_dans_kit (x=0):
         contenu += render_template('affichage_personnes.html', personnes = lignes)
 
 
->>>>>>> c79d95d98be4fce91b05071a2b51be92414ca68b
+
 
 @app.route('/accueil/agilog/initialisation/ajout_piece', methods=['GET', 'POST'])#recupere 2 variable nom et prnom et les ajoutent a la base de données (a modifier pour mettre piece et quantite)
 def ajout_piece():

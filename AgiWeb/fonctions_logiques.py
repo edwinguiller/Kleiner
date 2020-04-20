@@ -38,114 +38,35 @@ def creer_id(b):#créé un id
     return(ide)
 
 def demande_interaction(n,contenu):
-    for i in range(n):
-        contenu += "<form method='get' action='code_kit'>"
-        contenu += "<input type='str' name='nom_kit"+str(i)+"' value=''>"
-    contenu += "<input type='submit' value='Envoyer'>"
-    return(contenu)
+	for i in range(n):
+		contenu += "<form method='post' action='code_kit'>"
+		contenu += "<input type='str' name='nom_kit'+str(i)+'' value='' />"
+	contenu += "<input type='submit' value='Envoyer'/> </form>"
+	return(contenu)
 def recupere_interraction(n,contenu):
-    L=[]
-    for i in range(n):
-        nom=str(request.args.get('nom_kit'+str(i),''))
-        L.append(nom)
-    return(L)
-def ajouter_piece_dans_kit (x=0):
-    if x==0 :
-        #on sélectionne les id
-        contenu =""
-        con = lite.connect(cheminbdd)
-        con.row_factory = lite.Row
-        cur=con.cursor()
-        cur.execute("SELECT id FROM kit;")
-        ids=liste(cur.fetchall())
-        con.close()
-        #On choisit et vérifier le nom du kit
-        con = lite.connect(cheminbdd)
-        con.row_factory = lite.Row
-        cur=con.cursor()
-        con = lite.connect(cheminbdd)
-        con.row_factory = lite.Row
-        cur=con.cursor()
-        cur.execute("SELECT nom_kit FROM kit;")
-        base=liste(cur.fetchall())
-        contenu += "<br/>"
-        contenu += "<form method='get' action='code_kit'>"
-        contenu += "<input type='str' name='nom_kit' value=''>"
-        contenu += "<form method='get' action='code_kit'>"
-        contenu += "<input type='str' name='id_kit' value=''>"
-        print(contenu)
-        nom_kit=str(request.args.get('nom_kit',''))
-        id_kit=str(request.args.get('id_kit',''))
-        c=compare_nom(nom_kit,base)
-        d=compare_nom(id_kit,ids)
-        if c or d:#le nom du kit est déjà existant, on revient au départ
-            contenu += "<br/>"
-            contenu += "Erreur le nom existe déjà"
-            contenu += "<br/>"
-            contenu += "on recommence l'enregistrement de cette pièce ensemble mon chou dans quelques secondes"
-            print(contenu)
-            time.sleep(5)
-            return(ajouter_piece_dans_kit())
-        else:
-            #le nom est bon, on crée le kit dans la base kit
-            cur.execute("INSERT INTO kit('id', 'nom_kit') VALUES (?,?)", (id_kit,nom_kit))
-            return(ajouter_piece_dans_kit(id_kit))
-    #Maintenant que le kit est créé on va le modifier
-    else:
-        contenu += "<br/>"
-        contenu += "Entrer le nom puis la quantite de pièce"
-        contenu += "<br/>"
-        contenu += "<form method='get' action='code_kit'>"
-        contenu += "<input type='str' name='nom_piece' value=''>"
-        contenu += "<input type='str' name='quantite' value=''>"
-        contenu += "<input type='submit' value='Valider'>"
-        nom_piece=str(request.args.get('nom_piece',''))
-        quantite=request.args.get('quantite','')
-        con = lite.connect(cheminbdd)
-        con.row_factory = lite.Row
-        cur=con.cursor()
-        cur.execute("SELECT nom FROM piece")
-        ligne=liste(cur.fetchall())
-        c=compare_nom(nom_piece,ligne)
-        if c :
-            #le nom est existe
-            try:
-                quantite=int(quantite)
-                quantite>0
-            except:
-                #la quantite n'est pas bonne
-                contenu += "<br/>"
-                contenu += "Erreur la quantite est n'est pas bonne"
-                contenu += "<br/>"
-                contenu += "on recommence l'enregistrement de cette pièce ensemble mon chou dans quelques secondes"
-                contenu += "<br/>"
-                time.sleep(5)
-                return(ajouter_piece_dans_kit(x))
-            else:
-                #la quantité est un entier positif
-                con = lite.connect(cheminbdd)
-                con.row_factory = lite.Row
-                cur=con.cursor()
-                cur.execute("INSERT INTO compo_kit('kit', 'piece','quantite') VALUES (?,?,?)", (x,nom_piece,quantite))#On insert la nouvelle piece dans le kit
-        else:
-            #le nom de la pièce n'est pas bon
-            contenu += "<br/>"
-            contenu += "Erreur la pièce n'existe pas"
-            contenu += "<br/>"
-            contenu += "on recommence l'enregistrement de cette pièce ensemble mon chou dans quelques secondes"
-            contenu += "<br/>"
-            time.sleep(5)
-            return(ajouter_piece_dans_kit(x))
-        #On affiche la composition du kit
-        con = lite.connect(cheminbdd)
-        con.row_factory = lite.Row
-        cur=con.cursor()
-        cur.execute("SELECT kit, piece, quantite FROM compo_kit")
-        lignes=cur.fetchall()
-        con.close()
-        contenu += render_template('affichage_personnes.html', personnes = lignes)
+	L=[]
+	for i in range(n):
+		nom=str(request.args.get('nom_kit'+str(i),''))
+		L.append(nom)
+	return(L)
 
-def ajout_bdd(base, colonne, entree, types): # prend en argument  une base (ex: piece), les colonnes que l'on veut modifier (une liste ex: [id, nom...]), les entrées (valeurs) et le type de ces valeurs et rajoute ces valeurs sur une nouvelles ligne
+def modifier_kit(nom_kit,pieces,quantites):#La piece est choisit parmit un menu dérouant donc il n'y a pas besoin de vérifier
+	return(ajouter_piece(compo_kit, [piece,quantite], [pieces,quantites], [str(),int()]))
+
+def quantite_bonne(quantite):
+	try: #on vérifie que la quantité est bonne
+			quantite=int(quantite)
+	except: #si la quantité est mauvaise alors message d'erreur
+		return(print([quantite,False]))
+	else:
+		if quantite>0:
+			return(print([quantite,True]))
+		else:
+			return(print([quantite,False]))
+quantite_bonne(0)
+
+
+def ajouter_bdd(base, colonne, entree, types): # prend en argument  une base (ex: piece), les colonnes que l'on veut modifier (une liste ex: [id, nom...]), les entrées (valeurs) et le type de ces valeurs
 
     con = lite.connect(cheminbdd) #attention chez toi c'est pas rangé au meme endroit
     con.row_factory = lite.Row
