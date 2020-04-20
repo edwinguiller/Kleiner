@@ -19,9 +19,12 @@ def index():
     return contenu;
 
 def ajouter_piece_dans_kit (x=0):
+    contenu += "<a href='/accueil/agilog/initialisation/'>retour à la page précédente</a><br/>"
+    contenu += "<br/>"
+    contenu += "Kit"
+    contenu += "<br/>"
     if x==0 :
         #on crée un id
-        contenu =""
         con = lite.connect(cheminbdd)
         con.row_factory = lite.Row
         cur=con.cursor()
@@ -77,7 +80,7 @@ def ajouter_piece_dans_kit (x=0):
 			try:
 				quantite=int(quantite)
 				quantite>0
-			except:	
+			except:
 				#la quantite n'est pas bonne
 				contenu += "<br/>"
 				contenu += "Erreur la quantite est n'est pas bonne"

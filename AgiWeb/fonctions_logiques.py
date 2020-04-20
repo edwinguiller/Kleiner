@@ -83,6 +83,8 @@ def ajouter_piece_dans_kit (x=0):
             contenu += "Erreur le nom existe déjà"
             contenu += "<br/>"
             contenu += "on recommence l'enregistrement de cette pièce ensemble mon chou dans quelques secondes"
+            print(contenu)
+            time.sleep(5)
             return(ajouter_piece_dans_kit())
         else:
             #le nom est bon, on crée le kit dans la base kit
