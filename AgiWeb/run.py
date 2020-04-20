@@ -127,8 +127,6 @@ def commande():
 def initialisation ():
     return render_template('initialisation_alog.html')
 
-
-
 @app.route('/Agilog/Initialisation/Ajout_piece', methods=['GET', 'POST'])#recupere 2 variable nom et prnom et les ajoutent a la base de données (a modifier pour mettre piece et quantite)
 def ajout_piece():
     # la demande du nom de la piece à rajouter et du stock à mettre
@@ -272,7 +270,6 @@ def code_kit():
     return(contenu)
 #La page pour Agilean
 @app.route('/Agilean')
-
 def agilean():
     return render_template('agiLean_accueil.html');
 
