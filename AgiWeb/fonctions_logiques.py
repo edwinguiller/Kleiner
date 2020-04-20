@@ -37,6 +37,18 @@ def creer_id(b):#créé un id
         ide=max(c)+1
     return(ide)
 
+def demande_interaction(n,contenu):
+    for i in range(n):
+        contenu += "<form method='get' action='code_kit'>"
+        contenu += "<input type='str' name='nom_kit"+str(i)+"' value=''>"
+    contenu += "<input type='submit' value='Envoyer'>"
+    return(contenu)
+def recupere_interraction(n,contenu):
+    L=[]
+    for i in range(n):
+        nom=str(request.args.get('nom_kit'+str(i),''))
+        L.append(nom)
+    return(L)
 def ajouter_piece_dans_kit (x=0):
     if x==0 :
         #on sélectionne les id
@@ -133,7 +145,7 @@ def ajouter_piece_dans_kit (x=0):
         con.close()
         contenu += render_template('affichage_personnes.html', personnes = lignes)
 
-def ajouter_piece(base, colonne, entree, types): # prend en argument  une base (ex: piece), les colonnes que l'on veut modifier (une liste ex: [id, nom...]), les entrées (valeurs) et le type de ces valeurs
+def ajout_bdd(base, colonne, entree, types): # prend en argument  une base (ex: piece), les colonnes que l'on veut modifier (une liste ex: [id, nom...]), les entrées (valeurs) et le type de ces valeurs et rajoute ces valeurs sur une nouvelles ligne
 
     con = lite.connect(cheminbdd) #attention chez toi c'est pas rangé au meme endroit
     con.row_factory = lite.Row
@@ -150,27 +162,11 @@ def ajouter_piece(base, colonne, entree, types): # prend en argument  une base (
     selection= selection + ") VALUES (" + valu +")"
 
     taille=len(entree)
-    for i in range (0,taille):
-        if (entree[i]==""):
-            print ("ok boomer")
-    #test si le stock est un entier si qlq chose est rentré
-    #if (nome!="" or quantitee!="" or ide!="" ):
-    #    try:
-    #        quantitee=int(quantitee)
-    #    except:
-    #        contenu += '<br/> le stock doit être un nombre entier'
-    #    else:
-    #        # on ajoute le nom l'id et le stock à la bdd
-    #        if (nome!="" and quantitee!= ""):
-    #            if (testin('piece', 'nom', nome)==1 or testin('piece', 'id', ide)==1): # verifie si l'id ou le nom n'existent pas deja
-    #                contenu += "Cette piece existe deja"
-    #            elif (nome!="" and quantitee>-1): #ajouter un createur d'id apres
-    #                cur.execute("INSERT INTO piece('nom', 'quantite', id) VALUES (?,?,?)", (nome,quantitee,ide))
-    #            else:
-    #                contenu += (" Il faut un nom et une quantité positive")
-    #con.commit()
-    #con.close()
-    return contenu
+    if (test_rien(entree)==0):
+        if test_types(entree,types)==0:
+            cur.execute(selection, (entree))
+    con.commit()
+    con.close()
 
 def delete (base, colonne, entree): #prend en argument une base (ex: piece), une colonne dans cette base (ex: nom) et supprime la ligne quand la valeur de la colonne vaut nomdele
 
@@ -183,7 +179,7 @@ def delete (base, colonne, entree): #prend en argument une base (ex: piece), une
     con.commit()
     con.close()
 
-def testin (base, colonne, entree): # test si la entree est deja dans la bdd return 1 si il y'est et 0 si il n'y est pas
+def testin (base, colonne, entree): # test si l entree (une seule) est deja dans la bdd pour la colonne (une valeur) return 1 si il y'est et 0 si il n'y est pas
 
     con = lite.connect(cheminbdd) #attention chez toi c'est pas rangé au meme endroit
     con.row_factory = lite.Row
@@ -202,4 +198,86 @@ def testin (base, colonne, entree): # test si la entree est deja dans la bdd ret
         return error
     return retour
 
-#def test_rien(entree) #test si les entree ne sont pas vide renvois
+def test_rien(entree): # test si les entree (tableau) ne sont pas vide, renvois 1 si une valeur est vide et 0 sinon
+
+    taille=len(entree)
+    for i in range (0,taille):
+        if (entree[i]==""):
+            return 1
+    return 0
+
+def test_types(entree,types): #test le type des entrées (tableau) et les entrées (tableau) et renvois 0 si tout est bon et 1 si il y'a un problème
+
+    taille=len(entree)
+    for i in range (0, taille):
+        if (types[i]==str):
+            try:
+                entree[i]=str(entree[i])
+            except:
+                print ("str")
+                return 1
+        elif (types[i]==int):
+            try:
+                entree[i]=int(entree[i])
+            except:
+                return 1
+
+    return (0)
+
+def mise_a_jour_bdd (base, colonne, entree, types): # prend en argument  une base (ex: piece), les colonnes que l'on veut modifier (une liste ex: [id, nom...]), les entrées (valeurs) et le type de ces valeurs et met ajour la ligne de la dernière valeur de colonne qui a comme valeur la derniere d'entree
+
+    con = lite.connect(cheminbdd) #attention chez toi c'est pas rangé au meme endroit
+    con.row_factory = lite.Row
+    cur = con.cursor()
+    contenu =''
+    #ecriture de la chaine insert
+    selection= "UPDATE "+ base + " SET "
+    for i in colonne:
+        if (i==colonne[-1]):
+            selection=selection[:-2]
+            selection= selection + " WHERE " + i + "=?"
+        else:
+            selection= selection + i + "=?, "
+
+    print (selection)
+
+    if (test_rien(entree)==0):
+        if test_types(entree,types)==0:
+            cur.execute(selection, (entree))
+    con.commit()
+    con.close()
+
+def seuil_commande (stock,seuil_recomp,nom): #stock, nom et seuil_recomp sont des listes et si les stock sont sup au seuil, la colonne a_commander de la pièce passe à 1
+
+    con = lite.connect(cheminbdd) #attention chez toi c'est pas rangé au meme endroit
+    con.row_factory = lite.Row
+    cur = con.cursor()
+    taille=len(stock)
+    for i in range (0,taille):
+        print (seuil_recomp[i])
+        print (stock[i])
+        try:
+            seuil_recomp[i]=int(seuil_recomp[i])
+        except:
+            print ("non")
+        else:
+            if (stock[i]-seuil_recomp[i]<=0):
+                colonne=["a_commander", "nom"]
+                entree=[1, nom[i]]
+                types=["int","str"]
+                mise_a_jour_bdd("piece", colonne, entree, types)
+    con.commit
+    con.close
+
+def tableau (base,colonne): #prend les infos d'une base, et les rentres dans un tableau avec tableau[0]= colonne[0], tableau[1]=colonne[1]...
+
+    con = lite.connect(cheminbdd) #attention chez toi c'est pas rangé au meme endroit
+    con.row_factory = lite.Row
+    cur = con.cursor()
+    tableau=[]*len(colonne)
+    for i in colonne:
+        selection= "SELECT " + i + " FROM " + base
+        cur.execute(selection)
+        listes=liste(cur.fetchall())
+        tableau.append(listes)
+    return tableau

@@ -18,14 +18,32 @@ def agilog():
 
 
 @app.route('/Agilog/Encours')
-def encoursAlog(): #à faire
+def encoursAlog():
     return render_template('encours_alog.html')
+
+@app.route('/Agilog/Encours/<id>')  # route pour passer la pièce (dont l'idéee est séléctionnée) du stock encours à stock réel: Programmeur à faire
+def actualize_id(id): #Programmeur à faire
+    # TODO: handle the id in the sql
+
+
+    # return render_template('encours_alog.html')
+
+    return redirect(url_for('encoursAlog'))
+
+@app.route('/Agilog/Encours/Commande_agipart')
+def commandepart(): #à faire
+    return render_template('cmd_agipart.html')
+
+@app.route('/Agilog/Encours/Commande_agigreen')
+def commandegreen(): #à faire
+    return render_template('cmd_agigreen.html')
+
 
 @app.route('/Agilog/Encours/Declarer_kit', methods=['GET', 'POST'])#recupere 2 variable nom et prnom et les ajoutent a la base de données (a modifier pour mettre piece et quantite)
 def declarer_kit():
 
-    contenu=""
-    contenu += "<form method='get' action='Declarer_kit'>"
+    contenu = ""
+    contenu += "<form method='get' action='declarer_kit'>"
     contenu += "num kit "
     contenu += "<input type='text' name='num_kit' value=''>"
     contenu += "<input type='submit' value='Envoyer'>"
@@ -72,18 +90,43 @@ def declarer_kit():
 def commande():
 
     contenu = ""
-    contenu += "Page de commande"
-    contenu += "<br/> "
-    contenu += "Vous allez passer " + request.args.get('nombre', 'une valeur par défaut de la req') + " commandes!"# juste un rappel du nombre de kit qu'on prend
-    for i in range (0,request.args.get('nombre', 'une valeur par défaut de la req')):
-        contenu += "bj"
+    con = lite.connect(cheminbdd) #attention chez toi c'est pas rangé au meme endroit
+    con.row_factory = lite.Row
+    cur = con.cursor()
+    cur.execute("SELECT datetime('now')")
+    d=str(cur.fetchall()[0][0])
+    contenu += d
+
+    cur.execute("SELECT nom FROM piece")
+    nom = cur.fetchall()
+    liste_nom=liste(nom)
+    cur.execute("SELECT quantite FROM piece")
+    quantite = cur.fetchall()
+    liste_quantite=liste(quantite)
+    cur.execute("SELECT seuil_recomp FROM piece")
+    seuil = cur.fetchall()
+    liste_seuil=liste(seuil)
+
+    seuil_commande (liste_quantite,liste_seuil,liste_nom)
+
+    cur.execute("SELECT a_commander FROM piece")
+    commande = cur.fetchall()
+    liste_commande=liste(commande)
+    for i in range (0,len(liste_commande)):
+        print (liste_commande[i])
+        print (liste_nom[i])
+
+    con.commit
+    con.close
+
     return contenu
+
 
 #La page Initialisation
 @app.route('/Agilog/Initialisation')
 def initialisation ():
     return render_template('initialisation_alog.html')
-    
+
 
 
 @app.route('/Agilog/Initialisation/Ajout_piece', methods=['GET', 'POST'])#recupere 2 variable nom et prnom et les ajoutent a la base de données (a modifier pour mettre piece et quantite)
@@ -101,49 +144,32 @@ def ajout_piece():
     contenu += "<input type='text' name='id' value=''>"
     contenu += "<input type='submit' value='Envoyer'>"
 
+    # On ajoute la pièce à la base de donnée
     nome=request.args.get('nom','')
     quantitee=request.args.get('quantite','')
     ide=request.args.get('id','')
+    base="piece"
+    colonne=["nom", "id", "quantite"]
+    entree=[nome, ide, quantitee]
+    types=[str, str, int]
+    if (testin(base,"nom", nome)==1 or testin(base, "id", ide)==1): # test pour voir si le nom ou l'id existe deja
+        contenu += "<br/> cette piece existe deja <br/>"
+    else:
+        ajout_bdd(base, colonne, entree, types)
 
-    con = lite.connect(cheminbdd) #attention chez toi c'est pas rangé au meme endroit
-    con.row_factory = lite.Row
-    cur = con.cursor()
-
-    #test si le stock est un entier si qlq chose est rentré
-    if (nome!="" or quantitee!="" or ide!="" ):
-        try:
-            quantitee=int(quantitee)
-        except:
-            contenu += '<br/> le stock doit être un nombre entier'
-        else:
-            # on ajoute le nom l'id et le stock à la bdd
-            con = lite.connect(cheminbdd)
-            con.row_factory = lite.Row
-            cur = con.cursor()
-            cur.execute("SELECT nom FROM Piece;")
-            testnom = cur.fetchall()
-            test=[]
-            for testnom in testnom:
-                test.append(testnom[0]) # une liste pour ensuite voir si la piece demandé n'existe pas deja
-
-            if (nome!="" and quantitee!= ""):
-                if (nome in test):
-                    contenu += "Cette piece existe deja"
-                elif (nome!="" and quantitee>-1): #ajouter un createur d'id apres
-                    cur.execute("INSERT INTO piece('nom', 'quantite', id) VALUES (?,?,?)", (nome,quantitee,ide))
-                else:
-                    contenu += (" Il faut un nom et une quantité positive")
-
-    #delete
     contenu += "<form method='get' action='gestion_stock'>"
     contenu += "<br/><br/> quel est le nom de la piece que tu veux tu supprimer? <br/>"
     contenu += "<input type='str' name='nomdel' value=''>"
     contenu += "<input type='submit' value='Envoyer'>"
 
+    # on supprime une piece de la bdd
     nomdele=request.args.get('nomdel','')
-    if (nomdele != ""):
-        cur.execute ("DELETE FROM 'piece' WHERE nom=?", [nomdele])
+    delete('piece', 'nom', nomdele)
 
+    # un affichage des stocks rapide pour tester
+    con = lite.connect(cheminbdd) #attention chez toi c'est pas rangé au meme endroit
+    con.row_factory = lite.Row
+    cur = con.cursor()
     cur.execute("SELECT nom, quantite, id FROM Piece;")
     liste = cur.fetchall()
     #
@@ -153,15 +179,16 @@ def ajout_piece():
         contenu += str(chaque[1]) + " "
         contenu += str(chaque[2]) + " "
 
-    #con.commit()
+    con.commit()
     con.close()
 
     return contenu; # LES PROGRAMMEURS a retoucher / separer  fonctions
 
+
 @app.route('/Agilog/Initialisation/Gestion_stock', methods=['GET', 'POST'])#recupere 2 variable nom et prnom et les ajoutent a la base de données (a modifier pour mettre piece et quantite)
 def gestion_stock():
-    contenu=""
 
+    contenu=""
     #demande le nom de la piece, le seuil de recompletement, le stock de secu et le delai de reapro a changer en fournisseur
     contenu += "<form method='get' action='Gestion_stock'>"
     contenu += "quel est le nom de ta piece <br/>"
@@ -182,33 +209,20 @@ def gestion_stock():
     secue=request.args.get('secu','')
     delaie=request.args.get('delai','')
     #test si ce sont bien des entiers
+
+    base="Piece"
+    colonne=["seuil_recomp", "stock_secu", "delai_reappro", "nom"]
+    entree=[seuile,secue,delaie,nome]
+    types=[int, int, int, str]
+    if (testin(base,"nom", nome)==0 and test_rien(entree)==0): # test pour voir si le nom existe
+        contenu += "<br/> cette piece n'existe pas <br/>"
+    else:
+        mise_a_jour_bdd(base, colonne, entree, types)
+
+    # ceci est juste un affichage basique de la bdd, a remplacer par un vrai tableau
     con = lite.connect(cheminbdd)
     con.row_factory = lite.Row
     cur = con.cursor()
-    cur.execute ("SELECT nom FROM Piece;")
-
-    test = cur.fetchall()# pour vérifier si le nom existe bien
-    test_nom=[]
-    for tous in test:
-        test_nom.append(tous[0])
-
-    # si tout est bien rempli on met a jour la bdd
-    if (nome!="" and seuile!="" and secue!="" and delaie!=""):
-        try:
-            seuile=int(seuile)
-            secue=int(secue)
-            delaie=int(delaie)
-        except:
-            contenu += '<br/> Les stocks de sécurité, les delais de réapprovisionnement et le seuils de recompletement doivent être des nombres entier'
-        else:
-            if (seuile<0 or secue<0 or delaie<0):
-                contenu += " <br/> Les nombres doivent être supérieur à 0"
-            elif (nome not in test_nom):
-                contenu += '<br/> le nom n est pas dans la liste des pieces <br/>'
-            else:
-                cur.execute("UPDATE Piece SET seuil_recomp=?, stock_secu=?, delai_reappro=? WHERE nom=?", [seuile,secue,delaie,nome])
-    #con.commit()#enregistrer la requete de modification.
-    # ceci est juste un affichage basique de la bdd, a remplacer par un vrai tableau
     cur.execute("SELECT nom, quantite, id, seuil_recomp, stock_secu, delai_reappro FROM Piece;")
     liste = cur.fetchall()
     for chaque in liste:
@@ -220,20 +234,42 @@ def gestion_stock():
         contenu += str(chaque[4]) + " "
         contenu += str(chaque[5])
     con.close()
-    #contenu += render_template('affichage_personnes.html', personnes = lignes)#une fonction html pour afficher un tableau
 
     return contenu;
 
 @app.route('/Agilog/Initialisation/Code_kit', methods=['GET', 'POST'])
 def code_kit():
-	contenu=""
-	contenu += "<a href='/accueil/agilog/initialisation/'>retour à la page précédente</a><br/>"
-	contenu += "<br/>"
-	contenu += "Kit"
-	contenu += "<br/>"
-	return(ajouter_piece_dans_kit())
+    #On crée un kit ou on en choisit un
+    contenu=""
+    contenu += "<a href='/accueil/agilog/initialisation/'>retour à la page précédente</a><br/>"
+    contenu += "<br/>"
+    contenu += "Kit"
+    contenu += "<br/>"
+    contenu = demande_interaction(2,contenu)
+    kit= recupere_interraction(2,contenu)
+    #On choisit un kit existant
+    con = lite.connect(cheminbdd)
+    con.row_factory = lite.Row
+    cur=con.cursor()
+    cur.execute("SELECT nom_kit FROM kit;")
+    base=cur.fetchall()#variable pour le menu déroulant
+    #historique des kit existant
+    cur.execute("SELECT id FROM kit;")
+    id_kit=cur.fetchall()
+    c=compare_nom(request.arg.get('nom_kit1',''),base)
+    d=compare_nom(request.arg.get('nom_kit2',''),id_kit)
+    if c or d:#le nom du kit est déjà existant, on revient au départ
+        contenu += "erreur"
+        return(contenu)
+    historique=[]
+    for chose in id_kit :
+        cur.execute('SELECT piece, quantite FROM compo_kit WHERE kit=?;',[chose[0]])
+        historique.append(cur.fetchall())#historique est une liste de dictionnaire ou chaque dictionnaire est un kit
+    con.close()
+    return(contenu)
 #La page pour Agilean
 @app.route('/Agilean')
+
 def agilean():
     return render_template('agiLean_accueil.html');
 

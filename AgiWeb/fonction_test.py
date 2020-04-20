@@ -80,7 +80,7 @@ def ajouter_piece_dans_kit (x=0):
 			try:
 				quantite=int(quantite)
 				quantite>0
-			except:	
+			except:
 				#la quantite n'est pas bonne
 				contenu += "<br/>"
 				contenu += "Erreur la quantite est n'est pas bonne"

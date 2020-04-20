@@ -1,33 +1,25 @@
-
-
 <!-- page agilog/init/gestion stock (reference schema site trello) -->
+<!doctype html>
+
 <html>
 {% include "head.html" %}
 
 
 {% include "Navbar.html" %}
 
-<!-- Scrollspy requires position: relative; a fixed height and overflow-y: scroll; applied to the element being spied.
-  Add below class to page styles
-  .scrollspy-example{
-			position: relative;
-			height: <height>;
-			overflow-y: scroll;
-  } -->
-
 <div class='contenu'>
 	<h1>Ajout d'une piece dans un kit</h1><br/>
 	{% if msg!="" %}<strong>{{ msg }}</strong><br/><br/>{% endif %}
 	<form method='post' action='{{ url_for("ajouter_personne") }}'>
-	<label for='nom'>Nom de la pièce</label><input type='text' name='nom' value='{{ nom }}'>
+	<label for='nome'>Nom de la pièce</label><input type='text' name='nom' value='{{ nom }}'>
 	<label for='prenom'>Quantité</label><input type='text' name='prenom' value='{{ prenom }}'>
-	<label for='role'>fournisseur</label>
-		<select name='role'>
+	<label for='nome'>nom de la pièce</label>
+		<select name='Nom de la pièce'>
 			<option value='0'>Choisissez un fournisseur</option>
-			<option value='1' {% if role==1 %} active {% endif %}>fournisseur 1</option>
-			<option value='2' {% if role==2 %} active {% endif %}>fournisseur 2</option>
-			<option value='3' {% if role==3 %} active {% endif %}>fournisseur 3</option>
+			{%for nom in liste_nom%}
+			<option value='{{loop.index}}' {% if role==loop.index %} active {% endif %}>fournisseur 1</option>
 
+			{% endfor %}
 		</select>
 	<input type='submit' value='ajouter'>
 	</form><br/>
