@@ -21,6 +21,32 @@ def agilog():
 def encoursAlog(): #à faire
     return render_template('encours_alog.html')
 
+@app.route('/Agilog/Encours/<id>')  # route pour passer la pièce (dont l'idéee est séléctionnée) du stock encours à stock réel: Programmeur à faire
+def actualize_id(id): #Programmeur à faire
+    # TODO: handle the id in the sql
+
+
+    # return render_template('encours_alog.html')
+
+    return redirect(url_for('encoursAlog'))
+
+@app.route('/Agilog/Encours/Commande_agipart')
+def commandepart(): #à faire
+    return render_template('cmd_agipart.html')
+
+@app.route('/Agilog/Encours/Commande_agigreen')
+def commandegreen(): #à faire
+    return render_template('cmd_agigreen.html')
+
+@app.route('/Agilog/Encours')
+def valider_cmd_green(): #à faire
+    return render_template('encours_alog.html')
+
+@app.route('/Agilog/Encours')
+def valider_cmd_part(): #à faire
+    return render_template('encours_alog.html')
+
+
 @app.route('/Agilog/Encours/Declarer_kit', methods=['GET', 'POST'])#recupere 2 variable nom et prnom et les ajoutent a la base de données (a modifier pour mettre piece et quantite)
 def declarer_kit():
 

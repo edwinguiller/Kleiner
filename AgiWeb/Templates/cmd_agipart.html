@@ -1,0 +1,35 @@
+<!-- page qui affiche les commandes à valider chez agipart -->
+
+
+<html>
+{% include "head.html" %}
+
+	<body>
+
+		{% include "Navbar.html" %}
+
+
+		<!-- Contenu -->
+		<h1>Commande AgiPart</h1>
+		<table>
+			<tr>
+				<th>Id piece</th>
+				<th>Nom piece</th>
+				<th>Quantité</th>
+
+			</tr>
+			{%for piece in liste_commande_part %}
+			<tr>
+				<td>{{piece['id_piece']}}</td>
+				<td>{{piece['nom']}}</td>
+				<td>{{piece['quantite']}}</td>
+
+			</tr>
+			{%endfor%}
+		</table>
+		<ul>
+			<p>Cliquer sur valider pour valider la commande sélectionnée</p>
+			<li class=bouton_commande>
+				<a href="{{url_for('valider_cmd_part')}}"> Valider </a>
+			</li>
+		</ul>
