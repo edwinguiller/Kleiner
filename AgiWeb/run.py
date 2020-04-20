@@ -42,8 +42,8 @@ def commandegreen(): #à faire
 @app.route('/Agilog/Encours/Declarer_kit', methods=['GET', 'POST'])#recupere 2 variable nom et prnom et les ajoutent a la base de données (a modifier pour mettre piece et quantite)
 def declarer_kit():
 
-    contenu=""
-    contenu += "<form method='get' action='Declarer_kit'>"
+    contenu = ""
+    contenu += "<form method='get' action='declarer_kit'>"
     contenu += "num kit "
     contenu += "<input type='text' name='num_kit' value=''>"
     contenu += "<input type='submit' value='Envoyer'>"
@@ -121,6 +121,7 @@ def commande():
 
     return contenu
 
+    
 #La page Initialisation
 @app.route('/Agilog/Initialisation')
 def initialisation ():

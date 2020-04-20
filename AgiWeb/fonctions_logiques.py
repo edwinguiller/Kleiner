@@ -267,3 +267,15 @@ def seuil_commande (stock,seuil_recomp,nom): #stock, nom et seuil_recomp sont de
     con.commit
     con.close
 
+def tableau (base,colonne): #prend les infos d'une base, et les rentres dans un tableau avec tableau[0]= colonne[0], tableau[1]=colonne[1]...
+
+    con = lite.connect(cheminbdd) #attention chez toi c'est pas rangé au meme endroit
+    con.row_factory = lite.Row
+    cur = con.cursor()
+    tableau=[]*len(colonne)
+    for i in colonne:
+        selection= "SELECT " + i + " FROM " + base
+        cur.execute(selection)
+        listes=liste(cur.fetchall())
+        tableau.append(listes)
+    return tableau
