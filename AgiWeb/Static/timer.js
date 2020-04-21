@@ -1,48 +1,101 @@
-console.log("ça marche")
+class Chrono {
+  constructor() {
+    this.el = document.getElementById("chrono")
+    this.timeOffset = parseInt(this.el.getAttribute("chrono"))*1000
+    this.timeInit = new Date().getTime() - this.timeOffset;
+    console.log(this.timeOffset)
+    console.log(this.timeInit)
 
-timersHtml = document.getElementsByClassName("timer")
-console.log(timersHtml)
-let now = new Date().getTime();
-console.log(now)
+  }
 
-let deadlines = []
-
-for (var timerHtml of timersHtml) {
-  console.log(timerHtml.getAttribute("timer"))
-
-  var deadline = now + parseInt(timerHtml.getAttribute("timer"))*1000
-  deadlines.push(deadline)
+  handler(timeNow) {
+    var timeDelta = timeNow - this.timeInit
+    this.el.innerText = dateTimeConverter(timeDelta)
+  }
 }
 
-console.log(deadlines)
+class TimerProducts{
+  constructor(el) {
+    this.el = el
+    this.deadline = timeInit + parseInt(this.el.getAttribute("timer"))*1000
+  }
+  handler(timeNow) {
+    var timeDelta = this.deadline - timeNow
+
+    // If the count down is finished, write some text
+    if (timeDelta < 0) {
+      this.el.innerHTML = "PATATTTTEs";
+      this.el.parentNode.getElementsByClassName("validation")[0].removeAttribute("hidden")
+    } else {
+      this.el.innerText = dateTimeConverter(timeDelta)
+    }
+  }
+}
+
+class TimerFournisseurs{
+  constructor(el) {
+    this.el = el
+    this.deadline = timeInit + parseInt(this.el.getAttribute("timer"))*1000
+  }
+  handler(timeNow) {
+    var timeDelta = this.deadline - timeNow
+
+    // If the count down is finished, write some text
+    if (timeDelta < 0) {
+      this.el.innerHTML = "0s"
+    } else {
+      this.el.innerText = dateTimeConverter(timeDelta)
+    }
+  }
+}
+
+let timeInit = new Date().getTime();
+
+
+timerProductsHtml = document.getElementsByClassName("timer")
+
+toWatchEl = []
+for (const timerProductHtml of timerProductsHtml) {
+  toWatchEl.push(new TimerProducts(timerProductHtml))
+}
+
+timerFournisseursHtml = document.getElementsByClassName("timer-fournisseurs")
+
+for (const timerFournisseur of timerFournisseursHtml) {
+  toWatchEl.push(new TimerFournisseurs(timerFournisseur))
+}
+
+const chrono = new Chrono()
+toWatchEl.push(chrono)
 
 function timerHandler() {
 
   // Get today's date and time
-  var now = new Date().getTime();
+  var timeNow = new Date().getTime();
 
-  // Find the distance between now and the count down date
-  for (var i=0; i < timersHtml.length; i++ ) {
-    var distance = deadlines[i] - now;
-
-    // Time calculations for days, hours, minutes and seconds
-    var hours = Math.floor((distance / (1000 * 60 * 60)));
-    var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-    var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-    // Display the result in the element with id="demo"
-    if (hours) {
-      timersHtml[i].innerHTML = hours + "h "+ minutes + "m " + seconds + "s ";
-    } else {
-      timersHtml[i].innerHTML = minutes + "m " + seconds + "s ";
-
-    }
-
-    // If the count down is finished, write some text
-    if (distance < 0) {
-      timersHtml[i].innerHTML = "PATATTTTEs";
-    }
+  for (const el of toWatchEl) {
+    el.handler(timeNow)
   }
+  }
+
+
+
+
+function dateTimeConverter(timeMs) {
+  var convertedTime;
+  var hours = Math.floor((timeMs / (1000 * 60 * 60)));
+  var minutes = Math.floor((timeMs % (1000 * 60 * 60)) / (1000 * 60));
+  var seconds = Math.floor((timeMs % (1000 * 60)) / 1000);
+  // Display the result in the element with id="demo"
+  if (hours) {
+    convertedTime = hours + "h "+ minutes + "m " + seconds + "s ";
+  } else {
+    convertedTime = minutes + "m " + seconds + "s ";
+
+  }
+  return convertedTime
 }
+
 
 timerHandler()
 var x = setInterval(timerHandler, 1000)

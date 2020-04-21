@@ -12,20 +12,28 @@
 </header>
 
 <!-- Menu de navigation -->
-<nav class="menu-nav">
-  <ul>
-    <li class="bouton">
-      <a href="{{url_for('index')}}"> Accueil </a>
-    </li>
-    <li class="bouton">
-      <a href="{{url_for('agilog')}}" rel="nofollow">
-      AgiLog </a>
-    </li>
-    <li class="bouton">
-      <a href="{{url_for('agilean')}}" rel="nofollow">
-      AgiLean </a>
-    </li>
-  </ul>
+<div id="extending-nav">
+  <div class="leftbox">
+    <nav class="menu-nav">
+      <ul>
+        <li class="bouton">
+          <a href="{{url_for('index')}}"> Accueil </a>
+        </li>
+        <li class="bouton">
+          <a href="{{url_for('agilog')}}" rel="nofollow">
+          AgiLog </a>
+        </li>
+        <li class="bouton">
+          <a href="{{url_for('agilean')}}" rel="nofollow">
+          AgiLean </a>
+        </li>
+      </ul>
 
+    </nav>
+  </div>
+  <div class="rightbox">
+    <p id="chrono" chrono="16"></p>
 
-</nav>
+    <!-- <p > Temps depuis le début du jeu : <span id="chrono" chrono="16"></span> </p> -->
+  </div>
+</div>
