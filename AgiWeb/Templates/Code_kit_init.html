@@ -1,0 +1,43 @@
+<html lang="en" dir="ltr">
+{%include 'head.html'%}
+  <body>
+    {%include 'navbar.html'%}
+    <h1>saisi d'un nouveau kit :</h1>
+    <form method='post' action='{{url_for('code_kit')}}'>
+      <label for="nom_kit1"> nom du kit : </label><input type='str' name='nom_kit1' value='' />
+      <label for="id_kit"> id du kit :</label><input type='str' name='id_Kit' value='' />
+      <input type='submit' value='Envoyer'/>
+    </form>
+    <strong>{{msg}}</strong>
+    <h1>choix d'un kit existant :</h1>
+    <form action="{{url_for('code_kit')}}" method="post">
+      <select name="nom_kit_a_modif">
+        <option value="vierge">selectionnez une entrée</option>
+        {%for kit in liste_kit%}
+        <option value="{{kit['nom_kit']}}">{{kit['nom_kit']}}</option>
+        {%endfor%}
+      </select>
+      <input type="submit" value="Modifier">
+    </form>
+    <h1>Tabeaux deja renseigné :</h1>
+    <table>
+      <tr>
+        <th>id kit</th>
+        <th>piece dans kit</th>
+      </tr>
+      {%for kit in liste_id%}
+      <tr>
+        <th>{{kit[0]}}</th>
+        <th>
+          <ul>
+            </br>
+            {%for piece in tab_piece[loop.index0]%}
+            <li>{{piece['piece']}} : {{piece['quantite'] }} </li>
+            {%endfor%}
+          </ul>
+        </th>
+      </tr>
+      {%endfor%}
+    </table>
+  </body>
+</html>
