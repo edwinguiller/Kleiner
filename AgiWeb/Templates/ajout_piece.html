@@ -4,7 +4,6 @@
 	<body>
 
 	{% include "Navbar.html" %} <br/>
-
 	<h1>Stock actuel :</h1>
 
 	<table>
@@ -23,17 +22,22 @@
 	</table>
 	<h1>Ajouter une pièce :</h1>
 	<form action="{{url_for('ajout_piece')}}" method="post">
+		<label for="ide">id pièce</label><input type="text" name="ide" value="">
 		<label for="nom">Nom</label><input type="text" name="nome" value="">
 		<label for="quantite">Quantite</label><input type="text" name="quantitee" value="">
-		<label for="ide">id pièce</label><input type="text" name="ide" value="">
 		<input type="submit" value="ajouter la piece">
 	</form> <br/>
-	<strong>{{err_quant}}</strong>
-	<strong>{{msg}}</strong>
+	<p>{{err_quant}}</p>
+	<p>{{msg}}</p>
 
 	<h1>Supprimer pièce :</h1>
-	<form action="{{url_for('ajout_piece')}}" method="post">
-			<label for="nom a supprimer">nom à supprimer :</label><input type="text" name="nomdele" value="nomdele">
+	<form action="{{url_for('supprimer_piece')}}" method="post">
+			<select name='nomdele'>
+				<option value='0'>Choisissez une Piece à Supprimer</option>
+				{%for piece in liste_id%}
+				<option value='{{piece['nom']}}'>{{piece['nom']}}</option>
+				{%endfor%}
+			</select>
 			<input type="submit" value="supprimer">
 	</form>
 
