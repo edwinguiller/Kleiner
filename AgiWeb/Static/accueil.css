@@ -33,6 +33,8 @@ div#content div#proverbe{
 nav.menu-nav ul li.bouton{
 	list-style-type: none;
 	display :inline-block;
+
+
 }
 
 nav.menu-nav ul li.bouton a{
@@ -47,7 +49,25 @@ nav.menu-nav ul li.bouton:hover a{
 	background-color:white;
 	transition: 0.5S all;
 }
+div#extending-nav div{
+	display :inline-block;
 
+}
+div#extending-nav .leftbox{
+	margin-right: 100px;
+
+}
+#chrono{
+	background-color:#FF7733;
+	color:white;
+	margin:0px;
+
+
+	font-size: 30px;
+	padding: 20px;
+
+
+}
 
 footer{
 	color:blue;
