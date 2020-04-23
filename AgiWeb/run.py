@@ -265,8 +265,8 @@ def code_kit():
 
 @app.route('/Agilog/Initialisation/Code_kit/modif_kit', methods=['GET', 'POST'])
 def modif_kit():
-    #ici y faut que tu mettes les variables dont j'ai besoin pour la page càd "id" l'id du
-    #kit à modifier et "piece" la liste des pieces dans ce kit_a_modif
+    #ici y faut que tu mettes les variables dont j'ai besoin pour la page càd "kit a modif" l'id du
+    #kit à modifier et "piece" la liste des piece dans ce kit_a_modif
     kit_a_modif = request.form.get('nom_kit_a_modif')
 
     #fin recup variable
