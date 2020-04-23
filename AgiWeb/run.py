@@ -256,7 +256,7 @@ def code_kit():
     #création dico_kit
     dico_kit=[]
     for base in id :
-        cur.execute('SELECT piece, quantite FROM compo_kit WHERE kit=?;',[id[0]])
+        cur.execute('SELECT piece, quantite FROM compo_kit WHERE kit=?;',[base[0]])
         dico_kit.append(cur.fetchall())#dico_kit est une liste de dictionnaire ou chaque dictionnaire est un kit
     return(render_template("Code_kit_init.html", msg="" ,tab_piece=dico_kit ,liste_kit=base ,liste_id=id ))
 
