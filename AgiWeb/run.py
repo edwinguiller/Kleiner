@@ -258,6 +258,9 @@ def code_kit():
     for base in id :
         cur.execute('SELECT piece, quantite FROM compo_kit WHERE kit=?;',[base[0]])
         dico_kit.append(cur.fetchall())#dico_kit est une liste de dictionnaire ou chaque dictionnaire est un kit
+    cur.execute("SELECT nom_kit FROM kit;")
+    base=cur.fetchall()
+    cur.close()
     return(render_template("Code_kit_init.html", msg="" ,tab_piece=dico_kit ,liste_kit=base ,liste_id=id ))
 
 @app.route('/Agilog/Initialisation/Code_kit/modif_kit', methods=['GET', 'POST'])
