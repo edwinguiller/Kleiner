@@ -267,14 +267,23 @@ def code_kit():
 def modif_kit():
     #ici y faut que tu mettes les variables dont j'ai besoin pour la page càd "kit_a_modif" le nom du
     #kit à modifier et "piece_du_kit" la liste des piece dans ce kit_a_modif
+    con = lite.connect(cheminbdd)
+    con.row_factory = lite.Row
+    cur=con.cursor()
+    cur.execute("SELECT nom FROM piece;")
+    pieces=cur.fetchall()
     kit_a_modif = request.form.get('nom_kit_a_modif')
+    id_kit_a_modif=3 #a toi de jouer
+    piece_du_kit=[{"nom":"a","quantite":3},{"nom":"b","quantite":3},{"nom":"c","quantite":3}]
+    #pareil faut que tu la remplisses avec la bdd en faisant une liste de dictionnaire qui contoienne nom et quantité
+
     #fin recup variable
 
 #J'ai testé la fonction, les fonctionnalités marchent,
 	#si tu as un problème, tu peux retrouver dans fonction_test la fonction que j'ai testé qui marche
     #recupération des variables :
     if not request.method == 'POST':
-        return render_template('modif_kit_init.html',d=kit_a_modif, id=id_kit_amodif,pieces = piece_du_kit,msg="")
+        return render_template('modif_kit_init.html',d=kit_a_modif, id=id_kit_a_modif,pieces = pieces,msg="",piece_du_kit=piece_du_kit)
     else :
         piece_a_ajouter = request.form.get('saisi_piece')
         option = request.form.get('option')
