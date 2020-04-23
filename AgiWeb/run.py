@@ -285,6 +285,9 @@ def modif_kit():
     if not request.method == 'POST':
         return render_template('modif_kit_init.html',d=kit_a_modif, id=id_kit_a_modif,pieces = pieces,msg="",piece_du_kit=piece_du_kit)
     else :
+        # mets les action sur la bdd ici
+
+        #jusque la
         piece_a_ajouter = request.form.get('saisi_piece')
         option = request.form.get('option')
         quantitee = request.form.get('quantite')
