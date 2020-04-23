@@ -265,7 +265,7 @@ def code_kit():
 
 @app.route('/Agilog/Initialisation/Code_kit/modif_kit', methods=['GET', 'POST'])
 def modif_kit():
-    #ici y faut que tu mettes les variables dont j'ai besoin pour la page càd "kit_a_modif" l'id du
+    #ici y faut que tu mettes les variables dont j'ai besoin pour la page càd "kit_a_modif" le nom du
     #kit à modifier et "piece_du_kit" la liste des piece dans ce kit_a_modif
     kit_a_modif = request.form.get('nom_kit_a_modif')
     #fin recup variable
@@ -278,6 +278,8 @@ def modif_kit():
     else :
         piece_a_ajouter = request.form.get('saisi_piece')
         option = request.form.get('option')
+        quantitee = request.form.get('quantite')
+        return redirect(url_for('modif_kit'))
     #fin de recuperation des variables
     contenu=""
     piece_a_ajouter=[bool,option]#piece=[True/false,nom de la piece à ajouter]
