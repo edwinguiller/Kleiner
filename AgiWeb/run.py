@@ -266,7 +266,7 @@ def code_kit():
 @app.route('/Agilog/Initialisation/Code_kit/modif_kit', methods=['GET', 'POST'])
 def modif_kit():
     #ici y faut que tu mettes les variables dont j'ai besoin pour la page càd "kit a modif" l'id du
-    #kit à modifier et "piece" la liste des piece dans ce kit_a_modif
+    #kit à modifier et "piece_du_kit" la liste des piece dans ce kit_a_modif
     kit_a_modif = request.form.get('nom_kit_a_modif')
 
     #fin recup variable
@@ -275,7 +275,7 @@ def modif_kit():
 	#si tu as un problème, tu peux retrouver dans fonction_test la fonction que j'ai testé qui marche
     #recupération des variables :
     if not request.method == 'POST':
-        return render_template('modif_kit_init.html',d=kit_a_modif, id=id_kit_amodif,piece = liste_piece_dans_kit,msg="")
+        return render_template('modif_kit_init.html',d=kit_a_modif, id=id_kit_amodif,pieces = piece_du_kit,msg="")
     else :
         piece_a_ajouter = request.form.get('saisi_piece')
         option = request.form.get('option')
@@ -301,7 +301,7 @@ def modif_kit():
     else:#la piece est présente dans le kit, on modifie donc juste la quantite
     	cur.execute("UPDATE compo_kit SET quantite=? WHERE kit=?,piece=?;",[quantite[0],kit_a_modifier[0],piece_a_ajouter[1]])
 
-    return(render_template('modif_kit_init.html',d=kit_a_modif, id=id_kit_amodif,piece = liste_piece_dans_kit))
+    return(render_template('modif_kit_init.html',d=kit_a_modif, id=id_kit_amodif,pieces = piece_du_kit))
 
 #La page pour Agilean
 @app.route('/Agilean')
