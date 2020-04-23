@@ -6,30 +6,30 @@
 	<body>
 
 		{% include "Navbar.html" %}
-		<script src="{{url_for("static", filename="timer.js")}}" defer></script>
+
 
 
 		<!-- Contenu -->
 		<p class="cssmarche"> TEST1 ? </p>
 		<div id="content-stock">
-			<h1>Stocks</h1>
+			<h1>Les stockes réels </h1>
 			<div class="leftbox">
 
 				<table>
 					<caption>Stock des pièces encours</caption>
 					<tr>
-						<th>Id piece</th>
-						<th>Nom piece</th>
-						<th>Quantité</th>
-						<th>Délai</th>
+						<th>Id commande</th>
+						<th>Noms pièces</th>
+						<th>Quantités</th>
+						<th>Délais</th>
 						<th>Valider réception</th>
 					</tr>
 					<tr>
 						<td>1602</td>
 						<td>bricks 2*2</td>
 						<td>3</td>
-						<td class=timer timer="10"></td>
-						<td>
+						<td class="timer" timer="10">  </td>
+						<td hidden class="validation">
 								<a href="{{url_for('actualize_id', id=3)}}"> Oui </a>
 
 						</td>
@@ -38,19 +38,20 @@
 						<td>1800</td>
 						<td>bricks 4</td>
 						<td>3</td>
-						<td class=timer timer="20"></td>
-						<td>Oui</td>
+						<td class="timer" timer="8">   </td>
+						<td hidden class="validation">
+								<a href="{{url_for('actualize_id', id=3)}}"> Oui </a>
+						</td>
 					</tr>
 					{%for piece in stock_encours %}
 					<tr>
-					  <td>{{piece['id_piece']}}</td>
+					  <td>{{piece['id_commande']}}</td>
 					  <td>{{piece['nom']}}</td>
 					  <td>{{piece['quantite']}}</td>
 					  <td class="timer" timer="{{piece['delai']}}"></td>
-					  <td>
-
-
-					    Oui</td>
+						<td hidden class="validation">
+								<a href="{{url_for('actualize_id', id=3)}}"> Oui </a>
+						</td>
 					</tr>
 					{%endfor%}
 
