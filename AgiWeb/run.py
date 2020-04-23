@@ -242,10 +242,6 @@ def gestion_stock():
 def code_kit():
     #variable
     contenu=""
-    c= False
-    d= False
-    kit_a_modif = ""
-    kit_a_creer = ""
     #On crée un kit ou on en choisit un
     kit= recupere_interraction(1,contenu)
     #On choisit un kit existant
@@ -257,36 +253,11 @@ def code_kit():
     #historique des kit existant
     cur.execute("SELECT id FROM kit;")
     id=cur.fetchall()
-
     #création dico_kit
     dico_kit=[]
-    for chose in id :
-        cur.execute('SELECT piece, quantite FROM compo_kit WHERE kit=?;',[chose[0]])
-        dico_kit.append(cur.fetchall())#historique est une liste de dictionnaire ou chaque dictionnaire est un kit
-
-    if not request.method == 'POST':
-        con.close()
-        return render_template("Code_kit_init.html", msg ="",tab_piece=dico_kit,liste_kit=base,liste_id=id)
-    else:
-        kit_a_creer = request.form.get('nom_kit1')
-        id_kit_a_creer = request.form.get('id_Kit')
-        if kit_a_creer == "" :
-            kit_a_creer="gaga"
-            kit_a_modif = request.form.get('nom_kit_a_modif')
-            cur.execute("select id_kit from kit WHERE nom_kit=?;",kit_a_modif)
-            id_kit_a_modif = cur.fetchone()
-            return modif_kit(kit_a_modif,id_kit_a_modif,kit_a_creer)
-        c=True #compare_nom(request.form.get('nom_kit1'),base)
-        d=True #compare_nom(request.form.get('id'),id)
-        kit_a_modif = request.form.get('nom_kit1')
-    if c == False or d == False  :#le nom du kit est déjà existant, on revient au départ
-        con.close()
-        return(render_template("Code_kit_init.html", msg ="attention le kit existe deja ou vous avez oubliez de saisir l'une des entrées "+str(c)+str(d),tab_piece=dico_kit,liste_kit=base,liste_id=id))
-    else :
-        if kit_a_modif == "vierge" :
-             kit_a_modif = request.form.get('nom_kit_a_modif')
-        con.close()
-        return(modif_kit(kit_a_modif))
+    for base in id :
+        cur.execute('SELECT piece, quantite FROM compo_kit WHERE kit=?;',[id[0]])
+        dico_kit.append(cur.fetchall())#dico_kit est une liste de dictionnaire ou chaque dictionnaire est un kit
     return(render_template("Code_kit_init.html", msg="" ,tab_piece=dico_kit ,liste_kit=base ,liste_id=id ))
 
 @app.route('/Agilog/Initialisation/Code_kit/modif_kit', methods=['GET', 'POST'])
