@@ -7,7 +7,7 @@
 {% include "Navbar.html" %}
 
 <div class='contenu'>
-	<h1>Ajout d'une piece dans un kit</h1><br/>
+	<h1>Définition des porpriétés d'une pièce :</h1><br/>
 	{% if msg!="" %}<strong>{{ msg }}</strong><br/><br/>{% endif %}
 	<form method='post' action='{{ url_for("gestion_stock") }}'>
 	<label for='seuile'>seuil de recompletement</label><input type='text' name='seuile' value=''>
