@@ -26,15 +26,15 @@
       </tr>
       {%for kit in liste_id%}
       <tr>
-        <th>{{kit[0]}}</th>
-        <th>
+        <td>{{kit[0]}}</td>
+        <td>
           <ul>
             </br>
             {%for piece in tab_piece[loop.index0]%}
             <li>{{piece['piece']}} : {{piece['quantite'] }} </li>
             {%endfor%}
           </ul>
-        </th>
+        </td>
       </tr>
       {%endfor%}
     </table>
