@@ -19,6 +19,9 @@ def agilog():
 
 @app.route('/Agilog/Encours')
 def encoursAlog():
+
+    tab_encours=select_encours ()
+    tab_reel=select_stock_reel ()
     return render_template('encours_alog.html')
 
 @app.route('/Agilog/Encours/<id>')  # route pour passer la pièce (dont l'idéee est séléctionnée) du stock encours à stock réel: Programmeur à faire
@@ -32,10 +35,16 @@ def actualize_id(id): #Programmeur à faire
 
 @app.route('/Agilog/Encours/Commande_agipart')
 def commandepart(): #à faire
+
+    commande=select_commande_fournisseur ("agipart")
+    #passer__commande(commande)
     return render_template('cmd_agipart.html')
 
 @app.route('/Agilog/Encours/Commande_agigreen')
 def commandegreen(): #à faire
+
+    commande=select_commande_fournisseur ("agigreen")
+    print (commande)
     return render_template('cmd_agigreen.html')
 
 
@@ -118,6 +127,8 @@ def commande():
 
     con.commit
     con.close
+
+    select_en_cours ()
 
     return contenu
 
@@ -267,30 +278,30 @@ def code_kit():
 def modif_kit(kit_a_modif):
 
 #J'ai testé la fonction, les fonctionnalités marchent,
-	#si tu as un problème, tu peux retrouver dans fonction_test la fonction que j'ai testé qui marche
+    #si tu as un problème, tu peux retrouver dans fonction_test la fonction que j'ai testé qui marche
 
-	contenu=""
-	piece_a_ajouter=[]#piece=[True/false,nom de la piece à ajouter]
-	con = lite.connect(cheminbdd)
-	con.row_factory = lite.Row
-	cur=con.cursor()
-	cur.execute("SELECT nom FROM piece;")
-	pieces=cur.fetchall()#variable pour le menu déroulant pour le choix des pieces
-	cur.execute("SELECT id FROM kit WHERE nom_kit=?;",[kit_a_modif])#car dans la base compo_kit, kit correspond à des id
-	kit_a_modifier=liste(cur.fetchall())#variable pour travailler dans la base compo_kit
-	quantite=quantite_bonne(recupere_interraction(1,contenu))#on récupère et vérifie la quantite=[quantite,True/False]
-	cur.execute("SELECT piece FROM compo_kit WHERE kit=?;",[kit_a_modifier[0]])
-	piece_du_kit=liste(cur.fetchall())#cette liste nous permet de vérifier que la nouvelle pièce à ajouter n'est pas déjà présente
-	#Si on veut supprimer une piece du kit
-	if piece_a_ajouter[0]:
-		cur.execute("DELETE FROM compo_kit WHERE kit=?,piece=?;",[kit_a_modifier[0],piece_a_ajouter[1]])
-	#Si on veut ajouter une piece au kit
-	elif piece_a_ajouter not in piece_du_kit and quantite[1]:#la pièce n'est pas présente dans le kit et la quantite est bonne donc on ajoute la piece simplement au kit
-			cur.execute("INSERT INTO compo_kit(kit,piece,quantite) VALUES (?,?,?);",[kit_a_modifier[0],piece_a_ajouter[1],quantite[0]])
-	else:#la piece est présente dans le kit, on modifie donc juste la quantite
-		cur.execute("UPDATE compo_kit SET quantite=? WHERE kit=?,piece=?;",[quantite[0],kit_a_modifier[0],piece_a_ajouter[1]])
+    contenu=""
+    piece_a_ajouter=[]#piece=[True/false,nom de la piece à ajouter]
+    con = lite.connect(cheminbdd)
+    con.row_factory = lite.Row
+    cur=con.cursor()
+    cur.execute("SELECT nom FROM piece;")
+    pieces=cur.fetchall()#variable pour le menu déroulant pour le choix des pieces
+    cur.execute("SELECT id FROM kit WHERE nom_kit=?;",[kit_a_modif])#car dans la base compo_kit, kit correspond à des id
+    kit_a_modifier=liste(cur.fetchall())#variable pour travailler dans la base compo_kit
+    quantite=quantite_bonne(recupere_interraction(1,contenu))#on récupère et vérifie la quantite=[quantite,True/False]
+    cur.execute("SELECT piece FROM compo_kit WHERE kit=?;",[kit_a_modifier[0]])
+    piece_du_kit=liste(cur.fetchall())#cette liste nous permet de vérifier que la nouvelle pièce à ajouter n'est pas déjà présente
+    #Si on veut supprimer une piece du kit
+    if piece_a_ajouter[0]:
+        cur.execute("DELETE FROM compo_kit WHERE kit=?,piece=?;",[kit_a_modifier[0],piece_a_ajouter[1]])
+    #Si on veut ajouter une piece au kit
+    elif piece_a_ajouter not in piece_du_kit and quantite[1]:#la pièce n'est pas présente dans le kit et la quantite est bonne donc on ajoute la piece simplement au kit
+            cur.execute("INSERT INTO compo_kit(kit,piece,quantite) VALUES (?,?,?);",[kit_a_modifier[0],piece_a_ajouter[1],quantite[0]])
+    else:#la piece est présente dans le kit, on modifie donc juste la quantite
+        cur.execute("UPDATE compo_kit SET quantite=? WHERE kit=?,piece=?;",[quantite[0],kit_a_modifier[0],piece_a_ajouter[1]])
 
-	return(render_template('modif_kit_init.html',d=kit_a_modif))
+    return(render_template('modif_kit_init.html',d=kit_a_modif))
 
 #La page pour Agilean
 @app.route('/Agilean')
