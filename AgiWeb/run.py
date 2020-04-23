@@ -20,8 +20,14 @@ def agilog():
 @app.route('/Agilog/Encours')
 def encoursAlog():
 
+    # la fonction select_encours renvois un dicionnaire avec comme colonne: "id","date","nom", "quantite","timer".
+    # Les pièces dedans sont les pièces qui sont en en cours
     tab_encours=select_encours ()
+
+    # la fonction select_stockreel renvois un dicionnaire avec comme colonne: "id","nom","quantite", "a_commander".
+    # Toutes les pieces y sont renseigné. Les quantités sont les stocks. Les a_commander sont des "OUI" si il faut commander ou "NON" si il n'y'a pas besoin encore et non pas des 1 et 0 comme dans la base de donné.
     tab_reel=select_stock_reel ()
+
     return render_template('encours_alog.html')
 
 @app.route('/Agilog/Encours/<id>')  # route pour passer la pièce (dont l'idéee est séléctionnée) du stock encours à stock réel: Programmeur à faire
@@ -36,6 +42,9 @@ def actualize_id(id): #Programmeur à faire
 @app.route('/Agilog/Encours/Commande_agipart')
 def commandepart(): #à faire
 
+    # la fonction select_commande_fournisseur prend en argumant ("agipart") ou ("agigreen") en fonctioon du fournisseur qu'on veut, et renvois un dicionnaire avec comme colonne: "id","nom","quantite".
+    # Les pieces renseigné sont les pièces à commander qui sont fourni par le fournisseur choisi. Les quantités sont les stocks.
+    # Attention il faut que la bdd soit rempli pour que ca marche. si la ligne piece.a_commander n'est pas rempli, elle ne peut rien renvoyer!
     commande=select_commande_fournisseur ("agipart")
     #passer__commande(commande)
     return render_template('cmd_agipart.html')
