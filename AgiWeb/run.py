@@ -302,7 +302,7 @@ def modif_kit():
     else:#la piece est présente dans le kit, on modifie donc juste la quantite
     	cur.execute("UPDATE compo_kit SET quantite=? WHERE kit=?,piece=?;",[quantite[0],kit_a_modifier[0],piece_a_ajouter[1]])
 
-    return(render_template('modif_kit_init.html',d=kit_a_modif, id=id_kit_amodif,pieces = piece_du_kit))
+    return(render_template('modif_kit_init.html',d=kit_a_modif, id=id_kit_amodif,pieces = piece_du_kit,msg="return final"))
 
 #La page pour Agilean
 @app.route('/Agilean')
