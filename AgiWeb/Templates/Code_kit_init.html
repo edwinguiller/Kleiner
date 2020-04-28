@@ -4,7 +4,7 @@
     {%include 'navbar.html'%}
     <h1>saisi d'un nouveau kit :</h1>
     <form method='post' action='{{url_for('modif_kit')}}'>
-      <label for="nom_kit1"> nom du kit : </label><input type='str' name='nom_kit_a_créer' value='' />
+      <label for="nom_kit1"> nom du kit : </label><input type='str' name='nom_kit_a_modif' value='' />
       <input type='submit' value='Envoyer'/>
     </form>
     <strong>{{msg}}</strong>

@@ -286,12 +286,12 @@ def modif_kit():
         return render_template('modif_kit_init.html',d=kit_a_modif, id=id_kit_a_modif,pieces = pieces,msg="",piece_du_kit=piece_du_kit)
     else :
         # mets les action sur la bdd ici
-
+        #return request.form.get('nom_kit_a_modif')
         #jusque la
         piece_a_ajouter = request.form.get('saisi_piece')
         option = request.form.get('option')
         quantitee = request.form.get('quantite')
-        return redirect(url_for('modif_kit'))
+        return render_template('modif_kit_init.html',d=kit_a_modif, id=id_kit_a_modif,pieces = pieces,msg="",piece_du_kit=piece_du_kit)
     #fin de recuperation des variables
     contenu=""
     piece_a_ajouter=[bool,option]#piece=[True/false,nom de la piece à ajouter]
