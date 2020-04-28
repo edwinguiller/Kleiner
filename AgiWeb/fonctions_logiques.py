@@ -57,13 +57,13 @@ def quantite_bonne(quantite):
 	try: #on vérifie que la quantité est bonne
 			quantite=int(quantite)
 	except: #si la quantité est mauvaise alors message d'erreur
-		return(print([quantite,False]))
+		return([quantite,False])
 	else:
+		quantite=int(quantite)
 		if quantite>0:
-			return(print([quantite,True]))
+			return([quantite,True])
 		else:
-			return(print([quantite,False]))
-quantite_bonne(0)
+			return([quantite,False])
 
 
 def ajouter_bdd(base, colonne, entree, types): # prend en argument  une base (ex: piece), les colonnes que l'on veut modifier (une liste ex: [id, nom...]), les entrées (valeurs) et le type de ces valeurs
