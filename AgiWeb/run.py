@@ -272,9 +272,11 @@ def modif_kit():
     cur=con.cursor()
     cur.execute("SELECT nom FROM piece;")
     pieces=cur.fetchall()
-    kit_a_modif = request.form.get('nom_kit_a_modif')
-    id_kit_a_modif=3 #a toi de jouer
-    piece_du_kit=[{"nom":"a","quantite":3},{"nom":"b","quantite":3},{"nom":"c","quantite":3}]
+    kit_a_modif ="CCO_Habitacle"#a modifier pour toi
+    cur.execute("SELECT id FROM kit WHERE nom_kit=?;",[kit_a_modif])
+    id_kit_a_modif=int(liste(cur.fetchall())[0])
+    cur.execute("SELECT piece, quantite FROM compo_kit WHERE kit=?;",[id_kit_a_modif])
+    piece_du_kit=cur.fetchall()
     #pareil faut que tu la remplisses avec la bdd en faisant une liste de dictionnaire qui contoienne nom et quantité
 
     #fin recup variable
@@ -288,33 +290,36 @@ def modif_kit():
         # mets les action sur la bdd ici
 
         #jusque la
-        piece_a_ajouter = request.form.get('saisi_piece')
+        piece_a_ajoutee = request.form.get('saisi_piece')
         option = request.form.get('option')
         quantitee = request.form.get('quantite')
-        return redirect(url_for('modif_kit'))
+        #return redirect(url_for('modif_kit'))
     #fin de recuperation des variables
-    contenu=""
-    piece_a_ajouter=[bool,option]#piece=[True/false,nom de la piece à ajouter]
-    con = lite.connect(cheminbdd)
-    con.row_factory = lite.Row
-    cur=con.cursor()
-    cur.execute("SELECT nom FROM piece;")
-    pieces=cur.fetchall()#variable pour le menu déroulant pour le choix des pieces
-    cur.execute("SELECT id FROM kit WHERE nom_kit=?;",[kit_a_modif])#car dans la base compo_kit, kit correspond à des id
-    kit_a_modifier=liste(cur.fetchall())#variable pour travailler dans la base compo_kit
-    quantite=quantite_bonne(recupere_interraction(1,contenu))#on récupère et vérifie la quantite=[quantite,True/False]
-    cur.execute("SELECT piece FROM compo_kit WHERE kit=?;",[kit_a_modifier[0]])
-    piece_du_kit=liste(cur.fetchall())#cette liste nous permet de vérifier que la nouvelle pièce à ajouter n'est pas déjà présente
-    #Si on veut supprimer une piece du kit
+    cur.execute("SELECT id FROM piece WHERE nom=?;",[piece_a_ajoutee])
+    id_piece_a_ajoutee=liste(cur.fetchall())[0]
+    piece_a_ajouter=[bool(option),id_piece_a_ajoutee]#piece=[True/false,nom de la piece à ajouter]
+    quantite=quantite_bonne(quantitee)#on récupère et vérifie la quantite=[quantite,True/False]
+    cur.execute("SELECT piece FROM compo_kit WHERE kit=?;",[id_kit_a_modif])
+    nom_des_pieces_du_kit=liste(cur.fetchall())
+    print(nom_des_pieces_du_kit)
+    print(piece_a_ajouter)
+    print(quantite)
+    #Si on veut supprimer une pièce
     if piece_a_ajouter[0]:
-    	cur.execute("DELETE FROM compo_kit WHERE kit=?,piece=?;",[kit_a_modifier[0],piece_a_ajouter[1]])
+        if piece_a_ajouter[1] in nom_des_pieces_du_kit :
+            cur.execute("DELETE FROM compo_kit WHERE kit=? and piece=?;",[id_kit_a_modif,piece_a_ajouter[1]])
+        else:
+            return render_template('modif_kit_init.html',d=kit_a_modif, id=id_kit_a_modif,pieces = pieces,msg="erreur tu ne peux pas supprimer une pièce qui n'existe pas ",piece_du_kit=piece_du_kit)
     #Si on veut ajouter une piece au kit
-    elif piece_a_ajouter not in piece_du_kit and quantite[1]:#la pièce n'est pas présente dans le kit et la quantite est bonne donc on ajoute la piece simplement au kit
-    		cur.execute("INSERT INTO compo_kit(kit,piece,quantite) VALUES (?,?,?);",[kit_a_modifier[0],piece_a_ajouter[1],quantite[0]])
-    else:#la piece est présente dans le kit, on modifie donc juste la quantite
-    	cur.execute("UPDATE compo_kit SET quantite=? WHERE kit=?,piece=?;",[quantite[0],kit_a_modifier[0],piece_a_ajouter[1]])
+    else:
+        if quantite[1]:
+            if piece_a_ajouter[1] not in nom_des_pieces_du_kit :#la pièce n'est pas présente dans le kit et la quantite est bonne donc on ajoute la piece simplement au kit
+                cur.execute("INSERT INTO compo_kit(kit,piece,quantite) VALUES (?,?,?);",[id_kit_a_modif,piece_a_ajouter[1],quantite[0]])
+            else:#la piece est présente dans le kit, on modifie donc juste la quantite
+                cur.execute("UPDATE compo_kit SET quantite=? WHERE kit=? and piece=?;",[quantite[0],id_kit_a_modif,piece_a_ajouter[1]])
+        else:
+            return render_template('modif_kit_init.html',d=kit_a_modif, id=id_kit_a_modif,pieces = pieces,msg="erreur la quantite n'est pas bonne",piece_du_kit=piece_du_kit)
 
-    return(render_template('modif_kit_init.html',d=kit_a_modif, id=id_kit_amodif,pieces = piece_du_kit,msg="return final"))
 
 #La page pour Agilean
 @app.route('/Agilean')
