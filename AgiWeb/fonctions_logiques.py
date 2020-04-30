@@ -160,35 +160,41 @@ def mise_a_jour_bdd (base, colonne, entree, types): # prend en argument  une bas
         else:
             selection= selection + i + "=?, "
 
-    print (selection)
-
     if (test_rien(entree)==0):
         if test_types(entree,types)==0:
             cur.execute(selection, (entree))
     con.commit()
     con.close()
 
-def seuil_commande (stock,seuil_recomp,nom): #stock, nom et seuil_recomp sont des listes et si les stock sont inf au seuil, la colonne a_commander de la pièce passe à 1
+def seuil_commande (): #stock, nom et seuil_recomp sont des listes et si les stock sont inf au seuil, la colonne a_commander de la pièce passe à 1
 
     con = lite.connect(cheminbdd) #attention chez toi c'est pas rangé au meme endroit
     con.row_factory = lite.Row
     cur = con.cursor()
-    taille=len(stock)
+    cur.execute("SELECT quantite, seuil_recomp, nom FROM piece")
+    d=tab(cur.fetchall())
+    bdd=convert_dict(d,"quantite","seuil_recomp","nom")
+    taille=len(bdd["quantite"])
     for i in range (0,taille):
-        print (seuil_recomp[i])
-        print (stock[i])
+        print (bdd["seuil_recomp"][i])
+        print (bdd["quantite"][i])
         try:
-            seuil_recomp[i]=int(seuil_recomp[i])
+            bdd["seuil_recomp"][i]=int(bdd["seuil_recomp"][i])
         except:
             print ("non")
         else:
-            if (stock[i]-seuil_recomp[i]<=0):
+            if (bdd["quantite"][i]-bdd["seuil_recomp"][i]<=0):
                 colonne=["a_commander", "nom"]
-                entree=[1, nom[i]]
+                entree=[1, bdd["nom"][i]]
                 types=["int","str"]
                 mise_a_jour_bdd("piece", colonne, entree, types)
-    con.commit
-    con.close
+            elif (bdd["quantite"][i]-bdd["seuil_recomp"][i]>=0):
+                colonne=["a_commander", "nom"]
+                entree=[0, bdd["nom"][i]]
+                types=["int","str"]
+                mise_a_jour_bdd("piece", colonne, entree, types)
+    con.commit()
+    con.close()
 
 def tableau (base,colonne): #prend les infos d'une base, et les rentres dans un tableau avec tableau[0]= colonne[0], tableau[1]=colonne[1]...
 
@@ -225,7 +231,7 @@ def convert_dict(L,c1=None,c2=None,c3=None,c4=None,c5=None,c6=None,c7=None,c8=No
             D[C[i]]=L[i]
     return D
 
-def select_encours ():
+def select_encours (): #selectionne les stocks en cours pour pouvoir ensuite les afficher
 
     con = lite.connect(cheminbdd)
     con.row_factory = lite.Row
@@ -233,11 +239,11 @@ def select_encours ():
     cur.execute("SELECT id_com, date,nom as nom_piece,quantite, strftime('%s',date_arrivee)- strftime('%s',strftime('%H:%M:%S','now')) as timer from (SELECT id_com,nom,quantite,date,delai,strftime('%H:%M:%S',(SELECT commande.date FROM commande),delai) as date_arrivee from (SELECT piece.id as id_piece,piece.nom, piece.fournisseur, fournisseur.delai from piece join fournisseur ON piece.fournisseur==fournisseur.id) JOIN (SELECT commande.id as id_com,commande.date,compo_commande.piece,compo_commande.quantite from commande join compo_commande on commande.id==compo_commande.commande) ON id_piece==piece);")
     d=tab(cur.fetchall())
     b=convert_dict(d,"id","date","nom", "quantite","timer")
-    con.close
+    con.close()
 
     return b
 
-def select_stock_reel ():
+def select_stock_reel (): #selectionne les stocks reel pour pouvoir ensuite les afficher
 
     con = lite.connect(cheminbdd)
     con.row_factory = lite.Row
@@ -252,7 +258,7 @@ def select_stock_reel ():
             b["a_commander"][i]="NON"
         else:
             b["a_commander"][i]="ERREUR"
-    con.close
+    con.close()
 
     return b
 
@@ -268,15 +274,18 @@ def select_commande_fournisseur (fournisseur): #prend le fournisseur en lettre m
         fourniss=2
     else:
         return ERREUR
-
     cur.execute("SELECT id, nom, quantite FROM piece WHERE a_commander=? and fournisseur=?", [1,fourniss])
-    d=tab(cur.fetchall())
+    a=cur.fetchall()
+    if (a==[]):
+        print ("il n y a rien")
+        return a
+    d=tab(a)
     b=convert_dict(d,"id","nom","quantite")
-    con.close
+    con.close()
 
     return b
 
-def passer__commande(commande): #prend en argument le dictionnaire commande avec les id des pieces, leurs nom et la quantite pas fini
+def passer__commande(commande): #prend en argument le dictionnaire commande avec les id des pieces, leurs nom et la quantite et créer la commande et la compo commande associé
 
     con = lite.connect(cheminbdd)
     con.row_factory = lite.Row
@@ -284,10 +293,32 @@ def passer__commande(commande): #prend en argument le dictionnaire commande avec
     # générer id
     cur.execute ("SELECT id FROM commande")
     liste_id=(cur.fetchall())
-    newid=creer_id(liste_id)
+    new_id=creer_id(liste_id)
+    d=cur.execute(" SELECT datetime('now')")
+    date=cur.fetchall()[0][0]
     # creation de la commande
-    cur.execute("INSERT INTO commande (id,date,reception) VALUES (?,?,?)", (new_id,CURRENT_TIMESTAMP,0))
-    for i in range (0,commande["id"]):
-        cur.execute("INSERT INTO compo_commande(commande,piece,quantite) VALUES(?,?,?)", (newid, commande["id"][i], commande["quantite"][i]))
+    if (commande==[]):
+        return
+    cur.execute("INSERT INTO commande (id,date,reception) VALUES (?,?,?)", (new_id,date,0))
+    for i in range (0,len(commande["id"])):
+        cur.execute("INSERT INTO compo_commande(commande,piece,quantite) VALUES(?,?,?)", (new_id, commande["id"][i], commande["quantite"][i]))
+    cur.execute("UPDATE fournisseur SET derniere_com=CURRENT_TIMESTAMP WHERE fournisseur.id==(SELECT fournisseur FROM commande JOIN (SELECT piece.fournisseur,compo_commande.commande, compo_commande.piece FROM compo_commande JOIN piece ON compo_commande.piece==piece.id) WHERE commande.id==?)", [new_id])
+    con.commit()
+    con.close()
+    return
 
+def valider_commande(idcom): # prend en argumant l'id d une commande et la met recu et rajoute les pieces au stocks
+
+    con = lite.connect(cheminbdd)
+    con.row_factory = lite.Row
+    cur=con.cursor()
+    cur.execute("UPDATE piece SET quantite = (SELECT nq FROM (SELECT piece,piece.quantite+quantite_com as nq FROM (SELECT commande.id, compo_commande.piece,compo_commande.quantite as quantite_com FROM commande JOIN compo_commande ON commande.id==compo_commande.commande WHERE commande.id==?) JOIN piece ON piece.id=piece ) WHERE piece.id==piece) WHERE (SELECT nq FROM (SELECT piece,piece.quantite+quantite_com as nq FROM (SELECT commande.id, compo_commande.piece,compo_commande.quantite as quantite_com FROM commande JOIN compo_commande ON commande.id==compo_commande.commande WHERE commande.id==?) JOIN piece ON piece.id=piece ) WHERE piece.id==piece) IS NOT NULL",[idcom,idcom])
+    cur.execute("SELECT quantite FROM piece")
+    print (tab(cur.fetchall()))
+    cur.execute("UPDATE commande SET reception=? WHERE commande.id==?", [1,idcom])
+    cur.execute("SELECT reception FROM commande")
+    print (tab(cur.fetchall()))
+    con.commit()
+    con.close()
+    return
 
