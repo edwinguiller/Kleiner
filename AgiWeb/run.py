@@ -21,28 +21,40 @@ def agilog():
 def encoursAlog():
 
     # met a jour la colonne à commander des pièces (necessite de seuil_commande
-    seuil_commande ()
+    seuil_commande()
 
-    # la fonction select_encours renvois un dicionnaire avec comme colonne: "id","date","nom", "quantite","timer".
+    # la fonction select_encours renvois un dictionnaire avec comme colonne: "id","date","nom", "quantite","timer" de la commande
     # Les pièces dedans sont les pièces qui sont en en cours
-    tab_encours=select_encours ()
+    tab_encours=select_encours()
 
     # la fonction select_stockreel renvois un dicionnaire avec comme colonne: "id","nom","quantite", "a_commander".
     # Toutes les pieces y sont renseigné. Les quantités sont les stocks. Les a_commander sont des "OUI" si il faut commander ou "NON" si il n'y'a pas besoin encore et non pas des 1 et 0 comme dans la base de donné.
-    tab_reel=select_stock_reel ()
+    tab_reel=select_stock_reel()
+    list_of_list = zip(tab_reel['id'],  tab_reel['nom'], tab_reel['quantite'], tab_reel['a_commander'])
+    print(zip(tab_reel['id'],  tab_reel['nom'], tab_reel['quantite'], tab_reel['a_commander']))
 
-    return render_template('encours_alog.html')
+    return render_template('encours_alog.html',tab_reel=list_of_list)
 
 @app.route('/Agilog/Encours/<id>')  # route pour passer la pièce (dont l'idéee est séléctionnée) du stock encours à stock réel: Programmeur à faire
 def actualize_id(id): #Programmeur à faire
     # TODO: handle the id in the sql
 
     #prend l'id d'une commande en argument et passe la commande en validant la commande puis ajoute les pieces aux stocks, l'id est en argumant de la page
-    valider_commande(id) #elle est où cette fonction ?
+    valider_reception_commande(id) #elle est où cette fonction ?
 
     # return render_template('encours_alog.html')
 
     return redirect(url_for('encoursAlog'))
+
+@app.route('/Agilog/Encours/Commande_agigreen')
+def page_cmd_green():
+    commande=select_commande_fournisseur ("agigreen")
+    return render_template('cmd_agigreen.html',commandegreen=commande)
+
+@app.route('/Agilog/Encours/Commande_agipart')
+def page_cmd_part():
+    commande=select_commande_fournisseur ("agipart")
+    return render_template('cmd_agipart.html',commandepart=commande)
 
 @app.route('/Agilog/Encours/Commande_agipart')
 def commandepart(): #à faire
@@ -54,11 +66,14 @@ def commandepart(): #à faire
 
     # prend en argument la commande donnée par la fonction select_commande_fournisseur et ajoute les pieces dans les commande en en créant une nouvelle
     # a voir comment l'utiliser
-    #passer__commande(commande)
+    passer__commande(commande)
     return render_template('cmd_agipart.html')
+
+
 
 @app.route('/Agilog/Encours/Commande_agigreen')
 def commandegreen(): #à faire
+
 
     # la fonction select_commande_fournisseur prend en argumant ("agipart") ou ("agigreen") en fonctioon du fournisseur qu'on veut, et renvois un dicionnaire avec comme colonne: "id","nom","quantite".
     # Les pieces renseigné sont les pièces à commander qui sont fourni par le fournisseur choisi. Les quantités sont les stocks.
@@ -67,7 +82,7 @@ def commandegreen(): #à faire
 
     # prend en argument la commande donnée par la fonction select_commande_fournisseur et ajoute les pieces dans les commande en en créant une nouvelle
     # a voir comment l'utiliser
-    #passer__commande(commande)
+    passer__commande(commande)
     return render_template('cmd_agigreen.html')
 
 

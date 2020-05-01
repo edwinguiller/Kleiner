@@ -250,6 +250,7 @@ def select_stock_reel (): #selectionne les stocks reel pour pouvoir ensuite les 
     cur = con.cursor()
     cur.execute("SELECT id, nom, quantite, a_commander FROM piece")
     d=tab(cur.fetchall())
+
     b=convert_dict(d,"id","nom","quantite", "a_commander")
     for i in range (0,len(b["a_commander"])):
         if (b["a_commander"][i]==1):
@@ -307,7 +308,7 @@ def passer__commande(commande): #prend en argument le dictionnaire commande avec
     con.close()
     return
 
-def valider_commande(idcom): # prend en argumant l'id d une commande et la met recu et rajoute les pieces au stocks
+def valider_reception_commande(idcom): # prend en argumant l'id d une commande et la met recu et rajoute les pieces au stocks
 
     con = lite.connect(cheminbdd)
     con.row_factory = lite.Row
@@ -321,4 +322,3 @@ def valider_commande(idcom): # prend en argumant l'id d une commande et la met r
     con.commit()
     con.close()
     return
-

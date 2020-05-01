@@ -11,7 +11,7 @@
 
 
         <!-- Contenu -->
-        <p class="cssmarche"> TEST1 ? </p>
+
         <div id="content-stock">
             <h1>Les stockes réels </h1>
             <div class="leftbox">
@@ -44,12 +44,13 @@
                                 <a href="{{url_for('actualize_id', id=3)}}"> Oui </a>
                         </td>
                     </tr>
-                    {%for piece in stock_encours %}
+                    {%for piece in tab_encours %}
                     <tr>
-                      <td>{{piece['id_commande']}}</td>
+                      <td>{{piece['id']}}</td>
+                      <td>{{piece['date']}}</td>
                       <td>{{piece['nom']}}</td>
                       <td>{{piece['quantite']}}</td>
-                      <td class="timer" timer="{{piece['delai']}}"></td>
+                      <td class="timer" timer="{{piece['timer']}}"></td>
                         <td hidden class="validation">
                                 <a href="{{url_for('actualize_id', id=3)}}"> Oui </a>
                         </td>
@@ -72,12 +73,12 @@
                         <td>3</td>
                         <td>Oui ou non suivant le seuil de recompletement</td>
 
-                    {%for piece in stock_réel %}
+                    {%for piece in tab_reel %}
                     <tr>
-                        <td>{{piece['id_piece']}}</td>
-                        <td>{{piece['nom']}}</td>
-                        <td>{{piece['quantite']}}</td>
-                        <td>Oui ou non suivant le seuil de recompletement</td>
+                        <td>{{piece[0]}}</td>
+                        <td>{{piece[1]}}</td>
+                        <td>{{piece[2]}}</td>
+                        <td>{{piece[3]}}</td>
                     </tr>
                     {%endfor%}
                 </table>
@@ -93,14 +94,14 @@
 
                             <p class= "small ">  Vous voulez passer une commande chez AgiGreen ? </p>
                             <li class="bouton_commande">
-                                <a href="{{url_for('commandegreen')}}"> Oui </a>
+                                <a href="{{url_for('page_cmd_green')}}"> Oui </a>
                             </li>
                         </div>
                         <div class="rightbox">
 
                             <p class= "small ">Vous voulez passer une commande chez AgiPart ? </p>
                             <li class="bouton_commande">
-                                <a href="{{url_for('commandepart')}}"> Oui </a>
+                                <a href="{{url_for('page_cmd_part')}}"> Oui </a>
                             </li>
                         </div>
                     </ul>

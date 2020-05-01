@@ -24,7 +24,7 @@ class TimerProducts{
 
     // If the count down is finished, write some text
     if (timeDelta < 0) {
-      this.el.innerHTML = "PATATTTTEs";
+      this.el.innerHTML = "Terminé";
       this.el.parentNode.getElementsByClassName("validation")[0].removeAttribute("hidden")
     } else {
       this.el.innerText = dateTimeConverter(timeDelta)
