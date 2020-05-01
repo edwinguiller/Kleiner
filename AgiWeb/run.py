@@ -59,7 +59,7 @@ def cmd_part():# renvoit la page Commande_agipart!
     commande=select_commande_fournisseur ("agipart")
     return render_template('cmd_agipart.html',liste_commande_part=commande)
 
-@app.route('/Agilog/Encours/Commande_agipart')
+@app.route('/Agilog/Encours/Commande_agipart/button')
 def valider_commande_part(): #à faire
 
 
@@ -68,11 +68,11 @@ def valider_commande_part(): #à faire
     # prend en argument la commande donnée par la fonction select_commande_fournisseur et ajoute les pieces dans les commande en en créant une nouvelle
     # a voir comment l'utiliser
     passer__commande(commande)
-    return render_template('cmd_agipart.html')
+    return redirect(url_for('encoursAlog'))
 
 
 
-@app.route('/Agilog/Encours/Commande_agigreen')
+@app.route('/Agilog/Encours/Commande_agigreen/button')
 def valider_commande_green(): #à faire
 
 
@@ -81,7 +81,7 @@ def valider_commande_green(): #à faire
     # prend en argument la commande donnée par la fonction select_commande_fournisseur et ajoute les pieces dans les commande en en créant une nouvelle
     # a voir comment l'utiliser
     passer__commande(commande)
-    return render_template('cmd_agigreen.html')
+    return redirect(url_for('encoursAlog'))
 
 
 @app.route('/Agilog/Encours/Declarer_kit', methods=['GET', 'POST'])#recupere 2 variable nom et prnom et les ajoutent a la base de données (a modifier pour mettre piece et quantite)
