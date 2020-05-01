@@ -19,68 +19,23 @@ def agilog():
 
 @app.route('/Agilog/Encours')
 def encoursAlog():
-
-    # met a jour la colonne à commander des pièces (necessite de seuil_commande
-    seuil_commande()
-
-    # la fonction select_encours renvois un dictionnaire avec comme colonne: "id","date","nom", "quantite","timer" de la commande
-    # Les pièces dedans sont les pièces qui sont en en cours
-    tab_encours=select_encours()
-
-    # la fonction select_stockreel renvois un dicionnaire avec comme colonne: "id","nom","quantite", "a_commander".
-    # Toutes les pieces y sont renseigné. Les quantités sont les stocks. Les a_commander sont des "OUI" si il faut commander ou "NON" si il n'y'a pas besoin encore et non pas des 1 et 0 comme dans la base de donné.
-    tab_reel=select_stock_reel()
-    #list_of_list = zip(tab_reel['id'],  tab_reel['nom'], tab_reel['quantite'], tab_reel['a_commander'])
-    #print(zip(tab_reel['id'],  tab_reel['nom'], tab_reel['quantite'], tab_reel['a_commander']))
-
-    return render_template('encours_alog.html',tab_reel=tab_reel, tab_encours=tab_encours)
+    return render_template('encours_alog.html')
 
 @app.route('/Agilog/Encours/<id>')  # route pour passer la pièce (dont l'idéee est séléctionnée) du stock encours à stock réel: Programmeur à faire
 def actualize_id(id): #Programmeur à faire
     # TODO: handle the id in the sql
 
-    #prend l'id d'une commande en argument et passe la commande en validant la commande puis ajoute les pieces aux stocks, l'id est en argumant de la page
-    valider_reception_commande(id) #elle est où cette fonction ?
 
     # return render_template('encours_alog.html')
 
     return redirect(url_for('encoursAlog'))
 
-@app.route('/Agilog/Encours/Commande_agigreen')
-def cmd_green():# renvoit la page Commande_agigreen!
-    commande=select_commande_fournisseur ("agigreen")
-    # la fonction select_commande_fournisseur prend en argumant ("agipart") ou ("agigreen") en fonctioon du fournisseur qu'on veut, et renvois un dicionnaire avec comme colonne: "id","nom","quantite".
-    # Les pieces renseigné sont les pièces à commander qui sont fourni par le fournisseur choisi. Les quantités sont les stocks.
-    # Attention il faut que la bdd soit rempli pour que ca marche. si la ligne piece.a_commander n'est pas rempli, elle ne peut rien renvoyer!
-    return render_template('cmd_agigreen.html',liste_commande_green=commande)
-
 @app.route('/Agilog/Encours/Commande_agipart')
-def cmd_part():# renvoit la page Commande_agipart!
-    commande=select_commande_fournisseur ("agipart")
-    return render_template('cmd_agipart.html',liste_commande_part=commande)
-
-@app.route('/Agilog/Encours/Commande_agipart')
-def valider_commande_part(): #à faire
-
-
-    commande=select_commande_fournisseur ("agipart") #commandepart non ? sinon ca se mélange avec green
-
-    # prend en argument la commande donnée par la fonction select_commande_fournisseur et ajoute les pieces dans les commande en en créant une nouvelle
-    # a voir comment l'utiliser
-    passer__commande(commande)
+def commandepart(): #à faire
     return render_template('cmd_agipart.html')
 
-
-
 @app.route('/Agilog/Encours/Commande_agigreen')
-def valider_commande_green(): #à faire
-
-
-    commande=select_commande_fournisseur ("agigreen")
-
-    # prend en argument la commande donnée par la fonction select_commande_fournisseur et ajoute les pieces dans les commande en en créant une nouvelle
-    # a voir comment l'utiliser
-    passer__commande(commande)
+def commandegreen(): #à faire
     return render_template('cmd_agigreen.html')
 
 
@@ -163,8 +118,6 @@ def commande():
 
     con.commit
     con.close
-
-    select_en_cours ()
 
     return contenu
 
@@ -311,33 +264,66 @@ def code_kit():
     return(render_template("Code_kit_init.html", msg="" ,tab_piece=dico_kit ,liste_kit=base ,liste_id=id ))
 
 @app.route('/Agilog/Initialisation/Code_kit/modif_kit', methods=['GET', 'POST'])
-def modif_kit(kit_a_modif):
-
-#J'ai testé la fonction, les fonctionnalités marchent,
-    #si tu as un problème, tu peux retrouver dans fonction_test la fonction que j'ai testé qui marche
-
-    contenu=""
-    piece_a_ajouter=[]#piece=[True/false,nom de la piece à ajouter]
+def modif_kit():
+	
+	#Variables utiles
     con = lite.connect(cheminbdd)
     con.row_factory = lite.Row
     cur=con.cursor()
-    cur.execute("SELECT nom FROM piece;")
-    pieces=cur.fetchall()#variable pour le menu déroulant pour le choix des pieces
-    cur.execute("SELECT id FROM kit WHERE nom_kit=?;",[kit_a_modif])#car dans la base compo_kit, kit correspond à des id
-    kit_a_modifier=liste(cur.fetchall())#variable pour travailler dans la base compo_kit
-    quantite=quantite_bonne(recupere_interraction(1,contenu))#on récupère et vérifie la quantite=[quantite,True/False]
-    cur.execute("SELECT piece FROM compo_kit WHERE kit=?;",[kit_a_modifier[0]])
-    piece_du_kit=liste(cur.fetchall())#cette liste nous permet de vérifier que la nouvelle pièce à ajouter n'est pas déjà présente
-    #Si on veut supprimer une piece du kit
-    if piece_a_ajouter[0]:
-        cur.execute("DELETE FROM compo_kit WHERE kit=?,piece=?;",[kit_a_modifier[0],piece_a_ajouter[1]])
-    #Si on veut ajouter une piece au kit
-    elif piece_a_ajouter not in piece_du_kit and quantite[1]:#la pièce n'est pas présente dans le kit et la quantite est bonne donc on ajoute la piece simplement au kit
-            cur.execute("INSERT INTO compo_kit(kit,piece,quantite) VALUES (?,?,?);",[kit_a_modifier[0],piece_a_ajouter[1],quantite[0]])
-    else:#la piece est présente dans le kit, on modifie donc juste la quantite
-        cur.execute("UPDATE compo_kit SET quantite=? WHERE kit=?,piece=?;",[quantite[0],kit_a_modifier[0],piece_a_ajouter[1]])
+    cur.execute("SELECT id, nom FROM piece;")
+    pieces=cur.fetchall()
+    kit_a_modif =request.form.get('nom_kit_a_modif')#nom du kit à créer ou à modifier
+    choix=True #c'est un booléen qui traduit la volonté de créer (True) un kit ou de le modifier(False)
+    cur.execute("SELECT id FROM kit WHERE nom_kit=?;",[kit_a_modif])
+    id_kit_a_modif=cur.fetchall()
+    id_kit_a_modif=id_kit_a_modif[0]
+    id_kit_a_modif=id_kit_a_modif['id']
+    cur.execute("SELECT piece, quantite FROM compo_kit WHERE kit=?;",[id_kit_a_modif])
+    piece_du_kit=cur.fetchall()
+    
+    #permet la création d'un kit si on le souhaite
+    kit=choix_kit([kit_a_modif,choix])
+    if kit[0]==None:
+        return render_template('modif_kit_init.html',d=kit_a_modif, id=id_kit_a_modif,pieces = pieces,msg=kit[1],piece_du_kit=piece_du_kit) #kit[1] est un message d'erreur
 
-    return(render_template('modif_kit_init.html',d=kit_a_modif))
+    #recupération des variables :
+    if not request.method == 'POST':
+        return render_template('modif_kit_init.html',d=kit_a_modif, id=id_kit_a_modif,pieces = pieces,msg="",piece_du_kit=piece_du_kit)
+    else :
+        piece_a_ajoutee = request.form.get('saisi_piece')
+        option = request.form.get('option')
+        quantitee = request.form.get('quantite')
+    #fin de recuperation des variables
+        try:
+	        cur.execute("SELECT id FROM piece WHERE nom=?;",[piece_a_ajoutee])
+	        id_piece_a_ajoutee=liste(cur.fetchall())[0]
+	        piece_a_ajouter=[option,id_piece_a_ajoutee]#piece=[True/false,nom de la piece à ajouter]
+	        quantite=quantite_bonne(quantitee)#on récupère et vérifie la quantite=[quantite,True/False]
+	        cur.execute("SELECT piece FROM compo_kit WHERE kit=?;",[id_kit_a_modif])
+	        nom_des_pieces_du_kit=liste(cur.fetchall())
+	        #print(nom_des_pieces_du_kit)
+	        #print(piece_a_ajouter)
+	        #print(quantite)
+	        #Si on veut supprimer une pièce
+	        if piece_a_ajouter[0]=='True':
+	            if piece_a_ajouter[1] in nom_des_pieces_du_kit :
+	                cur.execute("DELETE FROM compo_kit WHERE kit=? and piece=?;",[id_kit_a_modif,piece_a_ajouter[1]])
+	            else:
+	                return render_template('modif_kit_init.html',d=kit_a_modif, id=id_kit_a_modif,pieces = pieces,msg="erreur tu ne peux pas supprimer une pièce qui n'existe pas ",piece_du_kit=piece_du_kit)
+	    #Si on veut ajouter une piece au kit
+	        elif quantite[1]:
+	            if piece_a_ajouter[1] not in nom_des_pieces_du_kit :#la pièce n'est pas présente dans le kit et la quantite est bonne donc on ajoute la piece simplement au kit
+	                cur.execute("INSERT INTO compo_kit(kit,piece,quantite) VALUES (?,?,?);",[id_kit_a_modif,piece_a_ajouter[1],quantite[0]])
+	            else:#la piece est présente dans le kit, on modifie donc juste la quantite
+	                cur.execute("UPDATE compo_kit SET quantite=? WHERE kit=? and piece=?;",[quantite[0],id_kit_a_modif,piece_a_ajouter[1]])
+	        else:
+	            return render_template('modif_kit_init.html',d=kit_a_modif, id=id_kit_a_modif,pieces = pieces,msg="erreur la quantite n'est pas bonne",piece_du_kit=piece_du_kit)
+        except:
+            pass
+        #cur.execute("SELECT piece FROM compo_kit WHERE kit=?;",[id_kit_a_modif])
+        #print(liste(cur.fetchall()))
+        con.commit()
+        return render_template('modif_kit_init.html',d=kit_a_modif, id=id_kit_a_modif,pieces = pieces,msg="",piece_du_kit=piece_du_kit)
 
 #La page pour Agilean
 @app.route('/Agilean')
