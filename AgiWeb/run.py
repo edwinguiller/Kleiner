@@ -325,6 +325,7 @@ def modif_kit():
         cur.execute("SELECT piece FROM compo_kit WHERE kit=?;",[id_kit_a_modif])
         print(liste(cur.fetchall()))
         #return render_template('modif_kit_init.html',d=kit_a_modif, id=id_kit_a_modif,pieces = pieces,msg="",piece_du_kit=piece_du_kit)
+        con.commit()
         return render_template('modif_kit_init.html',d=kit_a_modif, id=id_kit_a_modif,pieces = pieces,msg="",piece_du_kit=piece_du_kit)
 
 #La page pour Agilean
