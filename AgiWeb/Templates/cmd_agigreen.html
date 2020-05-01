@@ -3,6 +3,7 @@
 <html>
 {% include "head.html" %}
 
+<<<<<<< HEAD
     <body>
 
         {% include "Navbar.html" %}
@@ -36,3 +37,38 @@
                 <a href="{{url_for('valider_commande_green')}}"> Valider </a>
             </li>
         </ul>
+=======
+	<body>
+
+		{% include "Navbar.html" %}
+
+
+		<!-- Contenu -->
+		<h1>Commande AgiGreen</h1>
+		</br>
+		<p> Voici les commandes à effectuer chez AgiGreen </p>
+
+
+		<table>
+			<tr>
+				<th>Id piece</th>
+				<th>Nom piece</th>
+				<th>Quantité</th>
+
+			</tr>
+			{%for piece in liste_commande_green %}
+			<tr>
+				<td>{{piece['id']}}</td>
+				<td>{{piece['nom']}}</td>
+				<td>{{piece['quantite']}}</td>
+
+			</tr>
+			{%endfor%}
+		</table>
+		<ul>
+			<p>Cliquer sur valider pour valider la commande sélectionnée</p>
+			<li class=bouton_commande>
+				<a href="{{url_for('valider_commande_green')}}"> Valider </a>
+			</li>
+		</ul>
+>>>>>>> a18a3680af683d18e5a13c411e8bde940160518f

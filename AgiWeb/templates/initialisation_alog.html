@@ -6,18 +6,24 @@
 	<body>
 
 {% include "Navbar.html" %}
-
+<div id="content-agilog">
+	<h1>Bienvenue sur la page d'initialisation </h1>
 	<ul>
-		<li>
-			<a href="{{url_for('ajout_piece')}}">Renseigner stock initial</a>
-		</li>
-		<li>
-			<a href="{{url_for('gestion_stock')}}">Gestion des stocks</a>
-		</li>
-		<li>
-			<a href="{{url_for('code_kit')}}">Définir un kit </a>
-		</li>
-	</ul>
+			<p class= "small "> Vous pouvez initialiser le stock initial du jeux </p>
+			<li class="bouton2">
+				<a href="{{url_for('ajout_piece')}}">Renseigner stock initial</a>
+			</li>
 
+				<p class= "small "> Vous pouvez renseigner la gestion des stocks </p>
+			<li class="bouton2">
+				<a href="{{url_for('gestion_stock')}}">Gestion des stocks</a>
+			</li>
+			<p class= "small "> Vous pouvez définir un kit </p>
+			<li class="bouton2">
+				<a href="{{url_for('code_kit')}}">Définir un kit </a>
+			</li>
+
+	</ul>
+</div>
 </body>
 </html>
