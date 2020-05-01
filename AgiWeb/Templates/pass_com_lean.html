@@ -2,6 +2,13 @@
 {% include "head.html" %}
 	<body>
 		{% include "Navbar.html" %}
-		
+		<form action="index.html" method="post">
+			<select class="" name="kit_a_com">
+				{%for kit in kits%}
+				<option value="{{kit['nom']}}">{{kit['nom']}}</option>
+				{{endfor}}
+			</select>
+			<input type="submit" name="" value="Commander kit">
+		</form>
 	</body>
 </html>

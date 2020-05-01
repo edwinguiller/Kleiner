@@ -330,6 +330,12 @@ def modif_kit():
 def agilean():
     return render_template('agiLean_accueil.html');
 
+@app.route('/Agilean/commande')
+def com_lean():
+    kit_a_com = request.form.get('kit_a_com')
+    commander(kit_a_com)
+    return render_template('pass_com_lean.html')+"</br> page non faite"
+
 @app.route('/Agilean/Reception')
 def receptkit():
     return render_template('recept_stock_alean.html')+"</br> page non faite"

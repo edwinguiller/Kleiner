@@ -202,3 +202,12 @@ def tableau (base,colonne): #prend les infos d'une base, et les rentres dans un 
         listes=liste(cur.fetchall())
         tableau.append(listes)
     return tableau
+
+def commander(kit) :
+    con = lite.connect(cheminbdd)
+    con.row_factory = lite.row_factorycur
+    cur = con.cursor
+    cur.execute("INSERT INTO com_agilean(id,livree) VALUES (?,?);",kit,0)
+    con.commit()
+    con.close()
+    return 0
