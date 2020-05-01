@@ -330,15 +330,50 @@ def modif_kit():
 def agilean():
     return render_template('agiLean_accueil.html');
 
-@app.route('/Agilean/commande')
+@app.route('/Agilean/commande', methods=['GET', 'POST'])
 def com_lean():
-    kit_a_com = request.form.get('kit_a_com')
-    commander(kit_a_com)
-    return render_template('pass_com_lean.html')+"</br> page non faite"
+    con = lite.connect(cheminbdd)
+    con.row_factory = lite.Row
+    cur = con.cursor()
+    cur.execute("select id,nom_kit from kit")
+    kits=cur.fetchall()
+    try :
+        if not request.method == 'POST':
+            return render_template('pass_com_lean.html',kits=kits,msg="")
+        kit_a_com = request.form.get('kit_a_com')
+        quantite= request.form.get('quantite')
+        kit_a_com = int(kit_a_com)
+        quantite = int(quantite)
+    except :
+        return render_template('pass_com_lean.html',kits=kits,msg="attention il faut saisir un entier")
+    ajouter_bdd("com_agilean",["id_kit_comm","livree","quantite"],[kit_a_com,1,quantite],[int,int,int])
+    return render_template('pass_com_lean.html',kits=kits,msg="")
 
-@app.route('/Agilean/Reception')
+@app.route('/Agilean/Reception', methods=['GET', 'POST'])
 def receptkit():
-    return render_template('recept_stock_alean.html')+"</br> page non faite"
+    con = lite.connect(cheminbdd)
+    con.row_factory = lite.Row
+    cur = con.cursor()
+    cur.execute("select id,nom_kit from kit")
+    kits=cur.fetchall()
+    cur.execute("select id, quantite,id_kit_comm from com_agilean")
+    commandes=cur.fetchall()
+    if not request.method == 'POST':
+        return render_template('recept_stock_alean.html',kits= kits,commandes=commandes)
+    id_val=request.form.get("id_val")
+    quant_val= int(request.form.get("quant_val"))
+    id_comm_val = request.form.get("id_comm_val")
+    cur.execute("select stock_alean from kit WHERE id=?;",[id_val])
+    ad=int(cur.fetchall()[0]['stock_alean'])
+    quant_val = quant_val + ad
+    cur.execute('UPDATE kit set stock_alean=? where id=?;',[quant_val,id_val])
+    con.commit()
+    con.close()
+    delete("com_agilean","id",id_comm_val)
+
+
+
+    return redirect(url_for('receptkit'))
 
 
 
