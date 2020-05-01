@@ -47,21 +47,22 @@ def actualize_id(id): #Programmeur à faire
     return redirect(url_for('encoursAlog'))
 
 @app.route('/Agilog/Encours/Commande_agigreen')
-def page_cmd_green():
+def cmd_green():# renvoit la page Commande_agigreen!
     commande=select_commande_fournisseur ("agigreen")
-    return render_template('cmd_agigreen.html',commandegreen=commande)
-
-@app.route('/Agilog/Encours/Commande_agipart')
-def page_cmd_part():
-    commande=select_commande_fournisseur ("agipart")
-    return render_template('cmd_agipart.html',commandepart=commande)
-
-@app.route('/Agilog/Encours/Commande_agipart')
-def commandepart(): #à faire
-
     # la fonction select_commande_fournisseur prend en argumant ("agipart") ou ("agigreen") en fonctioon du fournisseur qu'on veut, et renvois un dicionnaire avec comme colonne: "id","nom","quantite".
     # Les pieces renseigné sont les pièces à commander qui sont fourni par le fournisseur choisi. Les quantités sont les stocks.
     # Attention il faut que la bdd soit rempli pour que ca marche. si la ligne piece.a_commander n'est pas rempli, elle ne peut rien renvoyer!
+    return render_template('cmd_agigreen.html',liste_commande_green=commande)
+
+@app.route('/Agilog/Encours/Commande_agipart')
+def cmd_part():# renvoit la page Commande_agipart!
+    commande=select_commande_fournisseur ("agipart")
+    return render_template('cmd_agipart.html',liste_commande_part=commande)
+
+@app.route('/Agilog/Encours/Commande_agipart')
+def valider_commande_part(): #à faire
+
+
     commande=select_commande_fournisseur ("agipart") #commandepart non ? sinon ca se mélange avec green
 
     # prend en argument la commande donnée par la fonction select_commande_fournisseur et ajoute les pieces dans les commande en en créant une nouvelle
@@ -72,12 +73,9 @@ def commandepart(): #à faire
 
 
 @app.route('/Agilog/Encours/Commande_agigreen')
-def commandegreen(): #à faire
+def valider_commande_green(): #à faire
 
 
-    # la fonction select_commande_fournisseur prend en argumant ("agipart") ou ("agigreen") en fonctioon du fournisseur qu'on veut, et renvois un dicionnaire avec comme colonne: "id","nom","quantite".
-    # Les pieces renseigné sont les pièces à commander qui sont fourni par le fournisseur choisi. Les quantités sont les stocks.
-    # Attention il faut que la bdd soit rempli pour que ca marche. si la ligne piece.a_commander n'est pas rempli, elle ne peut rien renvoyer!
     commande=select_commande_fournisseur ("agigreen")
 
     # prend en argument la commande donnée par la fonction select_commande_fournisseur et ajoute les pieces dans les commande en en créant une nouvelle

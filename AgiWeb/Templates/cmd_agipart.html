@@ -1,5 +1,4 @@
-<!-- page qui affiche les commandes à valider chez agipart -->
-
+<!-- page qui affiche les commandes à valider chez agipart-->
 
 <html>
 {% include "head.html" %}
@@ -11,7 +10,10 @@
 
 		<!-- Contenu -->
 		<h1>Commande AgiPart</h1>
-		<h2 class="timer-fournisseurs">3min03</h2> 
+		</br>
+		<p> Voici les commandes à effectuer chez AgiPart </p>
+
+
 		<table>
 			<tr>
 				<th>Id piece</th>
@@ -19,9 +21,9 @@
 				<th>Quantité</th>
 
 			</tr>
-			{%for piece in liste_commande_part %}
+			{%for piece in liste_commande_part=commande %}
 			<tr>
-				<td>{{piece['id_piece']}}</td>
+				<td>{{piece['id']}}</td>
 				<td>{{piece['nom']}}</td>
 				<td>{{piece['quantite']}}</td>
 
@@ -31,6 +33,6 @@
 		<ul>
 			<p>Cliquer sur valider pour valider la commande sélectionnée</p>
 			<li class=bouton_commande>
-				<a href="{{url_for('commandepart')}}"> Valider </a>
+				<a href="{{url_for('valider_commande_part')}}"> Valider </a>
 			</li>
 		</ul>

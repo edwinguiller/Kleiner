@@ -13,21 +13,30 @@
         <!-- Contenu -->
 
         <div id="content-stock">
-            <h1>Les stocks réels </h1>
+            <h1>Bienvenue sur la page des encours </h1>
+            <p> Vous pouvez visualiser ici les pièces en cours de livraison dans le tableau de gauche et les pièces présents dans le stocks actuel dans celui de droite.</p>
+            </br>
+
+
+            <p>Vous pouvez aussi visualiser les commandes à effectuer et les valider chez vos fournisseurs. Que ce soient AgiGreen ou AgiPart, le temps de réaprovisonnement doit être terminé pour valider</p>
+            </br>
+
             <div class="leftbox">
 
                 <table>
                     <caption>Stock des pièces encours</caption>
                     <tr>
                         <th>Id commande</th>
-                        <th>Noms pièces</th>
+                        <th>Date</th>
+                        <th>Nom</th>
                         <th>Quantités</th>
                         <th>Délais</th>
                         <th>Valider réception</th>
                     </tr>
                     <tr>
                         <td>1602</td>
-                        <td>bricks 2*2</td>
+                        <td>27/05</td>
+                        <td>Brick 2*2</td>
                         <td>3</td>
                         <td class="timer" timer="10">  </td>
                         <td hidden class="validation">
@@ -36,12 +45,14 @@
                         </td>
                     </tr>
                     <tr>
-                        <td>1800</td>
-                        <td>bricks 4</td>
-                        <td>3</td>
-                        <td class="timer" timer="8">   </td>
+                        <td>1555</td>
+                        <td>27/05</td>
+                        <td>Pneu </td>
+                        <td>4</td>
+                        <td class="timer" timer="6">  </td>
                         <td hidden class="validation">
                                 <a href="{{url_for('actualize_id', id=3)}}"> Oui </a>
+
                         </td>
                     </tr>
                     {%for piece in tab_encours %}
@@ -94,14 +105,14 @@
 
                             <p class= "small ">  Vous voulez passer une commande chez AgiGreen ? </p>
                             <li class="bouton_commande">
-                                <a href="{{url_for('page_cmd_green')}}"> Oui </a>
+                                <a href="{{url_for('cmd_green')}}"> Oui </a>
                             </li>
                         </div>
                         <div class="rightbox">
 
                             <p class= "small ">Vous voulez passer une commande chez AgiPart ? </p>
                             <li class="bouton_commande">
-                                <a href="{{url_for('page_cmd_part')}}"> Oui </a>
+                                <a href="{{url_for('cmd_part')}}"> Oui </a>
                             </li>
                         </div>
                     </ul>

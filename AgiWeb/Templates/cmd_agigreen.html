@@ -10,7 +10,10 @@
 
 		<!-- Contenu -->
 		<h1>Commande AgiGreen</h1>
-	
+		</br>
+		<p> Voici les commandes à effectuer chez AgiGreen </p>
+
+
 		<table>
 			<tr>
 				<th>Id piece</th>
@@ -18,9 +21,9 @@
 				<th>Quantité</th>
 
 			</tr>
-			{%for piece in liste_commande_green %}
+			{%for piece in liste_commande_green=commande %}
 			<tr>
-				<td>{{piece['id_piece']}}</td>
+				<td>{{piece['id']}}</td>
 				<td>{{piece['nom']}}</td>
 				<td>{{piece['quantite']}}</td>
 
@@ -30,6 +33,6 @@
 		<ul>
 			<p>Cliquer sur valider pour valider la commande sélectionnée</p>
 			<li class=bouton_commande>
-				<a href="{{url_for('commandegreen')}}"> Valider </a>
+				<a href="{{url_for('valider_commande_green')}}"> Valider </a>
 			</li>
 		</ul>
