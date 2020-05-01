@@ -8,33 +8,23 @@
 		<!-- Contenu -->
 			<h1>
 			Bienvenue sur la page d'accueil de votre logiciel de gestion du SeriousGame, AgiWeb </h1>
-			<br>
+			</br>
 
 			<p class= "small ">
 			AgiWeb se décompose en deux parties : </p>
-			<br>
-			<ul>
-
-				<div id="content-accueil">
-					<div class="leftbox">
-
-						<p class= "small "> - La partie logistique </p>
-						<li class=bouton2>
-
-							<p> <a href="{{url_for('agilog')}}" rel="nofollow"> Cliquez ici pour accéder à la partie AgiLog  </a></p>
-						<li class=bouton2>
-					</div>
-					<div class="rightbox">
+			</br>
 
 
-						<p class= "small "> - La partie lean </p>
-						<li class=bouton2>
-							<p> <a href="{{url_for('agilean')}}" rel="nofollow"> Cliquez ici pour accéder à la partie AgiLean  </a></p>
-					 </li>
+			<div id="content-accueil">
 
-					</div>
-				</div>
-			</ul>
+				<p > - La partie logistique </p>
+				<a  class=bouton2 href="{{url_for('agilog')}}" rel="nofollow"> Cliquez ici pour accéder à la partie AgiLog  </a></p>
+
+				<p> - La partie lean </p>
+				<p> <a class=bouton2 href="{{url_for('agilean')}}" rel="nofollow"> Cliquez ici pour accéder à la partie AgiLean  </a></p>
+
+
+			</div>
 
 		<!-- Pied de page -->
 		<footer>

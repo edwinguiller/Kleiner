@@ -6,14 +6,11 @@
 		{% include "Navbar.html" %}
 
 		<!-- Contenu -->
-		<h2> Bienvenue sur la page d'acceuil de AgiLean </h2>
-		<ul>
-			<p>Vous venez de recevoir un kit et vous souhaitez l'ajouter au stock ? Cliquer alors sur déclarer un kit</p>
-			<li class="bouton2">
-				<p> <a href="{{url_for('receptkit')}}" rel="nofollow"> Déclarer un kit </a></p>
-			</li>
 
-		</ul>
+		<h2> Bienvenue sur la page d'acceuil de AgiLean </h2>
+		<p>Vous venez de recevoir un kit et vous souhaitez l'ajouter au stock ? Cliquer alors sur déclarer un kit</p>
+		<a class="bouton2" href="{{url_for('receptkit')}}" rel="nofollow"> Déclarer un kit </a></p>
+
 		<!-- Pied de page -->
 		<footer>
 			<p> Copyright &copy; AgiWeb 2020 - All right reserved </p>

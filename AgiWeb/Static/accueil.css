@@ -123,17 +123,15 @@ div.leftbox{
 div.rightbox{
 }
 
-div#content-agilog ul li.bouton2{
-	list-style-type: none;
-}
-div#content-agilog ul li.bouton2 a{
+
+a.bouton2{
 	color:white;
 	background-color:990066;
 	text-decoration: none;
 	padding:10px;
 	font-size:20px;
 }
-div#content-agilog ul li.bouton2:hover a{
+a.bouton2:hover{
 	color:990066;
 	background-color:white;
 	transition: 0.5S all;
@@ -147,13 +145,6 @@ table
 td,th
 {
     border: 1px solid black;
-}
-div#content-stock ul li.bouton_valider{
-	list-style-type: none;
-}
-div#content-stock ul li.bouton_valider a{
-	color:red;
-	text-decoration: none;
 }
 
 

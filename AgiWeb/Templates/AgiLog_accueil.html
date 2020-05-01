@@ -9,24 +9,21 @@
 		<!-- Contenu -->
 		<h1> Bienvenue sur la page d'accueil de AgiLog </h1>
 		<div id="content-agilog">
-			<ul>
 
-				<div class="leftbox">
+			<div class="leftbox">
 
+				<p class= "small "> Vous voulez lancez le run et initialiser les paramètres du jeux ? Cliquez alors sur Initialisation </p>
 
-					<p class= "small "> Vous voulez lancez le run et initialiser les paramètres du jeux ? Cliquez alors sur Initialisation </p>
-					<li class="bouton2">
-						<a href="{{url_for('initialisation')}}"> Initialisation </a>
-					</li>
-				</div>
-				<div class="rightbox">
+				<a class="bouton2" href="{{url_for('initialisation')}}"> Initialisation </a>
+			</div>
 
-					<p class= "small "> Encours ? Cliquez alors sur Encours </p>
-					<li class="bouton2">
-						<a href="{{url_for('encoursAlog')}}"> Encours </a>
-					</li>
-				</div>
-			</ul>
+			<div class="rightbox">
+
+				<p class= "small "> Encours ? Cliquez alors sur Encours </p>
+
+				<a class="bouton2" href="{{url_for('encoursAlog')}}"> Encours </a>
+			</div>
+
 		</div>
 		<!-- Pied de page -->
 		<footer>

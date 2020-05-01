@@ -106,32 +106,31 @@
             <br/>
 
             </div>
-                <div id="content-commande">
-                    <ul>
-                        <h2>Le seuil de recompletement n'est pas complet ?</h2>
-                        <div class="leftbox">
+            <div id="content-commande">
 
-                            <p >  Vous voulez passer une commande chez AgiGreen ? </p>
-                            <li class="bouton_commande">
-                                <a href="{{url_for('cmd_green')}}"> Oui </a>
-                            </li>
-                            </br>
-                            <p> Délai avant de pouvoir passer commande chez ce fournisseur : </p>
-                            <p class="timer-fournisseurs" timer="10"></p>
-                        </div>
-                        <div class="rightbox">
+              <h2>Le seuil de recompletement n'est pas complet ?</h2>
+              <div class="leftbox">
 
-                            <p>Vous voulez passer une commande chez AgiPart ? </p>
-                            <li class="bouton_commande">
-                                <a href="{{url_for('cmd_part')}}"> Oui </a>
-                            </li>
-                            </br>
+                <p>  Vous voulez passer une commande chez AgiGreen ? </p>
 
-                            <p> Délai avant de pouvoir passer commande chez ce fournisseur : </p>
-                            <p class="timer-fournisseurs" timer="12"></p>
-                        </div>
-                    </ul>
-                </div>
+                <a class="bouton2" href ="{{url_for('cmd_green')}}"> Oui </a>
+                <br>
+                <p> Délai avant de pouvoir passer commande chez ce fournisseur : </p>
+                <p class="timer-fournisseurs" timer="10"></p>
+              </div>
+              <div class="rightbox">
+
+                <p>Vous voulez passer une commande chez AgiPart ? </p>
+
+                <a class="bouton2" href="{{url_for('cmd_part')}}"> Oui </a>
+
+                <br>
+
+                <p> Délai avant de pouvoir passer commande chez ce fournisseur : </p>
+                <p class="timer-fournisseurs" timer="12"></p>
+              </div>
+
+            </div>
         <!-- Pied de page -->
         <footer>
             <p> Copyright &copy; AgiWeb 2020 - All right reserved </p>

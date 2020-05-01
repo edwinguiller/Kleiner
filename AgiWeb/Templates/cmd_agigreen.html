@@ -10,7 +10,7 @@
         <!-- Contenu -->
         <h1>Commande AgiGreen</h1>
         </br>
-        <p class="cssmarche"> Voici les commandes à effectuer chez AgiGreen </p>
+        <p> Voici les commandes à effectuer chez AgiGreen </p>
 
 
         <table>
@@ -29,9 +29,16 @@
             </tr>
             {%endfor%}
         </table>
-        <ul>
-            <p>Cliquer sur valider pour valider la commande sélectionnée</p>
-            <li class="bouton2">
-                <a href="{{url_for('valider_commande_green')}}"> Valider </a>
-            </li>
-        </ul>
+
+        <p>Cliquer sur valider pour valider la commande sélectionnée</p>
+        <a class="bouton2" href="{{url_for('valider_commande_green')}}"> Valider </a>
+
+				<!-- Pied de page -->
+				<footer>
+					<p> Copyright &copy; AgiWeb 2020 - All right reserved </p>
+				</footer>
+
+
+
+			</body>
+		</html>

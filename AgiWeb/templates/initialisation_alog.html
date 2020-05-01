@@ -1,28 +1,31 @@
 
-
 <!-- page agilog/initialisation (ref structure site trello) -->
+<html>
 {% include "head.html" %}
 
 	<body>
 
-{% include "Navbar.html" %}
-<div id="content-agilog">
-	<h1>Bienvenue sur la page d'initialisation </h1>
+	{% include "Navbar.html" %}
+	<div id="content-agilog">
+		<h1>Bienvenue sur la page d'initialisation </h1>
 
-			<p class= "small "> Vous pouvez initialiser le stock initial du jeux </p>
+				<p class= "small "> Vous pouvez initialiser le stock initial du jeux </p>
 
-			<a class="bouton2" href="{{url_for('ajout_piece')}}">Renseigner stock initial</a>
+				<a class="bouton2" href="{{url_for('ajout_piece')}}">Renseigner stock initial</a>
 
-			<p class= "small "> Vous pouvez renseigner la gestion des stocks </p>
+				<p class= "small "> Vous pouvez renseigner la gestion des stocks </p>
 
-			<a class="bouton2" href="{{url_for('gestion_stock')}}">Gestion des stocks</a>
+				<a class="bouton2" href="{{url_for('gestion_stock')}}">Gestion des stocks</a>
 
-			<p class= "small"> Vous pouvez définir un kit </p>
+				<p class= "small"> Vous pouvez définir un kit </p>
 
-			<a class="bouton2" href="{{url_for('code_kit')}}">Définir un kit </a>
+				<a class="bouton2" href="{{url_for('code_kit')}}">Définir un kit </a>
 
+	</div>
+	<!-- Pied de page -->
+	<footer>
+		<p> Copyright &copy; AgiWeb 2020 - All right reserved </p>
+	</footer>
 
-
-</div>
 </body>
 </html>
