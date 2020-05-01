@@ -265,33 +265,32 @@ def code_kit():
 
 @app.route('/Agilog/Initialisation/Code_kit/modif_kit', methods=['GET', 'POST'])
 def modif_kit():
-    #ici y faut que tu mettes les variables dont j'ai besoin pour la page càd "kit_a_modif" le nom du
-    #kit à modifier et "piece_du_kit" la liste des piece dans ce kit_a_modif
+	
+	#Variables utiles
     con = lite.connect(cheminbdd)
     con.row_factory = lite.Row
     cur=con.cursor()
     cur.execute("SELECT id, nom FROM piece;")
     pieces=cur.fetchall()
-    kit_a_modif =request.form.get('nom_kit_a_modif')#a modifier pour toi
+    kit_a_modif =request.form.get('nom_kit_a_modif')#nom du kit à créer ou à modifier
+    choix=True #c'est un booléen qui traduit la volonté de créer (True) un kit ou de le modifier(False)
+    
+    #permet la création d'un kit si on le souhaite
+    kit=choix_kit([kit_a_modif,choix])
+    if kit[0]==None:
+         return(kit[1])#a toi de faire, kit[1] est un message d'erreur
+    
     cur.execute("SELECT id FROM kit WHERE nom_kit=?;",[kit_a_modif])
     id_kit_a_modif=cur.fetchall()
     id_kit_a_modif=id_kit_a_modif[0]
     id_kit_a_modif=id_kit_a_modif['id']
     cur.execute("SELECT piece, quantite FROM compo_kit WHERE kit=?;",[id_kit_a_modif])
     piece_du_kit=cur.fetchall()
-    #pareil faut que tu la remplisses avec la bdd en faisant une liste de dictionnaire qui contoienne nom et quantité
 
-    #fin recup variable
-
-#J'ai testé la fonction, les fonctionnalités marchent,
-	#si tu as un problème, tu peux retrouver dans fonction_test la fonction que j'ai testé qui marche
     #recupération des variables :
     if not request.method == 'POST':
         return render_template('modif_kit_init.html',d=kit_a_modif, id=id_kit_a_modif,pieces = pieces,msg="",piece_du_kit=piece_du_kit)
     else :
-        # mets les action sur la bdd ici
-
-        #jusque la
         piece_a_ajoutee = request.form.get('saisi_piece')
         option = request.form.get('option')
         quantitee = request.form.get('quantite')
@@ -303,9 +302,9 @@ def modif_kit():
 	        quantite=quantite_bonne(quantitee)#on récupère et vérifie la quantite=[quantite,True/False]
 	        cur.execute("SELECT piece FROM compo_kit WHERE kit=?;",[id_kit_a_modif])
 	        nom_des_pieces_du_kit=liste(cur.fetchall())
-	        print(nom_des_pieces_du_kit)
-	        print(piece_a_ajouter)
-	        print(quantite)
+	        #print(nom_des_pieces_du_kit)
+	        #print(piece_a_ajouter)
+	        #print(quantite)
 	        #Si on veut supprimer une pièce
 	        if piece_a_ajouter[0]=='True':
 	            if piece_a_ajouter[1] in nom_des_pieces_du_kit :
@@ -322,9 +321,8 @@ def modif_kit():
 	            return render_template('modif_kit_init.html',d=kit_a_modif, id=id_kit_a_modif,pieces = pieces,msg="erreur la quantite n'est pas bonne",piece_du_kit=piece_du_kit)
         except:
             pass
-        cur.execute("SELECT piece FROM compo_kit WHERE kit=?;",[id_kit_a_modif])
-        print(liste(cur.fetchall()))
-        #return render_template('modif_kit_init.html',d=kit_a_modif, id=id_kit_a_modif,pieces = pieces,msg="",piece_du_kit=piece_du_kit)
+        #cur.execute("SELECT piece FROM compo_kit WHERE kit=?;",[id_kit_a_modif])
+        #print(liste(cur.fetchall()))
         con.commit()
         return render_template('modif_kit_init.html',d=kit_a_modif, id=id_kit_a_modif,pieces = pieces,msg="",piece_du_kit=piece_du_kit)
 

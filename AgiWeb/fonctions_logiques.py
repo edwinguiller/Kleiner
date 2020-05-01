@@ -65,6 +65,32 @@ def quantite_bonne(quantite):
 		else:
 			return([quantite,False])
 
+def choix_kit(nom_du_kit):#nom_du_kit est une liste ["nom du kit",True/false] selon si on veut modifier ou creer le kit
+#la fonction execute l'ordre et retourne une liste [nom_du_kit/None,""/"un message d'erreur si l'action demandée n'est pas possible"]    
+    
+    #On recupère les variables utiles
+    con = lite.connect(cheminbdd)
+    con.row_factory = lite.Row
+    cur=con.cursor()
+    cur.execute("SELECT nom_kit from kit;")
+    nom_des_kits=liste(cur.fetchall())
+    cur.execute("SELECT id from kit;")
+    ids_des_kits=cur.fetchall()
+    
+    #On crée un kit, car nom_du_kit[1]=True
+    if nom_du_kit[1]:
+		#le nom existe déjà
+        if compare_nom(nom_du_kit[0],nom_des_kits):
+            return([None,"le nom de ce kit existe déjà"])
+        else:
+            id_du_kit=creer_id(ids_des_kits)
+            cur.execute("INSERT INTO kit(id,nom_kit) VALUES (?,?);",[id_du_kit,nom_du_kit[0]])
+            con.commit()
+            return([nom_du_kit,"le kit vient d'ètre créé"])
+    #sinon on modifie un kit existant
+    else:
+       return([nom_du_kit,"tu va modifier le kit"])
+	
 
 def ajouter_bdd(base, colonne, entree, types): # prend en argument  une base (ex: piece), les colonnes que l'on veut modifier (une liste ex: [id, nom...]), les entrées (valeurs) et le type de ces valeurs
 
