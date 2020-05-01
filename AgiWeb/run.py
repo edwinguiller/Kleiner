@@ -272,7 +272,7 @@ def modif_kit():
     cur=con.cursor()
     cur.execute("SELECT id, nom FROM piece;")
     pieces=cur.fetchall()
-    kit_a_modif =request.form.get('nom_kit_a_modif')#a modifier pour toi
+    kit_a_modif =request.form.get('nom_kit_a_modif')
     cur.execute("SELECT id FROM kit WHERE nom_kit=?;",[kit_a_modif])
     id_kit_a_modif=cur.fetchall()
     id_kit_a_modif=id_kit_a_modif[0]
