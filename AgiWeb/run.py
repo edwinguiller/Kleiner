@@ -272,7 +272,7 @@ def modif_kit():
     cur=con.cursor()
     cur.execute("SELECT nom FROM piece;")
     pieces=cur.fetchall()
-    kit_a_modif ="CCO_Habitacle"#a modifier pour toi
+    kit_a_modif =request.form.get('nom_kit_a_modif')#a modifier pour toi
     cur.execute("SELECT id FROM kit WHERE nom_kit=?;",[kit_a_modif])
     id_kit_a_modif=int(liste(cur.fetchall())[0])
     cur.execute("SELECT piece, quantite FROM compo_kit WHERE kit=?;",[id_kit_a_modif])
@@ -294,7 +294,7 @@ def modif_kit():
         option = request.form.get('option')
         quantitee = request.form.get('quantite')
     #fin de recuperation des variables
-        try:   
+        try:
 	        cur.execute("SELECT id FROM piece WHERE nom=?;",[piece_a_ajoutee])
 	        id_piece_a_ajoutee=liste(cur.fetchall())[0]
 	        piece_a_ajouter=[option,id_piece_a_ajoutee]#piece=[True/false,nom de la piece à ajouter]
@@ -323,7 +323,7 @@ def modif_kit():
         cur.execute("SELECT piece FROM compo_kit WHERE kit=?;",[id_kit_a_modif])
         print(liste(cur.fetchall()))
         #return render_template('modif_kit_init.html',d=kit_a_modif, id=id_kit_a_modif,pieces = pieces,msg="",piece_du_kit=piece_du_kit)
-        return redirect(url_for('modif_kit'))
+        return render_template('modif_kit_init.html',d=kit_a_modif, id=id_kit_a_modif,pieces = pieces,msg="",piece_du_kit=piece_du_kit)
 
 #La page pour Agilean
 @app.route('/Agilean')
