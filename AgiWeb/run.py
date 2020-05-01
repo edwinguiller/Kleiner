@@ -274,7 +274,9 @@ def modif_kit():
     pieces=cur.fetchall()
     kit_a_modif =request.form.get('nom_kit_a_modif')#a modifier pour toi
     cur.execute("SELECT id FROM kit WHERE nom_kit=?;",[kit_a_modif])
-    id_kit_a_modif=int(liste(cur.fetchall())[0])
+    id_kit_a_modif=cur.fetchall()
+    id_kit_a_modif=id_kit_a_modif[0]
+    id_kit_a_modif=id_kit_a_modif['id']
     cur.execute("SELECT piece, quantite FROM compo_kit WHERE kit=?;",[id_kit_a_modif])
     piece_du_kit=cur.fetchall()
     #pareil faut que tu la remplisses avec la bdd en faisant une liste de dictionnaire qui contoienne nom et quantité
