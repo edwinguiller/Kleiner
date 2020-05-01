@@ -303,9 +303,6 @@ def modif_kit():
 	        quantite=quantite_bonne(quantitee)#on récupère et vérifie la quantite=[quantite,True/False]
 	        cur.execute("SELECT piece FROM compo_kit WHERE kit=?;",[id_kit_a_modif])
 	        nom_des_pieces_du_kit=liste(cur.fetchall())
-	        print(nom_des_pieces_du_kit)
-	        print(piece_a_ajouter)
-	        print(quantite)
 	        #Si on veut supprimer une pièce
 	        if piece_a_ajouter[0]=='True':
 	            if piece_a_ajouter[1] in nom_des_pieces_du_kit :
