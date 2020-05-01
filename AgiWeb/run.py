@@ -30,10 +30,10 @@ def encoursAlog():
     # la fonction select_stockreel renvois un dicionnaire avec comme colonne: "id","nom","quantite", "a_commander".
     # Toutes les pieces y sont renseigné. Les quantités sont les stocks. Les a_commander sont des "OUI" si il faut commander ou "NON" si il n'y'a pas besoin encore et non pas des 1 et 0 comme dans la base de donné.
     tab_reel=select_stock_reel()
-    list_of_list = zip(tab_reel['id'],  tab_reel['nom'], tab_reel['quantite'], tab_reel['a_commander'])
-    print(zip(tab_reel['id'],  tab_reel['nom'], tab_reel['quantite'], tab_reel['a_commander']))
+    #list_of_list = zip(tab_reel['id'],  tab_reel['nom'], tab_reel['quantite'], tab_reel['a_commander'])
+    #print(zip(tab_reel['id'],  tab_reel['nom'], tab_reel['quantite'], tab_reel['a_commander']))
 
-    return render_template('encours_alog.html',tab_reel=list_of_list)
+    return render_template('encours_alog.html',tab_reel=tab_reel, tab_encours=tab_encours)
 
 @app.route('/Agilog/Encours/<id>')  # route pour passer la pièce (dont l'idéee est séléctionnée) du stock encours à stock réel: Programmeur à faire
 def actualize_id(id): #Programmeur à faire
