@@ -270,7 +270,7 @@ def modif_kit():
     con = lite.connect(cheminbdd)
     con.row_factory = lite.Row
     cur=con.cursor()
-    cur.execute("SELECT nom FROM piece;")
+    cur.execute("SELECT id, nom FROM piece;")
     pieces=cur.fetchall()
     kit_a_modif =request.form.get('nom_kit_a_modif')#a modifier pour toi
     cur.execute("SELECT id FROM kit WHERE nom_kit=?;",[kit_a_modif])
