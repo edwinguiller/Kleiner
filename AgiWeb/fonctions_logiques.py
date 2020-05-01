@@ -66,7 +66,7 @@ def quantite_bonne(quantite):
 			return([quantite,False])
 
 def choix_kit(nom_du_kit):#nom_du_kit est une liste ["nom du kit",True/false] selon si on veut modifier ou creer le kit
-#la fonction execute l'ordre et retourne une liste [nom_du_kit/None,""/"un message d'erreur si l'action demandée n'est pas possible"]    
+#la fonction execute l'ordre et retourne une liste [nom_du_kit/None,l'id du kit]    
     
     #On recupère les variables utiles
     con = lite.connect(cheminbdd)
@@ -81,15 +81,19 @@ def choix_kit(nom_du_kit):#nom_du_kit est une liste ["nom du kit",True/false] se
     if nom_du_kit[1]:
 		#le nom existe déjà
         if compare_nom(nom_du_kit[0],nom_des_kits):
-            return([None,"le nom de ce kit existe déjà"])
+            cur.execute("SELECT id from kit WHERE nom_kit=?;",[nom_du_kit[0]])
+            id_kit=liste(cur.fetchall())[0]
+            return([None,id_kit])
         else:
-            id_du_kit=creer_id(ids_des_kits)
-            cur.execute("INSERT INTO kit(id,nom_kit) VALUES (?,?);",[id_du_kit,nom_du_kit[0]])
+            id_kit=creer_id(ids_des_kits)
+            cur.execute("INSERT INTO kit(id,nom_kit) VALUES (?,?);",[id_kit,nom_du_kit[0]])
             con.commit()
-            return([nom_du_kit,"le kit vient d'ètre créé"])
+            return([nom_du_kit,id_kit])
     #sinon on modifie un kit existant
     else:
-       return([nom_du_kit,"tu va modifier le kit"])
+       cur.execute("SELECT id from kit WHERE nom_kit=?;",[nom_du_kit[0]])
+       id_kit=liste(cur.fetchall())[0]
+       return([nom_du_kit,id_kit])
 	
 
 def ajouter_bdd(base, colonne, entree, types): # prend en argument  une base (ex: piece), les colonnes que l'on veut modifier (une liste ex: [id, nom...]), les entrées (valeurs) et le type de ces valeurs
