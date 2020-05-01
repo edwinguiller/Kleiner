@@ -294,7 +294,7 @@ def modif_kit():
         option = request.form.get('option')
         quantitee = request.form.get('quantite')
     #fin de recuperation des variables
-        try:
+        try:   
 	        cur.execute("SELECT id FROM piece WHERE nom=?;",[piece_a_ajoutee])
 	        id_piece_a_ajoutee=liste(cur.fetchall())[0]
 	        piece_a_ajouter=[option,id_piece_a_ajoutee]#piece=[True/false,nom de la piece à ajouter]
@@ -304,24 +304,26 @@ def modif_kit():
 	        print(nom_des_pieces_du_kit)
 	        print(piece_a_ajouter)
 	        print(quantite)
+	        #Si on veut supprimer une pièce
+	        if piece_a_ajouter[0]=='True':
+	            if piece_a_ajouter[1] in nom_des_pieces_du_kit :
+	                cur.execute("DELETE FROM compo_kit WHERE kit=? and piece=?;",[id_kit_a_modif,piece_a_ajouter[1]])
+	            else:
+	                return render_template('modif_kit_init.html',d=kit_a_modif, id=id_kit_a_modif,pieces = pieces,msg="erreur tu ne peux pas supprimer une pièce qui n'existe pas ",piece_du_kit=piece_du_kit)
+	    #Si on veut ajouter une piece au kit
+	        elif quantite[1]:
+	            if piece_a_ajouter[1] not in nom_des_pieces_du_kit :#la pièce n'est pas présente dans le kit et la quantite est bonne donc on ajoute la piece simplement au kit
+	                cur.execute("INSERT INTO compo_kit(kit,piece,quantite) VALUES (?,?,?);",[id_kit_a_modif,piece_a_ajouter[1],quantite[0]])
+	            else:#la piece est présente dans le kit, on modifie donc juste la quantite
+	                cur.execute("UPDATE compo_kit SET quantite=? WHERE kit=? and piece=?;",[quantite[0],id_kit_a_modif,piece_a_ajouter[1]])
+	        else:
+	            return render_template('modif_kit_init.html',d=kit_a_modif, id=id_kit_a_modif,pieces = pieces,msg="erreur la quantite n'est pas bonne",piece_du_kit=piece_du_kit)
         except:
             pass
-        #Si on veut supprimer une pièce
-        if piece_a_ajouter[0]=='True':
-            if piece_a_ajouter[1] in nom_des_pieces_du_kit :
-                cur.execute("DELETE FROM compo_kit WHERE kit=? and piece=?;",[id_kit_a_modif,piece_a_ajouter[1]])
-            else:
-                return render_template('modif_kit_init.html',d=kit_a_modif, id=id_kit_a_modif,pieces = pieces,msg="erreur tu ne peux pas supprimer une pièce qui n'existe pas ",piece_du_kit=piece_du_kit)
-    #Si on veut ajouter une piece au kit
-        elif quantite[1]:
-            if piece_a_ajouter[1] not in nom_des_pieces_du_kit :#la pièce n'est pas présente dans le kit et la quantite est bonne donc on ajoute la piece simplement au kit
-                cur.execute("INSERT INTO compo_kit(kit,piece,quantite) VALUES (?,?,?);",[id_kit_a_modif,piece_a_ajouter[1],quantite[0]])
-            else:#la piece est présente dans le kit, on modifie donc juste la quantite
-                cur.execute("UPDATE compo_kit SET quantite=? WHERE kit=? and piece=?;",[quantite[0],id_kit_a_modif,piece_a_ajouter[1]])
-        else:
-            return render_template('modif_kit_init.html',d=kit_a_modif, id=id_kit_a_modif,pieces = pieces,msg="erreur la quantite n'est pas bonne",piece_du_kit=piece_du_kit)
-
-        #return redirect(url_for('modif_kit'))
+        cur.execute("SELECT piece FROM compo_kit WHERE kit=?;",[id_kit_a_modif])
+        print(liste(cur.fetchall()))
+        #return render_template('modif_kit_init.html',d=kit_a_modif, id=id_kit_a_modif,pieces = pieces,msg="",piece_du_kit=piece_du_kit)
+        return redirect(url_for('modif_kit'))
 
 #La page pour Agilean
 @app.route('/Agilean')
