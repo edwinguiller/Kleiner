@@ -38,7 +38,7 @@ def actualize_id(id): #Programmeur à faire
     # TODO: handle the id in the sql
 
     #prend l'id d'une commande en argument et passe la commande en validant la commande puis ajoute les pieces aux stocks, l'id est en argumant de la page
-    valider_commande(id)
+    valider_commande(id) #elle est où cette fonction ?
 
     # return render_template('encours_alog.html')
 
@@ -50,7 +50,7 @@ def commandepart(): #à faire
     # la fonction select_commande_fournisseur prend en argumant ("agipart") ou ("agigreen") en fonctioon du fournisseur qu'on veut, et renvois un dicionnaire avec comme colonne: "id","nom","quantite".
     # Les pieces renseigné sont les pièces à commander qui sont fourni par le fournisseur choisi. Les quantités sont les stocks.
     # Attention il faut que la bdd soit rempli pour que ca marche. si la ligne piece.a_commander n'est pas rempli, elle ne peut rien renvoyer!
-    commande=select_commande_fournisseur ("agipart")
+    commande=select_commande_fournisseur ("agipart") #commandepart non ? sinon ca se mélange avec green
 
     # prend en argument la commande donnée par la fonction select_commande_fournisseur et ajoute les pieces dans les commande en en créant une nouvelle
     # a voir comment l'utiliser
