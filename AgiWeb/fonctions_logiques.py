@@ -183,12 +183,12 @@ def seuil_commande (): #stock, nom et seuil_recomp sont des listes et si les sto
         except:
             print ("non")
         else:
-            if (bdd["quantite"][i]-bdd["seuil_recomp"][i]<=0):
+            if (bdd["quantite"][i]-bdd["seuil_recomp"][i]>=0):
                 colonne=["a_commander", "nom"]
                 entree=[1, bdd["nom"][i]]
                 types=["int","str"]
                 mise_a_jour_bdd("piece", colonne, entree, types)
-            elif (bdd["quantite"][i]-bdd["seuil_recomp"][i]>=0):
+            elif (bdd["quantite"][i]-bdd["seuil_recomp"][i]<=0):
                 colonne=["a_commander", "nom"]
                 entree=[0, bdd["nom"][i]]
                 types=["int","str"]
@@ -232,33 +232,33 @@ def convert_dict(L,c1=None,c2=None,c3=None,c4=None,c5=None,c6=None,c7=None,c8=No
     return D
 
 def select_encours (): #selectionne les stocks en cours pour pouvoir ensuite les afficher
-
     con = lite.connect(cheminbdd)
     con.row_factory = lite.Row
     cur = con.cursor()
-    cur.execute("SELECT id_com, date,nom as nom_piece,quantite, strftime('%s',date_arrivee)- strftime('%s',strftime('%H:%M:%S','now')) as timer from (SELECT id_com,nom,quantite,date,delai,strftime('%H:%M:%S',(SELECT commande.date FROM commande),delai) as date_arrivee from (SELECT piece.id as id_piece,piece.nom, piece.fournisseur, fournisseur.delai from piece join fournisseur ON piece.fournisseur==fournisseur.id) JOIN (SELECT commande.id as id_com,commande.date,compo_commande.piece,compo_commande.quantite from commande join compo_commande on commande.id==compo_commande.commande) ON id_piece==piece);")
-    d=tab(cur.fetchall())
-    b=convert_dict(d,"id","date","nom", "quantite","timer")
+    cur.execute("SELECT id_com as id, date,nom as nom,quantite, strftime('%s',date_arrivee)- strftime('%s',strftime('%H:%M:%S','now')) as timer from (SELECT id_com,nom,quantite,date,delai,strftime('%H:%M:%S',(SELECT commande.date FROM commande),delai) as date_arrivee from (SELECT piece.id as id_piece,piece.nom, piece.fournisseur, fournisseur.delai from piece join fournisseur ON piece.fournisseur==fournisseur.id) JOIN (SELECT commande.id as id_com,commande.date,compo_commande.piece,compo_commande.quantite from commande join compo_commande on commande.id==compo_commande.commande WHERE reception==0) ON id_piece==piece) ORDER by id_com;")
+    b=cur.fetchall() #ajouté
+    #d=tab(cur.fetchall())
+    #b=convert_dict(d,"id","date","nom", "quantite","timer")
     con.close()
 
     return b
 
 def select_stock_reel (): #selectionne les stocks reel pour pouvoir ensuite les afficher
-
     con = lite.connect(cheminbdd)
     con.row_factory = lite.Row
     cur = con.cursor()
     cur.execute("SELECT id, nom, quantite, a_commander FROM piece")
-    d=tab(cur.fetchall())
+    b=cur.fetchall() # ajouté
+    #d=tab(cur.fetchall())
 
-    b=convert_dict(d,"id","nom","quantite", "a_commander")
-    for i in range (0,len(b["a_commander"])):
-        if (b["a_commander"][i]==1):
-            b["a_commander"][i]="OUI"
-        elif (b["a_commander"][i]==0):
-            b["a_commander"][i]="NON"
-        else:
-            b["a_commander"][i]="ERREUR"
+    #b=convert_dict(d,"id","nom","quantite", "a_commander")
+    #for i in range (0,len(b["a_commander"])):
+    #    if (b["a_commander"][i]==1):
+    #        b["a_commander"][i]="OUI"
+    #    elif (b["a_commander"][i]==0):
+    #        b["a_commander"][i]="NON"
+    #    else:
+    #        b["a_commander"][i]="ERREUR"
     con.close()
 
     return b
