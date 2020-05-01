@@ -274,19 +274,12 @@ def modif_kit():
     pieces=cur.fetchall()
     kit_a_modif =request.form.get('nom_kit_a_modif')#nom du kit à créer ou à modifier
     choix=True #c'est un booléen qui traduit la volonté de créer (True) un kit ou de le modifier(False)
-    
-    #permet la création d'un kit si on le souhaite
-    kit=choix_kit([kit_a_modif,choix])
-    if kit[0]==None:
-         return(kit[1])#a toi de faire, kit[1] est un message d'erreur
-    
-    cur.execute("SELECT id FROM kit WHERE nom_kit=?;",[kit_a_modif])
-    id_kit_a_modif=cur.fetchall()
-    id_kit_a_modif=id_kit_a_modif[0]
-    id_kit_a_modif=id_kit_a_modif['id']
+    kit_a_creer=choix_kit([kit_a_modif[0],choix])
+    id_kit_a_modif=kit_a_creer[1]
     cur.execute("SELECT piece, quantite FROM compo_kit WHERE kit=?;",[id_kit_a_modif])
     piece_du_kit=cur.fetchall()
-
+    if kit_a_creer[0]==None:
+        return render_template('modif_kit_init.html',d=kit_a_modif, id=kit_a_creer[1],pieces = pieces,msg="tu ne peux créer un kit déjà existant donc je te propose de le modifier",piece_du_kit=piece_du_kit)
     #recupération des variables :
     if not request.method == 'POST':
         return render_template('modif_kit_init.html',d=kit_a_modif, id=id_kit_a_modif,pieces = pieces,msg="",piece_du_kit=piece_du_kit)
@@ -302,9 +295,6 @@ def modif_kit():
 	        quantite=quantite_bonne(quantitee)#on récupère et vérifie la quantite=[quantite,True/False]
 	        cur.execute("SELECT piece FROM compo_kit WHERE kit=?;",[id_kit_a_modif])
 	        nom_des_pieces_du_kit=liste(cur.fetchall())
-	        #print(nom_des_pieces_du_kit)
-	        #print(piece_a_ajouter)
-	        #print(quantite)
 	        #Si on veut supprimer une pièce
 	        if piece_a_ajouter[0]=='True':
 	            if piece_a_ajouter[1] in nom_des_pieces_du_kit :
@@ -321,8 +311,6 @@ def modif_kit():
 	            return render_template('modif_kit_init.html',d=kit_a_modif, id=id_kit_a_modif,pieces = pieces,msg="erreur la quantite n'est pas bonne",piece_du_kit=piece_du_kit)
         except:
             pass
-        #cur.execute("SELECT piece FROM compo_kit WHERE kit=?;",[id_kit_a_modif])
-        #print(liste(cur.fetchall()))
         con.commit()
         return render_template('modif_kit_init.html',d=kit_a_modif, id=id_kit_a_modif,pieces = pieces,msg="",piece_du_kit=piece_du_kit)
 
