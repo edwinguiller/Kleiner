@@ -183,12 +183,12 @@ def seuil_commande (): #stock, nom et seuil_recomp sont des listes et si les sto
         except:
             print ("non")
         else:
-            if (bdd["quantite"][i]-bdd["seuil_recomp"][i]>=0):
+            if (bdd["quantite"][i]-bdd["seuil_recomp"][i]<=0):
                 colonne=["a_commander", "nom"]
                 entree=[1, bdd["nom"][i]]
                 types=["int","str"]
                 mise_a_jour_bdd("piece", colonne, entree, types)
-            elif (bdd["quantite"][i]-bdd["seuil_recomp"][i]<=0):
+            elif (bdd["quantite"][i]-bdd["seuil_recomp"][i]>=0):
                 colonne=["a_commander", "nom"]
                 entree=[0, bdd["nom"][i]]
                 types=["int","str"]
@@ -263,6 +263,7 @@ def select_stock_reel (): #selectionne les stocks reel pour pouvoir ensuite les 
 
     return b
 
+
 def select_commande_fournisseur (fournisseur): #prend le fournisseur en lettre minuscule et("agigreen" ou "agipart") et renvoi les id, nom et quantité des pièces à commander du fournisseur
     #fonctionne uniquement si il y'a quelque chose dans la colonne à commander (0 ou 1) pour les 2 fournisseur mais pas si il y'a que des NULL, si il y a que des NULL c'est chiant faut que je fasse un test pour ca
     con = lite.connect(cheminbdd)
@@ -275,22 +276,27 @@ def select_commande_fournisseur (fournisseur): #prend le fournisseur en lettre m
         fourniss=2
     else:
         return ERREUR
-    cur.execute("SELECT id, nom, quantite FROM piece WHERE a_commander=? and fournisseur=?", [1,fourniss])
-    a=cur.fetchall()
-    if (a==[]):
-        print ("il n y a rien")
-        return a
-    d=tab(a)
-    b=convert_dict(d,"id","nom","quantite")
+    cur.execute("SELECT id , nom, quantite FROM piece WHERE a_commander=? and fournisseur=?", [1,fourniss])
+    b=cur.fetchall()
+    #if (a==[]):
+    #    print ("il n y a rien")
+    #    return a
+    #d=tab(a)
+    #b=convert_dict(d,"id","nom","quantite")
     con.close()
 
     return b
+
 
 def passer__commande(commande): #prend en argument le dictionnaire commande avec les id des pieces, leurs nom et la quantite et créer la commande et la compo commande associé
 
     con = lite.connect(cheminbdd)
     con.row_factory = lite.Row
     cur = con.cursor()
+    if (commande==[]):
+        return
+    d=tab(commande)
+    commande=convert_dict(d,"id","nom","quantite")
     # générer id
     cur.execute ("SELECT id FROM commande")
     liste_id=(cur.fetchall())

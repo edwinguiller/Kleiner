@@ -63,7 +63,7 @@
                       <td>{{piece['quantite']}}</td>
                       <td class="timer" timer="{{piece['timer']}}"></td>
                         <td hidden class="validation">
-                                <a href="{{url_for('actualize_id', id=3)}}"> Oui </a>
+                                <a href="{{url_for('actualize_id', id=piece['id'])}}"> Oui </a>
                         </td>
                     </tr>
                     {%endfor%}
