@@ -14,6 +14,14 @@
 
         <div id="content-stock">
             <h1>Bienvenue sur la page des encours </h1>
+            <p>Temps depuis le lancement du jeux </p>
+
+
+            <p id="chrono" chrono="16"></p>
+
+            <!-- <p > Temps depuis le début du jeu : <span id="chrono" chrono="16"></span> </p> -->
+
+
             <p> Vous pouvez visualiser ici les pièces en cours de livraison dans le tableau de gauche et les pièces présents dans le stocks actuel dans celui de droite.</p>
             </br>
 
@@ -100,20 +108,27 @@
             </div>
                 <div id="content-commande">
                     <ul>
-                        <p>Le seuil de recompletement n'est pas complet ?</p>
+                        <h2>Le seuil de recompletement n'est pas complet ?</h2>
                         <div class="leftbox">
 
-                            <p class= "small ">  Vous voulez passer une commande chez AgiGreen ? </p>
+                            <p >  Vous voulez passer une commande chez AgiGreen ? </p>
                             <li class="bouton_commande">
                                 <a href="{{url_for('cmd_green')}}"> Oui </a>
                             </li>
+                            </br>
+                            <p> Délai avant de pouvoir passer commande chez ce fournisseur : </p>
+                            <p class="timer-fournisseurs" timer="10"></p>
                         </div>
                         <div class="rightbox">
 
-                            <p class= "small ">Vous voulez passer une commande chez AgiPart ? </p>
+                            <p>Vous voulez passer une commande chez AgiPart ? </p>
                             <li class="bouton_commande">
                                 <a href="{{url_for('cmd_part')}}"> Oui </a>
                             </li>
+                            </br>
+
+                            <p> Délai avant de pouvoir passer commande chez ce fournisseur : </p>
+                            <p class="timer-fournisseurs" timer="12"></p>
                         </div>
                     </ul>
                 </div>

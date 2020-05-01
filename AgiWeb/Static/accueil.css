@@ -57,16 +57,20 @@ div#extending-nav .leftbox{
 	margin-right: 100px;
 
 }
+.timer-fournisseurs{
+
+}
 #chrono{
-	background-color:#FF7733;
-	color:white;
-	margin:0px;
-
-
+	color:#FF7733;
 	font-size: 30px;
-	padding: 20px;
+	padding: 10px;
 
 
+}
+.timer-fournisseurs{
+	color:#FF7733;
+	font-size: 30px;
+	padding: 10px;
 }
 
 footer{
