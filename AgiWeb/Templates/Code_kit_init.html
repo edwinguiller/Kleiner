@@ -5,6 +5,7 @@
     <h1>saisi d'un nouveau kit :</h1>
     <form method='post' action='{{url_for('modif_kit')}}'>
       <label for="nom_kit1"> nom du kit : </label><input type='str' name='nom_kit_a_modif' value='' />
+      <input type="hidden" name="choix" value="False">
       <input type='submit' value='Envoyer'/>
     </form>
     <strong>{{msg}}</strong>
@@ -16,6 +17,7 @@
         <option value="{{kit['nom_kit']}}">{{kit['nom_kit']}}</option>
         {%endfor%}
       </select>
+      <input type="hidden" name="choix" value="False">
       <input type="submit" value="Modifier">
     </form>
     <h1>Tabeaux deja renseigné :</h1>

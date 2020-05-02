@@ -265,7 +265,7 @@ def code_kit():
 
 @app.route('/Agilog/Initialisation/Code_kit/modif_kit', methods=['GET', 'POST'])
 def modif_kit():
-	
+
 	#Variables utiles
     con = lite.connect(cheminbdd)
     con.row_factory = lite.Row
@@ -273,7 +273,7 @@ def modif_kit():
     cur.execute("SELECT id, nom FROM piece;")
     pieces=cur.fetchall()
     kit_a_modif =request.form.get('nom_kit_a_modif')#nom du kit à créer ou à modifier
-    choix=True #c'est un booléen qui traduit la volonté de créer (True) un kit ou de le modifier(False)
+    choix=request.form.get('choix') #c'est un booléen qui traduit la volonté de créer (True) un kit ou de le modifier(False)
     kit_a_creer=choix_kit([kit_a_modif[0],choix])
     id_kit_a_modif=kit_a_creer[1]
     cur.execute("SELECT piece, quantite FROM compo_kit WHERE kit=?;",[id_kit_a_modif])
@@ -310,7 +310,7 @@ def modif_kit():
 	            else:#la piece est présente dans le kit, on modifie donc juste la quantite
 	                cur.execute("UPDATE compo_kit SET quantite=? WHERE kit=? and piece=?;",[quantite[0],id_kit_a_modif,piece_a_ajouter[1]])
 	                redirect(url_for("modif_kit"))
-                    
+
 	        else:
 	            return render_template('modif_kit_init.html',d=kit_a_modif, id=id_kit_a_modif,pieces = pieces,msg="erreur la quantite n'est pas bonne",piece_du_kit=piece_du_kit)
         except:
