@@ -273,11 +273,12 @@ def modif_kit():
     cur.execute("SELECT id, nom FROM piece;")
     pieces=cur.fetchall()
     kit_a_modif =request.form.get('nom_kit_a_modif')#nom du kit à créer ou à modifier
-    choix=True #c'est un booléen qui traduit la volonté de créer (True) un kit ou de le modifier(False)
+    choix=False #c'est un booléen qui traduit la volonté de créer (True) un kit ou de le modifier(False)
     kit_a_creer=choix_kit([kit_a_modif[0],choix])
     id_kit_a_modif=kit_a_creer[1]
     cur.execute("SELECT piece, quantite FROM compo_kit WHERE kit=?;",[id_kit_a_modif])
     piece_du_kit=cur.fetchall()
+    #print(liste(piece_du_kit))
     if kit_a_creer[0]==None:
         return render_template('modif_kit_init.html',d=kit_a_modif, id=kit_a_creer[1],pieces = pieces,msg="tu ne peux créer un kit déjà existant donc je te propose de le modifier",piece_du_kit=piece_du_kit)
     #recupération des variables :
@@ -312,6 +313,9 @@ def modif_kit():
         except:
             pass
         con.commit()
+        #cur.execute("SELECT piece, quantite FROM compo_kit WHERE kit=?;",[id_kit_a_modif])
+        #a=cur.fetchall()
+        #print(liste(a))
         return render_template('modif_kit_init.html',d=kit_a_modif, id=id_kit_a_modif,pieces = pieces,msg="",piece_du_kit=piece_du_kit)
 
 #La page pour Agilean
