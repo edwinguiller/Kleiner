@@ -273,7 +273,7 @@ def modif_kit():
     cur.execute("SELECT id, nom FROM piece;")
     pieces=cur.fetchall()
     kit_a_modif =request.form.get('nom_kit_a_modif')#nom du kit à créer ou à modifier
-    choix=False #c'est un booléen qui traduit la volonté de créer (True) un kit ou de le modifier(False)
+    choix=request.form.get('choix') #c'est un booléen qui traduit la volonté de créer (True) un kit ou de le modifier(False)
     kit_a_creer=choix_kit([kit_a_modif,choix])
     id_kit_a_modif=kit_a_creer[1]
     cur.execute("SELECT piece, quantite FROM compo_kit WHERE kit=?;",[id_kit_a_modif])
