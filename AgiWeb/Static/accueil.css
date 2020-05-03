@@ -110,12 +110,12 @@ div#content-accueil div{
 	width:48%;
 
 }
-div.leftbox{
+div#content-lean_acceuil div{
+	display :inline-block;
+	width:48%;
 
 }
-div.rightbox{
 
-  }
 
 /*AgiLog acceuil*/
 div#content-agilog div{
@@ -123,14 +123,9 @@ div#content-agilog div{
 	width:48%;
 
 }
-div.leftbox{
-
-}
-div.rightbox{
-}
-
 
 a.bouton2{
+	margin-top:10px;
 	color:white;
 	background-color:990066;
 	text-decoration: none;
