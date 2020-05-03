@@ -38,20 +38,20 @@ def creer_id(b):#créé un id
     return(ide)
 
 def demande_interaction(n,contenu):
-    for i in range(n):
-        contenu += "<form method='post' action='code_kit'>"
-        contenu += "<input type='str' name='nom_kit'+str(i)+'' value='' />"
-    contenu += "<input type='submit' value='Envoyer'/> </form>"
-    return(contenu)
+	for i in range(n):
+		contenu += "<form method='post' action='code_kit'>"
+		contenu += "<input type='str' name='nom_kit'+str(i)+'' value='' />"
+	contenu += "<input type='submit' value='Envoyer'/> </form>"
+	return(contenu)
 def recupere_interraction(n,contenu):
-    L=[]
-    for i in range(n):
-        nom=str(request.args.get('nom_kit'+str(i),''))
-        L.append(nom)
-    return(L)
+	L=[]
+	for i in range(n):
+		nom=str(request.args.get('nom_kit'+str(i),''))
+		L.append(nom)
+	return(L)
 
 def modifier_kit(nom_kit,pieces,quantites):#La piece est choisit parmit un menu dérouant donc il n'y a pas besoin de vérifier
-    return(ajouter_piece(compo_kit, [piece,quantite], [pieces,quantites], [str(),int()]))
+	return(ajouter_piece(compo_kit, [piece,quantite], [pieces,quantites], [str(),int()]))
 
 def quantite_bonne(quantite):
 	try: #on vérifie que la quantité est bonne
@@ -190,13 +190,15 @@ def mise_a_jour_bdd (base, colonne, entree, types): # prend en argument  une bas
         else:
             selection= selection + i + "=?, "
 
+    print (selection)
+
     if (test_rien(entree)==0):
         if test_types(entree,types)==0:
             cur.execute(selection, (entree))
     con.commit()
     con.close()
 
-def seuil_commande (): #stock, nom et seuil_recomp sont des listes et si les stock sont inf au seuil, la colonne a_commander de la pièce passe à 1
+def seuil_commande (stock,seuil_recomp,nom): #stock, nom et seuil_recomp sont des listes et si les stock sont sup au seuil, la colonne a_commander de la pièce passe à 1
 
     con = lite.connect(cheminbdd) #attention chez toi c'est pas rangé au meme endroit
     con.row_factory = lite.Row
@@ -224,7 +226,7 @@ def seuil_commande (): #stock, nom et seuil_recomp sont des listes et si les sto
             print (dicencours["stock_encours"])
             if (bdd["quantite"][i]+dicencours["stock_encours"]-bdd["stock_secu"][i]<=0):
                 colonne=["a_commander", "nom"]
-                entree=[1, bdd["nom"][i]]
+                entree=[1, nom[i]]
                 types=["int","str"]
                 mise_a_jour_bdd("piece", colonne, entree, types)
             elif (bdd["quantite"][i]+dicencours["stock_encours"]-bdd["stock_secu"][i]>=0):
