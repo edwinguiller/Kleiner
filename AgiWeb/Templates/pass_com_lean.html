@@ -12,5 +12,18 @@
 			<input type="submit" name="" value="Commander kit">
 		</form>
 		<strong>{{msg}}</strong>
+    <table>
+      <tr>
+        <th>Kit</th>
+        <th>stock</th>
+      </tr>
+      {%for kit in kits%}
+      <tr>
+        <td>{{kit['nom_kit']}}</td>
+        <td>{{kit['stock_alean']}}</td>
+      </tr>
+      {%endfor%}
+    </table>
+    <a href="{{url_for('receptkit')}}">Valider reception kit</a>
 	</body>
 </html>

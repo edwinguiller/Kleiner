@@ -328,8 +328,9 @@ def com_lean():
     con = lite.connect(cheminbdd)
     con.row_factory = lite.Row
     cur = con.cursor()
-    cur.execute("select id,nom_kit from kit")
+    cur.execute("select id,nom_kit,stock_alean from kit")
     kits=cur.fetchall()
+    
     try :
         if not request.method == 'POST':
             return render_template('pass_com_lean.html',kits=kits,msg="")
