@@ -42,6 +42,7 @@ def encoursAlog():
 def actualize_id(id): #Programmeur à faire
     # TODO: handle the id in the sql
 
+    valider_reception_commande(id)
 
     # return render_template('encours_alog.html')
 
@@ -265,12 +266,38 @@ def gestion_stock():
         con.close()
         return render_template('gestion_stock.html', liste_nom=liste_nom, liste_fournisseur=liste_fournisseur, msg = "")
     else :
-        if (nome!="" and seuile!="" and secue!="" and delaie!="" and fournisseur!=""):
+        if (nome!=""):
+            if (fournisseur=='AgiGreen'):
+                fournisseur=1
+            elif (fournisseur=='AgiPart'):
+                fournisseur=2
+            else:
+                fournisseur=''
+            if (secue==''):
+                cur.execute("SELECT stock_secu from piece WHERE nom==?", [nome])
+                a=liste(cur.fetchall())
+                secue=a[0]
+                print (secue)
+            if (seuile==''):
+                cur.execute("SELECT seuil_recomp from piece WHERE nom==?", [nome])
+                a=liste(cur.fetchall())
+                seuile=a[0]
+                print (seuile)
+            if (delaie==''):
+                cur.execute("SELECT delai_reappro from piece WHERE nom==?", [nome])
+                a=liste(cur.fetchall())
+                delaie=a[0]
+                print (delaie)
+            if (fournisseur==''):
+                cur.execute("SELECT fournisseur from piece WHERE nom==?", [nome])
+                a=liste(cur.fetchall())
+                fournisseur=a[0]
+                print (fournisseur)
             try:
                 seuile=int(seuile)
                 secue=int(secue)
                 delaie=int(delaie)
-                fournisseur=str(fournisseur)
+                fournisseur=int(fournisseur)
                 assert seuile >= 0 and secue>=0 and delaie>=0
             except ValueError:
                 con.close()
@@ -278,10 +305,6 @@ def gestion_stock():
             except AssertionError:
                 con.close()
                 return render_template('gestion_stock.html', liste_nom=liste_nom, liste_fournisseur=liste_fournisseur, msg = "attention il faut saisir un entier positif !")
-            if (fournisseur=='AgiGreen'):
-                fournisseur=1
-            elif (fournisseur=='AgiPart'):
-                fournisseur=2
             cur.execute("UPDATE Piece SET seuil_recomp=?, stock_secu=?, delai_reappro=?, fournisseur=? WHERE nom=?", [seuile,secue,delaie,fournisseur,nome])
             con.commit()
             con.close()
@@ -320,7 +343,7 @@ def code_kit():
 @app.route('/Agilog/Initialisation/Code_kit/modif_kit', methods=['GET', 'POST'])
 def modif_kit():
 
-	#Variables utiles
+    #Variables utiles
     con = lite.connect(cheminbdd)
     con.row_factory = lite.Row
     cur=con.cursor()
@@ -358,14 +381,14 @@ def modif_kit():
                else:
                     message="erreur tu ne peux pas supprimer une pièce qui n'existe pas"
                     return render_template('modif_kit_init.html',d=kit_a_modif, id=id_kit_a_modif,pieces = pieces,msg=messsage,piece_du_kit=piece_du_kit)
-	    #Si on veut ajouter une piece au kit
+        #Si on veut ajouter une piece au kit
            elif quantite[1]:
-	            if piece_a_ajouter[1] not in nom_des_pieces_du_kit :#la pièce n'est pas présente dans le kit et la quantite est bonne donc on ajoute la piece simplement au kit
-	                cur.execute("INSERT INTO compo_kit(kit,piece,quantite) VALUES (?,?,?);",[id_kit_a_modif,piece_a_ajouter[1],quantite[0]])
-	                redirect(url_for("modif_kit"))
-	            else:#la piece est présente dans le kit, on modifie donc juste la quantite
-	                cur.execute("UPDATE compo_kit SET quantite=? WHERE kit=? and piece=?;",[quantite[0],id_kit_a_modif,piece_a_ajouter[1]])
-	                redirect(url_for("modif_kit"))
+                if piece_a_ajouter[1] not in nom_des_pieces_du_kit :#la pièce n'est pas présente dans le kit et la quantite est bonne donc on ajoute la piece simplement au kit
+                    cur.execute("INSERT INTO compo_kit(kit,piece,quantite) VALUES (?,?,?);",[id_kit_a_modif,piece_a_ajouter[1],quantite[0]])
+                    redirect(url_for("modif_kit"))
+                else:#la piece est présente dans le kit, on modifie donc juste la quantite
+                    cur.execute("UPDATE compo_kit SET quantite=? WHERE kit=? and piece=?;",[quantite[0],id_kit_a_modif,piece_a_ajouter[1]])
+                    redirect(url_for("modif_kit"))
 
            else:
                 message="erreur la quantite n'est pas bonne"
@@ -385,7 +408,7 @@ def com_lean():
     con = lite.connect(cheminbdd)
     con.row_factory = lite.Row
     cur = con.cursor()
-    cur.execute("select id,nom_kit from kit")
+    cur.execute("select id,nom_kit, stock_alean from kit")
     kits=cur.fetchall()
     try :
         if not request.method == 'POST':
@@ -396,7 +419,7 @@ def com_lean():
         quantite = int(quantite)
     except :
         return render_template('pass_com_lean.html',kits=kits,msg="attention il faut saisir un entier")
-    ajouter_bdd("com_agilean",["id_kit_comm","livree","quantite"],[kit_a_com,1,quantite],[int,int,int])
+    commander_kit (kit_a_com,quantite)
     return render_template('pass_com_lean.html',kits=kits,msg="")
 
 @app.route('/Agilean/Reception', methods=['GET', 'POST'])
@@ -406,7 +429,7 @@ def receptkit():
     cur = con.cursor()
     cur.execute("select id,nom_kit from kit")
     kits=cur.fetchall()
-    cur.execute("select id, quantite,id_kit_comm from com_agilean")
+    cur.execute ("select id, quantite, kit from production WHERE reception_agilean=0")
     commandes=cur.fetchall()
     if not request.method == 'POST':
         return render_template('recept_stock_alean.html',kits= kits,commandes=commandes)
@@ -417,9 +440,10 @@ def receptkit():
     ad=int(cur.fetchall()[0]['stock_alean'])
     quant_val = quant_val + ad
     cur.execute('UPDATE kit set stock_alean=? where id=?;',[quant_val,id_val])
+    cur.execute("UPDATE production SET fini=1, reception_agilean=1 WHERE production.id==?", (id_comm_val))
+
     con.commit()
     con.close()
-    delete("com_agilean","id",id_comm_val)
 
 
 

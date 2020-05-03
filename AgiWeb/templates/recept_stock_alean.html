@@ -4,44 +4,46 @@
 <html>
 {% include "head.html" %}
 
-	<body>
-		{% include "Navbar.html" %}
-		<h1>correspondance kit-id :</h1>
-		<table>
-			<tr>
-				<th>id</th>
-				<th>nom du kit</th>
-			</tr>
-			{%for kit in kits%}
-			<tr>
-				<td>{{kit["id"]}}</td>
-				<td>{{kit["nom_kit"]}}</td>
-			</tr>
-			{%endfor%}
-		</table>
-		<h1>Voici les commandes en cours pour valider une reception cliquer sur recu</h1>
-		<table>
-			<tr>
-				<th>id du kit de la commande</th>
-				<th>quantite commandée</th>
-				<th>valider reception</th>
-			</tr>
-			{%for commande in commandes%}
-			<tr>
-				<td>{{commande['id_kit_comm']}}</td>
-				<td>{{commande['quantite']}}</td>
-				<td><form action="{{url_for('receptkit')}}" method="post">
-					<input type="hidden" name="id_val" value="{{commande['id_kit_comm']}}">
-					<input type="hidden" name="quant_val" value="{{commande['quantite']}}">
-					<input type="hidden" name="id_comm_val" value="{{commande['id']}}">
-					<input type="submit" name="" value="valider receptions">
-				</form></td>
-			</tr>
-			{%endfor%}
-		</table>
+    <body>
+        {% include "Navbar.html" %}
+        <h1>correspondance kit-id :</h1>
+        <table>
+            <tr>
+                <th>id</th>
+                <th>nom du kit</th>
+            </tr>
+            {%for kit in kits%}
+            <tr>
+                <td>{{kit["id"]}}</td>
+                <td>{{kit["nom_kit"]}}</td>
+            </tr>
+            {%endfor%}
+        </table>
+        <h1>Voici les commandes en cours pour valider une reception cliquer sur recu</h1>
+        <table>
+            <tr>
+                <th>id du kit de la commande</th>
+                <th>id de la commande</th>
+                <th>quantite commandée</th>
+                <th>valider reception</th>
+            </tr>
+            {%for commande in commandes%}
+            <tr>
+                <td>{{commande['kit']}}</td>
+                <td>{{commande['id']}}</td>
+                <td>{{commande['quantite']}}</td>
+                <td><form action="{{url_for('receptkit')}}" method="post">
+                    <input type="hidden" name="id_val" value="{{commande['kit']}}">
+                    <input type="hidden" name="quant_val" value="{{commande['quantite']}}">
+                    <input type="hidden" name="id_comm_val" value="{{commande['id']}}">
+                    <input type="submit" name="" value="valider receptions">
+                </form></td>
+            </tr>
+            {%endfor%}
+        </table>
     <a href="{{url_for('com_lean')}}">Passer commande</a>
-	</body>
+    </body>
 </html>
 
 
-		<!-- Contenu -->
+        <!-- Contenu -->

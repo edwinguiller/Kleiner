@@ -38,32 +38,32 @@ def creer_id(b):#créé un id
     return(ide)
 
 def demande_interaction(n,contenu):
-	for i in range(n):
-		contenu += "<form method='post' action='code_kit'>"
-		contenu += "<input type='str' name='nom_kit'+str(i)+'' value='' />"
-	contenu += "<input type='submit' value='Envoyer'/> </form>"
-	return(contenu)
+    for i in range(n):
+        contenu += "<form method='post' action='code_kit'>"
+        contenu += "<input type='str' name='nom_kit'+str(i)+'' value='' />"
+    contenu += "<input type='submit' value='Envoyer'/> </form>"
+    return(contenu)
 def recupere_interraction(n,contenu):
-	L=[]
-	for i in range(n):
-		nom=str(request.args.get('nom_kit'+str(i),''))
-		L.append(nom)
-	return(L)
+    L=[]
+    for i in range(n):
+        nom=str(request.args.get('nom_kit'+str(i),''))
+        L.append(nom)
+    return(L)
 
 def modifier_kit(nom_kit,pieces,quantites):#La piece est choisit parmit un menu dérouant donc il n'y a pas besoin de vérifier
-	return(ajouter_piece(compo_kit, [piece,quantite], [pieces,quantites], [str(),int()]))
+    return(ajouter_piece(compo_kit, [piece,quantite], [pieces,quantites], [str(),int()]))
 
 def quantite_bonne(quantite):
-	try: #on vérifie que la quantité est bonne
-			quantite=int(quantite)
-	except: #si la quantité est mauvaise alors message d'erreur
-		return([quantite,False])
-	else:
-		quantite=int(quantite)
-		if quantite>0:
-			return([quantite,True])
-		else:
-			return([quantite,False])
+    try: #on vérifie que la quantité est bonne
+            quantite=int(quantite)
+    except: #si la quantité est mauvaise alors message d'erreur
+        return([quantite,False])
+    else:
+        quantite=int(quantite)
+        if quantite>0:
+            return([quantite,True])
+        else:
+            return([quantite,False])
 
 def choix_kit(nom_du_kit):#nom_du_kit est une liste ["nom du kit",True/false] selon si on veut modifier ou creer le kit
 #la fonction execute l'ordre et retourne une liste [nom_du_kit/None,l'id du kit]
@@ -79,7 +79,7 @@ def choix_kit(nom_du_kit):#nom_du_kit est une liste ["nom du kit",True/false] se
 
     #On crée un kit, car nom_du_kit[1]=True
     if nom_du_kit[1]:
-		#le nom existe déjà
+        #le nom existe déjà
         if compare_nom(nom_du_kit[0],nom_des_kits):
             cur.execute("SELECT id from kit WHERE nom_kit=?;",[nom_du_kit[0]])
             id_kit=liste(cur.fetchall())[0]
@@ -98,7 +98,7 @@ def choix_kit(nom_du_kit):#nom_du_kit est une liste ["nom du kit",True/false] se
 
 def ajouter_bdd(base, colonne, entree, types): # prend en argument  une base (ex: piece), les colonnes que l'on veut modifier (une liste ex: [id, nom...]), les entrées (valeurs) et le type de ces valeurs
 
-    con = lite.connect(cheminbdd) #attention chez toi c'est pas rangé au meme endroit
+    con = lite.connect(cheminbdd)
     con.row_factory = lite.Row
     cur = con.cursor()
     contenu =''
@@ -198,7 +198,7 @@ def mise_a_jour_bdd (base, colonne, entree, types): # prend en argument  une bas
     con.commit()
     con.close()
 
-def seuil_commande (stock,seuil_recomp,nom): #stock, nom et seuil_recomp sont des listes et si les stock sont sup au seuil, la colonne a_commander de la pièce passe à 1
+def seuil_commande (): #stock, nom et seuil_recomp sont des listes et si les stock sont inf au seuil, la colonne a_commander de la pièce passe à 1
 
     con = lite.connect(cheminbdd) #attention chez toi c'est pas rangé au meme endroit
     con.row_factory = lite.Row
@@ -226,7 +226,7 @@ def seuil_commande (stock,seuil_recomp,nom): #stock, nom et seuil_recomp sont de
             print (dicencours["stock_encours"])
             if (bdd["quantite"][i]+dicencours["stock_encours"]-bdd["stock_secu"][i]<=0):
                 colonne=["a_commander", "nom"]
-                entree=[1, nom[i]]
+                entree=[1, bdd["nom"][i]]
                 types=["int","str"]
                 mise_a_jour_bdd("piece", colonne, entree, types)
             elif (bdd["quantite"][i]+dicencours["stock_encours"]-bdd["stock_secu"][i]>=0):
@@ -391,6 +391,7 @@ def valider_reception_commande(idcom): # prend en argumant l'id d une commande e
     return
 
 def time_fournisseur(fournisseur): # prend en argumant un fournisseur ('agigreen' ou 'agipart') et renvois son timer
+
     con = lite.connect(cheminbdd)
     con.row_factory = lite.Row
     cur=con.cursor()
@@ -404,3 +405,20 @@ def time_fournisseur(fournisseur): # prend en argumant un fournisseur ('agigreen
     timer=cur.fetchall()
     print (timer)
     return timer
+
+def commander_kit(id,quantite): # au moment de commander un kit pour agilean, rajoute ce kit en production, et décrémente les stocks de pièce d'agilog
+
+    con = lite.connect(cheminbdd)
+    con.row_factory = lite.Row
+    cur = con.cursor()
+
+    cur.execute("SELECT id FROM production")
+    liste_id=(cur.fetchall())
+    id_prod=creer_id(liste_id)
+    d=cur.execute(" SELECT datetime('now')")
+    date=cur.fetchall()[0][0]
+
+    cur.execute("INSERT INTO production (id,date,kit,quantite,fini,reception_agilean) VALUES (?,?,?,?,?,?)", (id_prod ,date,id,quantite,0,0))
+    cur.execute("UPDATE piece SET quantite = (SELECT nq FROM (SELECT piece, quantite-quantite_par_kit*quantite_de_kit as nq FROM (SELECT compo_kit.piece,compo_kit.quantite as quantite_par_kit,production.kit,production.quantite as quantite_de_kit FROM production JOIN compo_kit ON compo_kit.kit==production.kit WHERE production.id=?) JOIN piece ON piece.id==piece) WHERE piece.id==piece) WHERE (SELECT nq FROM (SELECT piece, quantite-quantite_par_kit*quantite_de_kit as nq FROM (SELECT compo_kit.piece,compo_kit.quantite as quantite_par_kit,production.kit,production.quantite as quantite_de_kit FROM production JOIN compo_kit ON compo_kit.kit==production.kit WHERE production.id=?) JOIN piece ON piece.id==piece) WHERE piece.id==piece) NOT NULL", (id_prod, id_prod))
+    con.commit()
+    con.close()
