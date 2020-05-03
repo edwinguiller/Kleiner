@@ -1,7 +1,7 @@
 # go to your project  
 
 ## go to your flask project (from your git bash terminal)  
-cd Desktop/ENSAM/cours/PJT\ KLEINER/flask_project/
+cd ...
 
 
 # Virtual Environement Setting  
