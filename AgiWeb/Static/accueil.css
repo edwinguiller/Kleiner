@@ -6,6 +6,12 @@
 	float : left ;
 }
 
+.logoAM{
+	width:400px ;
+	height:300px ;
+	float : center ;
+}
+
 table
 {
 	border-collapse: collapse;
