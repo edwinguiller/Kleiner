@@ -322,42 +322,110 @@ def code_kit():
     return(render_template("Code_kit_init.html", msg="" ,tab_piece=dico_kit ,liste_kit=base ,liste_id=id ))
 
 @app.route('/Agilog/Initialisation/Code_kit/modif_kit', methods=['GET', 'POST'])
-def modif_kit(kit_a_modif):
+def modif_kit():
 
-#J'ai testé la fonction, les fonctionnalités marchent,
-    #si tu as un problème, tu peux retrouver dans fonction_test la fonction que j'ai testé qui marche
-
-    contenu=""
-    piece_a_ajouter=[]#piece=[True/false,nom de la piece à ajouter]
+	#Variables utiles
     con = lite.connect(cheminbdd)
     con.row_factory = lite.Row
     cur=con.cursor()
-    cur.execute("SELECT nom FROM piece;")
-    pieces=cur.fetchall()#variable pour le menu déroulant pour le choix des pieces
-    cur.execute("SELECT id FROM kit WHERE nom_kit=?;",[kit_a_modif])#car dans la base compo_kit, kit correspond à des id
-    kit_a_modifier=liste(cur.fetchall())#variable pour travailler dans la base compo_kit
-    quantite=quantite_bonne(recupere_interraction(1,contenu))#on récupère et vérifie la quantite=[quantite,True/False]
-    cur.execute("SELECT piece FROM compo_kit WHERE kit=?;",[kit_a_modifier[0]])
-    piece_du_kit=liste(cur.fetchall())#cette liste nous permet de vérifier que la nouvelle pièce à ajouter n'est pas déjà présente
-    #Si on veut supprimer une piece du kit
-    if piece_a_ajouter[0]:
-        cur.execute("DELETE FROM compo_kit WHERE kit=?,piece=?;",[kit_a_modifier[0],piece_a_ajouter[1]])
-    #Si on veut ajouter une piece au kit
-    elif piece_a_ajouter not in piece_du_kit and quantite[1]:#la pièce n'est pas présente dans le kit et la quantite est bonne donc on ajoute la piece simplement au kit
-            cur.execute("INSERT INTO compo_kit(kit,piece,quantite) VALUES (?,?,?);",[kit_a_modifier[0],piece_a_ajouter[1],quantite[0]])
-    else:#la piece est présente dans le kit, on modifie donc juste la quantite
-        cur.execute("UPDATE compo_kit SET quantite=? WHERE kit=?,piece=?;",[quantite[0],kit_a_modifier[0],piece_a_ajouter[1]])
+    cur.execute("SELECT id, nom FROM piece;")
+    pieces=cur.fetchall()
+    kit_a_modif =request.form.get('nom_kit_a_modif')#nom du kit à créer ou à modifier
+    choix=request.form.get('choix') #c'est un booléen qui traduit la volonté de créer (True) un kit ou de le modifier(False)
+    kit_a_creer=choix_kit([kit_a_modif,choix])
+    id_kit_a_modif=kit_a_creer[1]
+    cur.execute("SELECT piece, quantite FROM compo_kit WHERE kit=?;",[id_kit_a_modif])
+    piece_du_kit=cur.fetchall()
+    if kit_a_creer[0]==None:
+        return render_template('modif_kit_init.html',d=kit_a_modif, id=kit_a_creer[1],pieces = pieces,msg="tu ne peux créer un kit déjà existant donc je te propose de le modifier",piece_du_kit=piece_du_kit)
+    #recupération des variables :
+    if not request.method == 'POST':
+        return render_template('modif_kit_init.html',d=kit_a_modif, id=id_kit_a_modif,pieces = pieces,msg="",piece_du_kit=piece_du_kit)
+    else :
+        piece_a_ajoutee = request.form.get('saisi_piece')
+        option = request.form.get('option')
+        quantitee = request.form.get('quantite')
+    #fin de recuperation des variables
+        try:
+	        cur.execute("SELECT id FROM piece WHERE nom=?;",[piece_a_ajoutee])
+	        id_piece_a_ajoutee=liste(cur.fetchall())[0]
+	        piece_a_ajouter=[option,id_piece_a_ajoutee]#piece=[True/false,nom de la piece à ajouter]
+	        quantite=quantite_bonne(quantitee)#on récupère et vérifie la quantite=[quantite,True/False]
+	        cur.execute("SELECT piece FROM compo_kit WHERE kit=?;",[id_kit_a_modif])
+	        nom_des_pieces_du_kit=liste(cur.fetchall())
+	        #Si on veut supprimer une pièce
+	        if piece_a_ajouter[0]=='True':
+	            if piece_a_ajouter[1] in nom_des_pieces_du_kit :
+	                cur.execute("DELETE FROM compo_kit WHERE kit=? and piece=?;",[id_kit_a_modif,piece_a_ajouter[1]])
+	                redirect(url_for("modif_kit"))
+	            else:
+	                return render_template('modif_kit_init.html',d=kit_a_modif, id=id_kit_a_modif,pieces = pieces,msg="erreur tu ne peux pas supprimer une pièce qui n'existe pas ",piece_du_kit=piece_du_kit)
+	    #Si on veut ajouter une piece au kit
+	        elif quantite[1]:
+	            if piece_a_ajouter[1] not in nom_des_pieces_du_kit :#la pièce n'est pas présente dans le kit et la quantite est bonne donc on ajoute la piece simplement au kit
+	                cur.execute("INSERT INTO compo_kit(kit,piece,quantite) VALUES (?,?,?);",[id_kit_a_modif,piece_a_ajouter[1],quantite[0]])
+	                redirect(url_for("modif_kit"))
+	            else:#la piece est présente dans le kit, on modifie donc juste la quantite
+	                cur.execute("UPDATE compo_kit SET quantite=? WHERE kit=? and piece=?;",[quantite[0],id_kit_a_modif,piece_a_ajouter[1]])
+	                redirect(url_for("modif_kit"))
 
-    return(render_template('modif_kit_init.html',d=kit_a_modif))
+	        else:
+	            return render_template('modif_kit_init.html',d=kit_a_modif, id=id_kit_a_modif,pieces = pieces,msg="erreur la quantite n'est pas bonne",piece_du_kit=piece_du_kit)
+        except:
+            pass
+        con.commit()
+        return render_template('modif_kit_init.html',d=kit_a_modif, id=id_kit_a_modif,pieces = pieces,msg="",piece_du_kit=piece_du_kit)
 
 #La page pour Agilean
 @app.route('/Agilean')
 def agilean():
     return render_template('agiLean_accueil.html');
 
-@app.route('/Agilean/Reception')
+@app.route('/Agilean/commande', methods=['GET', 'POST'])
+def com_lean():
+    con = lite.connect(cheminbdd)
+    con.row_factory = lite.Row
+    cur = con.cursor()
+    cur.execute("select id,nom_kit,stock_alean from kit")
+    kits=cur.fetchall()
+
+    try :
+        if not request.method == 'POST':
+            return render_template('pass_com_lean.html',kits=kits,msg="")
+        kit_a_com = request.form.get('kit_a_com')
+        quantite= request.form.get('quantite')
+        kit_a_com = int(kit_a_com)
+        quantite = int(quantite)
+    except :
+        return render_template('pass_com_lean.html',kits=kits,msg="attention il faut saisir un entier")
+    ajouter_bdd("com_agilean",["id_kit_comm","livree","quantite"],[kit_a_com,1,quantite],[int,int,int])
+    return render_template('pass_com_lean.html',kits=kits,msg="")
+
+@app.route('/Agilean/Reception', methods=['GET', 'POST'])
 def receptkit():
-    return render_template('recept_stock_alean.html')+"</br> page non faite"
+    con = lite.connect(cheminbdd)
+    con.row_factory = lite.Row
+    cur = con.cursor()
+    cur.execute("select id,nom_kit from kit")
+    kits=cur.fetchall()
+    cur.execute("select id, quantite,id_kit_comm from com_agilean")
+    commandes=cur.fetchall()
+    if not request.method == 'POST':
+        return render_template('recept_stock_alean.html',kits= kits,commandes=commandes)
+    id_val=request.form.get("id_val")
+    quant_val= int(request.form.get("quant_val"))
+    id_comm_val = request.form.get("id_comm_val")
+    cur.execute("select stock_alean from kit WHERE id=?;",[id_val])
+    ad=int(cur.fetchall()[0]['stock_alean'])
+    quant_val = quant_val + ad
+    cur.execute('UPDATE kit set stock_alean=? where id=?;',[quant_val,id_val])
+    con.commit()
+    con.close()
+    delete("com_agilean","id",id_comm_val)
+
+
+
+    return redirect(url_for('receptkit'))
 
 
 

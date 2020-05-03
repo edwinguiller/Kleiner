@@ -54,16 +54,46 @@ def modifier_kit(nom_kit,pieces,quantites):#La piece est choisit parmit un menu 
     return(ajouter_piece(compo_kit, [piece,quantite], [pieces,quantites], [str(),int()]))
 
 def quantite_bonne(quantite):
-    try: #on vérifie que la quantité est bonne
-            quantite=int(quantite)
-    except: #si la quantité est mauvaise alors message d'erreur
-        return(print([quantite,False]))
-    else:
-        if quantite>0:
-            return(print([quantite,True]))
+	try: #on vérifie que la quantité est bonne
+			quantite=int(quantite)
+	except: #si la quantité est mauvaise alors message d'erreur
+		return([quantite,False])
+	else:
+		quantite=int(quantite)
+		if quantite>0:
+			return([quantite,True])
+		else:
+			return([quantite,False])
+
+def choix_kit(nom_du_kit):#nom_du_kit est une liste ["nom du kit",True/false] selon si on veut modifier ou creer le kit
+#la fonction execute l'ordre et retourne une liste [nom_du_kit/None,l'id du kit]
+
+    #On recupère les variables utiles
+    con = lite.connect(cheminbdd)
+    con.row_factory = lite.Row
+    cur=con.cursor()
+    cur.execute("SELECT nom_kit from kit;")
+    nom_des_kits=liste(cur.fetchall())
+    cur.execute("SELECT id from kit;")
+    ids_des_kits=cur.fetchall()
+
+    #On crée un kit, car nom_du_kit[1]=True
+    if nom_du_kit[1]:
+		#le nom existe déjà
+        if compare_nom(nom_du_kit[0],nom_des_kits):
+            cur.execute("SELECT id from kit WHERE nom_kit=?;",[nom_du_kit[0]])
+            id_kit=liste(cur.fetchall())[0]
+            return([None,id_kit])
         else:
-            return(print([quantite,False]))
-quantite_bonne(0)
+            id_kit=creer_id(ids_des_kits)
+            cur.execute("INSERT INTO kit(id,nom_kit) VALUES (?,?);",[id_kit,nom_du_kit[0]])
+            con.commit()
+            return([nom_du_kit,id_kit])
+    #sinon on modifie un kit existant
+    else:
+       cur.execute("SELECT id from kit WHERE nom_kit=?;",[nom_du_kit[0]])
+       id_kit=liste(cur.fetchall())[0]
+       return([nom_du_kit,id_kit])
 
 
 def ajouter_bdd(base, colonne, entree, types): # prend en argument  une base (ex: piece), les colonnes que l'on veut modifier (une liste ex: [id, nom...]), les entrées (valeurs) et le type de ces valeurs

@@ -3,5 +3,42 @@
 	<body>
     {% include "Navbar.html" %}
     <h1>Modification du kit : {{d}} d'id :{{id}}</h1>
+		<form action="{{url_for('modif_kit')}}" method="post">
+			<select name="saisi_piece">
+				<option value="vide">Sélectionnez une entrée</option>
+				{%for piece in pieces%}
+				<option value="{{piece['nom']}}">{{piece['id']}}: {{piece['nom']}}</option>
+				{%endfor%}
+			</select>
+      <input type="hidden" name="choix" value="False">
+			<label for="quantite"> Quantitée :</label><input type="text" name="quantite" value="">
+			<select name="option">
+				<option value="">sélectionnez une option </option>
+				<option value="True">supprimer</option>
+				<option value="False">ajouter </option>
+			</select>
+			<input type="hidden" name="nom_kit_a_modif" value="{{d}}">
+			<input type="submit" value="ajouter pièce">
+			<nav class="menu-nav">
+				<ul>
+					<li class="bouton2"> <a href="{{url_for("code_kit")}}"> valider le kit </a> </li>
+				</ul>
+			</nav>
+		</form>
+		<strong>{{msg}}</strong>
+		<h1>Pièce déja dans le kit :</h1>
+		<table>
+			<tr>
+				<th>nom pièce</th>
+				<th>quantité</th>
+			</tr>
+			{%for piece in piece_du_kit%}
+			<tr>
+				<td>{{piece['piece']}}</td>
+				<td>{{piece['quantite']}}</td>
+			</tr>
+			{%endfor%}
+
+		</table>
   </body>
 </html>

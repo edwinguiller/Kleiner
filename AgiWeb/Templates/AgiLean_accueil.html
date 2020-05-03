@@ -8,8 +8,15 @@
 		<!-- Contenu -->
 
 		<h2> Bienvenue sur la page d'acceuil de AgiLean </h2>
-		<p>Vous venez de recevoir un kit et vous souhaitez l'ajouter au stock ? Cliquer alors sur déclarer un kit</p>
-		<a class="bouton2" href="{{url_for('receptkit')}}" rel="nofollow"> Déclarer un kit </a></p>
+		<ul>
+			<p>Commander un kit : </p>
+			<li class="bouton2">
+				<a href="{{url_for('com_lean')}}">Commander</a>
+			</li>
+			<p>Vous venez de recevoir un kit et vous souhaitez l'ajouter au stock ? Cliquer alors sur déclarer un kit</p>
+			<li class="bouton2">
+				<p> <a href="{{url_for('receptkit')}}" rel="nofollow"> Déclarer réception d'un kit </a></p>
+			</li>
 
 		<!-- Pied de page -->
 		<footer>
