@@ -13,13 +13,6 @@
     <label for='seuile'>seuil de recompletement</label><input type='text' name='seuile' value=''>
     <label for='secue'>stock de secu</label><input type='text' name='secue' value=''>
     <label for='delaie'>delai de reappro</label><input type='text' name='delaie' value=''>
-    <label for='fournisseur'>fournisseur</label>
-    <select name='fournisseur'>
-            <option value='0'>Choisissez un fournisseur</option>
-            {%for nom in liste_fournisseur%}
-            <option value='{{nom['nom']}}'>{{nom['nom']}}</option>
-            {%endfor%}
-        </select>
     <label for='nome'>nom de la pièce</label>
         <select name='nome'>
             <option value='0'>Choisissez une Piece</option>

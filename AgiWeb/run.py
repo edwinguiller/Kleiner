@@ -50,6 +50,7 @@ def actualize_id(id): #Programmeur à faire
 
 @app.route('/Agilog/Encours/Commande_agigreen')
 def cmd_green():# renvoit la page Commande_agigreen!
+    seuil_commande()
     commande=select_commande_fournisseur ("agigreen")
     # la fonction select_commande_fournisseur prend en argumant ("agipart") ou ("agigreen") en fonctioon du fournisseur qu'on veut, et renvois un dicionnaire avec comme colonne: "id","nom","quantite".
     # Les pieces renseigné sont les pièces à commander qui sont fourni par le fournisseur choisi. Les quantités sont les stocks.
@@ -58,6 +59,7 @@ def cmd_green():# renvoit la page Commande_agigreen!
 
 @app.route('/Agilog/Encours/Commande_agipart')
 def cmd_part():# renvoit la page Commande_agipart!
+    seuil_commande()
     commande=select_commande_fournisseur ("agipart")
     return render_template('cmd_agipart.html',liste_commande_part=commande)
 
@@ -184,29 +186,41 @@ def ajout_piece():
     con = lite.connect(cheminbdd) #attention chez toi c'est pas rangé au meme endroit
     con.row_factory = lite.Row
     cur = con.cursor()
-    cur.execute("SELECT id, nom, quantite FROM piece")
+    cur.execute("SELECT id, nom, quantite, fournisseur FROM piece")
     liste_id = cur.fetchall()
+    cur.execute("SELECT nom FROM fournisseur")
+    liste_fournisseur=cur.fetchall()
 
     if not request.method == 'POST':
         con.close()
-        return render_template('ajout_piece.html',liste_id=liste_id, err_quant= "", msg="")
+        return render_template('ajout_piece.html',liste_id=liste_id,liste_fournisseur=liste_fournisseur, err_quant= "", msg="")
     else:
         nome = request.form.get('nome','')
         quantitee = request.form.get('quantitee','')
         ide = request.form.get('ide','')
+        fournisseur=str(request.form.get('fournisseur',''))
 
         #test si le stock est un entier si qlq chose est rentré
+        if (fournisseur=='AgiGreen'):
+            fournisseur=1
+        elif (fournisseur=='AgiPart'):
+            fournisseur=2
         try:
             quantitee=int(quantitee)
             assert quantitee>=0
         except ValueError:
             con.close()
-            return render_template('ajout_piece.html',liste_id=liste_id, err_quant= err_quant, msg='le stock doit être un nombre entier')
+            return render_template('ajout_piece.html',liste_id=liste_id,liste_fournisseur=liste_fournisseur, err_quant= err_quant, msg='le stock doit être un nombre entier')
         except AssertionError :
             con.close()
-            return render_template('ajout_piece.html',liste_id=liste_id, err_quant= "", msg="Il faut une quantité positive")
+            return render_template('ajout_piece.html',liste_id=liste_id,liste_fournisseur=liste_fournisseur, err_quant= "", msg="Il faut une quantité positive")
+        try:
+            fournisseur=int(fournisseur)
+        except:
+            con.close()
+            return render_template('ajout_piece.html',liste_id=liste_id,liste_fournisseur=liste_fournisseur, err_quant= "", msg="les seuls fournisseurs sont agigreen et agilog")
 
-        if (nome!="" and quantitee!="" and ide!="" and quantitee>=0):
+        if (nome!="" and quantitee!="" and ide!="" and quantitee>=0 and fournisseur>0):
             # on ajoute le nom l'id et le stock à la bdd
             cur.execute("SELECT id FROM Piece")
             testnom = cur.fetchall()
@@ -214,16 +228,17 @@ def ajout_piece():
             for testnom in testnom:
                 test.append(testnom[0]) # une liste pour ensuite voir si la piece demandé n'existe pas deja
             if (ide in test):
-                return render_template('ajout_piece.html',liste_id=liste_id, err_quant= err_quant, msg="Cette piece existe deja")
+                return render_template('ajout_piece.html',liste_id=liste_id,liste_fournisseur=liste_fournisseur, err_quant= err_quant, msg="Cette piece existe deja")
             else : #ajouter un createur d'id apres
-                cur.execute("INSERT INTO piece('nom', 'quantite', 'id') VALUES (?,?,?)", (nome,quantitee,ide))
+                cur.execute("INSERT INTO piece('nom', 'quantite', 'id', fournisseur) VALUES (?,?,?,?)", (nome,quantitee,ide, fournisseur))
                 con.commit()
                 con.close()
                 msg = ''
                 return(redirect(url_for('ajout_piece')))
         else :
-            return render_template('ajout_piece.html',liste_id=liste_id, err_quant= err_quant, msg="il faut saisir un nom et un id")
-    return render_template('ajout_piece.html', liste_id=liste_id, err_quant= err_quant, msg=msg); # LES PROGRAMMEURS a retoucher / separer  fonctions
+            return render_template('ajout_piece.html',liste_id=liste_id,liste_fournisseur=liste_fournisseur, err_quant= err_quant, msg="il faut saisir un nom et un id")
+    return render_template('ajout_piece.html', liste_id=liste_id,liste_fournisseur=liste_fournisseur, err_quant= err_quant, msg=msg); # LES PROGRAMMEURS a retoucher / separer  fonctions
+
 
 @app.route('/Agilog/Initialisation/supp', methods=['GET', 'POST'])
 def supprimer_piece() :
@@ -253,67 +268,49 @@ def gestion_stock():
     cur = con.cursor()
     cur.execute("SELECT nom FROM piece")
     liste_nom = cur.fetchall()
-    cur.execute("SELECT nom FROM fournisseur")
-    liste_fournisseur=cur.fetchall()
 
     nome=request.form.get('nome','')
     seuile=request.form.get('seuile','')
     secue=request.form.get('secue','')
     delaie=request.form.get('delaie','')
-    fournisseur=request.form.get('fournisseur','')
     #test si ce sont bien des entiers
     if not request.method == 'POST':
         con.close()
-        return render_template('gestion_stock.html', liste_nom=liste_nom, liste_fournisseur=liste_fournisseur, msg = "")
+        return render_template('gestion_stock.html', liste_nom=liste_nom, msg = "")
     else :
         if (nome!=""):
-            if (fournisseur=='AgiGreen'):
-                fournisseur=1
-            elif (fournisseur=='AgiPart'):
-                fournisseur=2
-            else:
-                fournisseur=''
             if (secue==''):
                 cur.execute("SELECT stock_secu from piece WHERE nom==?", [nome])
                 a=liste(cur.fetchall())
                 secue=a[0]
-                print (secue)
             if (seuile==''):
                 cur.execute("SELECT seuil_recomp from piece WHERE nom==?", [nome])
                 a=liste(cur.fetchall())
                 seuile=a[0]
-                print (seuile)
             if (delaie==''):
                 cur.execute("SELECT delai_reappro from piece WHERE nom==?", [nome])
                 a=liste(cur.fetchall())
                 delaie=a[0]
-                print (delaie)
-            if (fournisseur==''):
-                cur.execute("SELECT fournisseur from piece WHERE nom==?", [nome])
-                a=liste(cur.fetchall())
-                fournisseur=a[0]
-                print (fournisseur)
             try:
                 seuile=int(seuile)
                 secue=int(secue)
                 delaie=int(delaie)
-                fournisseur=int(fournisseur)
                 assert seuile >= 0 and secue>=0 and delaie>=0
             except ValueError:
                 con.close()
-                return render_template('gestion_stock.html', liste_nom=liste_nom, liste_fournisseur=liste_fournisseur, msg = "attention il faut saisir un entier !")
+                return render_template('gestion_stock.html', liste_nom=liste_nom, msg = "attention il faut saisir un entier !")
             except AssertionError:
                 con.close()
-                return render_template('gestion_stock.html', liste_nom=liste_nom, liste_fournisseur=liste_fournisseur, msg = "attention il faut saisir un entier positif !")
-            cur.execute("UPDATE Piece SET seuil_recomp=?, stock_secu=?, delai_reappro=?, fournisseur=? WHERE nom=?", [seuile,secue,delaie,fournisseur,nome])
+                return render_template('gestion_stock.html', liste_nom=liste_nom, msg = "attention il faut saisir un entier positif !")
+            cur.execute("UPDATE Piece SET seuil_recomp=?, stock_secu=?, delai_reappro=? WHERE nom=?", [seuile,secue,delaie,nome])
             con.commit()
             con.close()
             return redirect(url_for('gestion_stock'))
         else:
             con.close()
-            return render_template('gestion_stock.html', liste_nom=liste_nom, liste_fournisseur=liste_fournisseur, msg = "attention vous n'avez rien saisi")
+            return render_template('gestion_stock.html', liste_nom=liste_nom, msg = "attention vous n'avez rien saisi")
 
-    return render_template('gestion_stock.html', liste_nom=liste_nom, liste_fournisseur=liste_fournisseur, msg = "")
+    return render_template('gestion_stock.html', liste_nom=liste_nom, msg = "")
 
 @app.route('/Agilog/Initialisation/Code_kit', methods=['GET', 'POST'])
 def code_kit():
