@@ -4,20 +4,20 @@
     {%include 'navbar.html'%}
     <h1>saisi d'un nouveau kit :</h1>
     <form method='post' action='{{url_for('modif_kit')}}'>
-      <label for="nom_kit1"> nom du kit : </label><input type='str' name='nom_kit_a_modif' value='' />
       <input type="hidden" name="choix" value="True">
+      <label for="nom_kit1"> nom du kit : </label><input type='str' name='nom_kit_a_modif' value='' />
       <input type='submit' value='Envoyer'/>
     </form>
     <strong>{{msg}}</strong>
     <h1>choix d'un kit existant :</h1>
     <form action="{{url_for('modif_kit')}}" method="post">
+      <input type="hidden" name="choix" value="False">
       <select name="nom_kit_a_modif">
         <option value="vierge">selectionnez une entrée</option>
         {%for kit in liste_kit%}
         <option value="{{kit['nom_kit']}}">{{kit['nom_kit']}}</option>
         {%endfor%}
       </select>
-      <input type="hidden" name="choix" value="False">
       <input type="submit" value="Modifier">
     </form>
     <h1>Tabeaux deja renseigné :</h1>

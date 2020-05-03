@@ -10,6 +10,7 @@
 				<option value="{{piece['nom']}}">{{piece['id']}}: {{piece['nom']}}</option>
 				{%endfor%}
 			</select>
+      <input type="hidden" name="choix" value="False">
 			<label for="quantite"> Quantitée :</label><input type="text" name="quantite" value="">
 			<select name="option">
 				<option value="">sélectionnez une option </option>
@@ -17,7 +18,6 @@
 				<option value="False">ajouter </option>
 			</select>
 			<input type="hidden" name="nom_kit_a_modif" value="{{d}}">
-      <input type="hidden" name="choix" value="False">
 			<input type="submit" value="ajouter pièce">
 			<nav class="menu-nav">
 				<ul>
