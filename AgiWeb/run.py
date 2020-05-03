@@ -256,37 +256,45 @@ def gestion_stock():
     cur = con.cursor()
     cur.execute("SELECT nom FROM piece")
     liste_nom = cur.fetchall()
+    cur.execute("SELECT nom FROM fournisseur")
+    liste_fournisseur=cur.fetchall()
 
     nome=request.form.get('nome','')
     seuile=request.form.get('seuile','')
     secue=request.form.get('secue','')
     delaie=request.form.get('delaie','')
+    fournisseur=request.form.get('fournisseur','')
     #test si ce sont bien des entiers
     if not request.method == 'POST':
         con.close()
-        return render_template('gestion_stock.html', liste_nom=liste_nom, msg = "")
+        return render_template('gestion_stock.html', liste_nom=liste_nom, liste_fournisseur=liste_fournisseur, msg = "")
     else :
-        if (nome!="" and seuile!="" and secue!="" and delaie!=""):
+        if (nome!="" and seuile!="" and secue!="" and delaie!="" and fournisseur!=""):
             try:
                 seuile=int(seuile)
                 secue=int(secue)
                 delaie=int(delaie)
+                fournisseur=str(fournisseur)
                 assert seuile >= 0 and secue>=0 and delaie>=0
             except ValueError:
                 con.close()
-                return render_template('gestion_stock.html', liste_nom=liste_nom, msg = "attention il faut saisir un entier !")
+                return render_template('gestion_stock.html', liste_nom=liste_nom, liste_fournisseur=liste_fournisseur, msg = "attention il faut saisir un entier !")
             except AssertionError:
                 con.close()
-                return render_template('gestion_stock.html', liste_nom=liste_nom, msg = "attention il faut saisir un entier positif !")
-            cur.execute("UPDATE Piece SET seuil_recomp=?, stock_secu=?, delai_reappro=? WHERE nom=?", [seuile,secue,delaie,nome])
+                return render_template('gestion_stock.html', liste_nom=liste_nom, liste_fournisseur=liste_fournisseur, msg = "attention il faut saisir un entier positif !")
+            if (fournisseur=='AgiGreen'):
+                fournisseur=1
+            elif (fournisseur=='AgiPart'):
+                fournisseur=2
+            cur.execute("UPDATE Piece SET seuil_recomp=?, stock_secu=?, delai_reappro=?, fournisseur=? WHERE nom=?", [seuile,secue,delaie,fournisseur,nome])
             con.commit()
             con.close()
             return redirect(url_for('gestion_stock'))
         else:
             con.close()
-            return render_template('gestion_stock.html', liste_nom=liste_nom, msg = "attention vous n'avez rien saisi")
+            return render_template('gestion_stock.html', liste_nom=liste_nom, liste_fournisseur=liste_fournisseur, msg = "attention vous n'avez rien saisi")
 
-    return render_template('gestion_stock.html', liste_nom=liste_nom, msg = "")
+    return render_template('gestion_stock.html', liste_nom=liste_nom, liste_fournisseur=liste_fournisseur, msg = "")
 
 @app.route('/Agilog/Initialisation/Code_kit', methods=['GET', 'POST'])
 def code_kit():
