@@ -330,7 +330,7 @@ def com_lean():
     cur = con.cursor()
     cur.execute("select id,nom_kit,stock_alean from kit")
     kits=cur.fetchall()
-    
+
     try :
         if not request.method == 'POST':
             return render_template('pass_com_lean.html',kits=kits,msg="")
