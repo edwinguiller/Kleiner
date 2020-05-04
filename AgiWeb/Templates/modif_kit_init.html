@@ -26,6 +26,8 @@
 			</nav>
 		</form>
 		<strong>{{msg}}</strong>
+		<br><br>
+		<strong>PENSEZ A RAFRAICHIR LA PAGE</strong>
 		<h1>Pièce déja dans le kit :</h1>
 		<table>
 			<tr>
@@ -34,7 +36,7 @@
 			</tr>
 			{%for piece in piece_du_kit%}
 			<tr>
-				<td>{{piece['piece']}}</td>
+				<td>{{piece['nom']}}</td>
 				<td>{{piece['quantite']}}</td>
 			</tr>
 			{%endfor%}

@@ -44,8 +44,17 @@
 		<div id="photo">
 			<img class="logoAM" src="{{url_for("static",filename="logoAM.png")}}" alt="description" align = "bottom right"/>
 		</div>
-		
-	</footer>
 
-	</body>
+	<strong>ATTENTION ça supprime les pieces, noms, kits, commandes passées etc.<br> Pour debuter un run avec les pieces et kits actuels, il suffit d'aller dans encours et "Debuter Run"</strong>
+	</footer>
+	<div id="extending-nav">
+	  <div class="leftbox">
+	    <nav class="menu-nav">
+	      <ul>
+					<li class="bouton">
+						<a href="{{url_for('ResetBDD')}}"> RESET BDD pour reinitialiser le SeriousGame </a>
+					</li>
+	      </ul>
+				<br><br>
+				</body>
 </html>

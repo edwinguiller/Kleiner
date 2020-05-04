@@ -6,7 +6,7 @@ import random
 
 app = Flask(__name__)
 
-heure_debut_run=[[99999999999999]]
+heure_debut_run=[[0]]
 @app.route('/LancerRun')
 def debutRun():
     global heure_debut_run
@@ -15,7 +15,26 @@ def debutRun():
     cur = con.cursor()
     cur.execute("SELECT strftime( '%s','now')")
     heure_debut_run=cur.fetchall()
+    cur.execute("UPDATE 'kit' SET stock_alean =0 ")
+    cur.execute('UPDATE fournisseur SET derniere_com="00:00:00"')
+    con.commit()
+    con.close()
     return redirect(url_for('encoursAlog'))
+
+@app.route('/BddInit')
+def ResetBDD():
+    con = lite.connect(cheminbdd)
+    con.row_factory = lite.Row
+    cur = con.cursor()
+    cur.execute("DELETE FROM piece")
+    cur.execute("DELETE FROM kit")
+    cur.execute("DELETE FROM compo_kit")
+    cur.execute("DELETE FROM commande")
+    cur.execute("DELETE FROM compo_commande")
+    cur.execute("DELETE FROM production")
+    con.commit()
+    con.close()
+    return redirect(url_for('index'))
 
 # Une belle (Hyp'ss) page d'accueil avec un lien vers la partie Agilean et un vers la partie Agilog
 @app.route('/')
@@ -327,7 +346,7 @@ def code_kit():
     cur.execute("SELECT nom_kit FROM kit;")
     base=cur.fetchall()#variable pour le menu déroulant
     #historique des kit existant
-    cur.execute("SELECT id FROM kit;")
+    cur.execute("SELECT id,nom_kit FROM kit;")
     id=cur.fetchall()
     #création dico_kit
     dico_kit=[]
@@ -368,7 +387,7 @@ def modif_kit():
     choix=request.form.get('choix') #c'est un booléen qui traduit la volonté de créer (True) un kit ou de le modifier(False)
     kit_a_creer=choix_kit([kit_a_modif,choix])
     id_kit_a_modif=kit_a_creer[1]
-    cur.execute("SELECT piece, quantite FROM compo_kit WHERE kit=?;",[id_kit_a_modif])
+    cur.execute("SELECT p.nom, c.quantite FROM compo_kit c JOIN piece p ON p.id=c.piece  WHERE kit=?;",[id_kit_a_modif])
     piece_du_kit=cur.fetchall()
     if kit_a_creer[0]==None:
         message="Tu ne peux créer un kit déjà existant donc je te propose de le modifier"
