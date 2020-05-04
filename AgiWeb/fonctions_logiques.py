@@ -158,7 +158,7 @@ def test_types(entree,types): #test le type des entrées (tableau) et les entré
             try:
                 entree[i]=str(entree[i])
             except:
-                print ("str")
+                # print ("str")
                 return 1
         elif (types[i]==int):
             try:
@@ -182,9 +182,6 @@ def mise_a_jour_bdd (base, colonne, entree, types): # prend en argument  une bas
             selection= selection + " WHERE " + i + "=?"
         else:
             selection= selection + i + "=?, "
-
-    print (selection)
-
     if (test_rien(entree)==0):
         if test_types(entree,types)==0:
             cur.execute(selection, (entree))
@@ -193,42 +190,45 @@ def mise_a_jour_bdd (base, colonne, entree, types): # prend en argument  une bas
 
 def seuil_commande (): #stock, nom et seuil_recomp sont des listes et si les stock sont inf au seuil, la colonne a_commander de la pièce passe à 1
 
-    con = lite.connect(cheminbdd) #attention chez toi c'est pas rangé au meme endroit
+    con = lite.connect(cheminbdd)
     con.row_factory = lite.Row
     cur = con.cursor()
     cur.execute("SELECT quantite, stock_secu, nom, id FROM piece")
     d=tab(cur.fetchall())
     cur.execute("SELECT compo_commande.quantite, compo_commande.piece FROM compo_commande JOIN commande ON commande.id==compo_commande.commande WHERE commande.reception=0")
     e=cur.fetchall()
-    if (e!=[]):
-        stock_encours=convert_dict(tab(e),"quantite","id_piece")
-    bdd=convert_dict(d,"quantite","stock_secu","nom","id")
-    taille=len(bdd["quantite"])
-    for i in range (0,taille):
-        try:
-            bdd["stock_secu"][i]=int(bdd["stock_secu"][i])
-        except:
-            print ("non")
-        else:
-            rajout_encours=0
-            for k in range (0,len(stock_encours["quantite"])):
-                if (bdd["id"][i]==stock_encours["id_piece"][k]):
-                    rajout_encours=rajout_encours+stock_encours["quantite"][k]
-            dicencours={}
-            dicencours["stock_encours"]=rajout_encours
-            print (dicencours["stock_encours"])
-            if (bdd["quantite"][i]+dicencours["stock_encours"]-bdd["stock_secu"][i]<=0):
-                colonne=["a_commander", "nom"]
-                entree=[1, bdd["nom"][i]]
-                types=["int","str"]
-                mise_a_jour_bdd("piece", colonne, entree, types)
-            elif (bdd["quantite"][i]+dicencours["stock_encours"]-bdd["stock_secu"][i]>=0):
-                colonne=["a_commander", "nom"]
-                entree=[0, bdd["nom"][i]]
-                types=["int","str"]
-                mise_a_jour_bdd("piece", colonne, entree, types)
-    con.commit()
-    con.close()
+    try:
+        if (e!=[]):
+            stock_encours=convert_dict(tab(e),"quantite","id_piece")
+        bdd=convert_dict(d,"quantite","stock_secu","nom","id")
+        taille=len(bdd["quantite"])
+        for i in range (0,taille):
+            try:
+                bdd["stock_secu"][i]=int(bdd["stock_secu"][i])
+            except:
+                pass
+            else:
+                rajout_encours=0
+                for k in range (0,len(stock_encours["quantite"])):
+                    if (bdd["id"][i]==stock_encours["id_piece"][k]):
+                        rajout_encours=rajout_encours+stock_encours["quantite"][k]
+                dicencours={}
+                dicencours["stock_encours"]=rajout_encours
+                # print (dicencours["stock_encours"])
+                if (bdd["quantite"][i]+dicencours["stock_encours"]-bdd["stock_secu"][i]<=0):
+                    colonne=["a_commander", "nom"]
+                    entree=[1, bdd["nom"][i]]
+                    types=["int","str"]
+                    mise_a_jour_bdd("piece", colonne, entree, types)
+                elif (bdd["quantite"][i]+dicencours["stock_encours"]-bdd["stock_secu"][i]>=0):
+                    colonne=["a_commander", "nom"]
+                    entree=[0, bdd["nom"][i]]
+                    types=["int","str"]
+                    mise_a_jour_bdd("piece", colonne, entree, types)
+        con.commit()
+        con.close()
+    except:
+        pass
 
 def tableau (base,colonne): #prend les infos d'une base, et les rentres dans un tableau avec tableau[0]= colonne[0], tableau[1]=colonne[1]...
 
@@ -279,7 +279,6 @@ def select_encours (): #selectionne les stocks en cours pour pouvoir ensuite les
     #d=tab(cur.fetchall())
     #b=convert_dict(d,"id","date","nom", "quantite","timer")
     con.close()
-
     return b
 
 def select_stock_reel (): #selectionne les stocks reel pour pouvoir ensuite les afficher
@@ -386,9 +385,9 @@ def time_fournisseur(fournisseur): # prend en argumant un fournisseur ('agigreen
         fourniss=2
     else:
         return ERREUR
-    cur.execute("SELECT strftime('%s',strftime('%H:%M:%S',(SELECT derniere_com FROM fournisseur WHERE fournisseur.id=?)))-strftime('%s',strftime('%H:%M:%S','now'))",[fourniss])
+    cur.execute("SELECT (strftime('%s',strftime('%H:%M:%S',(SELECT derniere_com FROM fournisseur WHERE fournisseur.id=?),(SELECT perio FROM fournisseur WHERE fournisseur.id=?)))-strftime('%s',strftime('%H:%M:%S','now')))",(fourniss,fourniss))
     timer=cur.fetchall()
-    return timer
+    return int(timer[0][0])
 
 def commander_kit(id,quantite): # au moment de commander un kit pour agilean, rajoute ce kit en production, et décrémente les stocks de pièce d'agilog
 

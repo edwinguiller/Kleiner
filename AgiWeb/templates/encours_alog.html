@@ -8,14 +8,19 @@
 
         {% include "Navbar.html" %}
 
+        <div id="demarrer-jeu">
+          <div class="rightbox">
+            <p> <a class=bouton2 href="{{url_for('debutRun')}}" rel="nofollow"> Debuter le run !  </a></p>
+          </div>
 
+        </div>
 
         <!-- Contenu -->
 
         <div id="content-stock">
             <h1>Bienvenue sur la page des encours </h1>
             <p>Temps depuis le lancement du jeux </p>
-            <p id="chrono" chrono="16"></p>
+            <p id="chrono" chrono={{run}}></p>
 
             <!-- <p > Temps depuis le début du jeu : <span id="chrono" chrono="16"></span> </p> -->
 
@@ -93,7 +98,7 @@
                 <br>
                 <br>
                 <p> Délai avant de pouvoir passer commande chez ce fournisseur : </p>
-                <p class="timer-fournisseurs" timer="timer_agigreen"></p>
+                <p class="timer-fournisseurs" timer={{timer_agigreen}}></p>
               </div>
               <div class="rightbox">
 
@@ -106,7 +111,7 @@
                 <br>
 
                 <p> Délai avant de pouvoir passer commande chez ce fournisseur : </p>
-                <p class="timer-fournisseurs" timer="timer_agipart"></p>
+                <p class="timer-fournisseurs" timer={{timer_agipart}}></p>
               </div>
 
             </div>

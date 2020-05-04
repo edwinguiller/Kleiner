@@ -18,7 +18,7 @@
             <td>{{piece['id']}}</td>
             <td>{{piece['nom']}}</td>
             <td>{{piece['quantite']}}</td>
-            <td>{{piece['fournisseur']}}</td>
+            <td>{%if piece['fournisseur']==1%}<strong>AgiGreen</strong>{%endif%}{%if piece['fournisseur']==2%}<strong>AgiPart</strong>{%endif%}</td>
         </tr>
         {%endfor%}
     </table>

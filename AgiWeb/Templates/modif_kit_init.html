@@ -10,7 +10,7 @@
 				<option value="{{piece['nom']}}">{{piece['id']}}: {{piece['nom']}}</option>
 				{%endfor%}
 			</select>
-      <input type="hidden" name="choix" value="False">
+      <input type="hidden" name="choix" value=False>
 			<label for="quantite"> Quantitée :</label><input type="text" name="quantite" value="">
 			<select name="option">
 				<option value="">sélectionnez une option </option>
@@ -18,7 +18,7 @@
 				<option value="False">ajouter </option>
 			</select>
 			<input type="hidden" name="nom_kit_a_modif" value="{{d}}">
-			<input type="submit" value="ajouter pièce">
+			<input type="submit" value="Valider">
 			<nav class="menu-nav">
 				<ul>
 					<li class="bouton2"> <a href="{{url_for("code_kit")}}"> valider le kit </a> </li>

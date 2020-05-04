@@ -24,21 +24,35 @@
     <table>
       <tr>
         <th>id kit</th>
-        <th>piece dans kit</th>
+        <th>Nom du kit</th>
+        <th>Pieces dans kit</th>
       </tr>
       {%for kit in liste_id%}
       <tr>
         <td>{{kit[0]}}</td>
+        <td>{{kit[1]}}</td>
         <td>
           <ul>
             </br>
             {%for piece in tab_piece[loop.index0]%}
-            <li>{{piece['piece']}} : {{piece['quantite'] }} </li>
+            <li>{{piece['nom']}} : {{piece['quantite'] }} </li>
             {%endfor%}
           </ul>
         </td>
       </tr>
       {%endfor%}
     </table>
+
+    <h1>Supprimer kit:</h1>
+    <form action="{{url_for('supprimer_kit')}}" method="post">
+            <select name='nomdele'>
+                <option value='0'>Choisissez un kit à Supprimer</option>
+                {%for kit in liste_kit%}
+                  <option value='{{kit['nom_kit']}}'>{{kit['nom_kit']}}</option>
+                {%endfor%}
+            </select>
+            <input type="submit" value="supprimer">
+    </form>
+
   </body>
 </html>

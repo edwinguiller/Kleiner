@@ -6,9 +6,9 @@
 
 {% include "Navbar.html" %}
 
+<h1>Définition des porpriétés d'une pièce :</h1><br/>
+
 <div class='contenu'>
-    <h1>Définition des porpriétés d'une pièce :</h1><br/>
-    {% if msg!="" %}<strong>{{ msg }}</strong><br/><br/>{% endif %}
     <form method='post' action='{{ url_for("gestion_stock") }}'>
     <label for='seuile'>seuil de recompletement</label><input type='text' name='seuile' value=''>
     <label for='secue'>stock de secu</label><input type='text' name='secue' value=''>
@@ -20,8 +20,10 @@
             <option value='{{nom['nom']}}'>{{nom['nom']}}</option>
             {%endfor%}
         </select>
-    <input type='submit' value='ajouter'>
+
+    <input type='submit' value='Ajouter Pièce'>
     </form><br/>
+    {% if msg!="" %}<strong>{{ msg }}</strong><br/><br/>{% endif %}
 </div>
 
 </body>

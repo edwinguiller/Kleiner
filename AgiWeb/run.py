@@ -6,6 +6,17 @@ import random
 
 app = Flask(__name__)
 
+heure_debut_run=[[99999999999999]]
+@app.route('/LancerRun')
+def debutRun():
+    global heure_debut_run
+    con = lite.connect(cheminbdd)
+    con.row_factory = lite.Row
+    cur = con.cursor()
+    cur.execute("SELECT strftime( '%s','now')")
+    heure_debut_run=cur.fetchall()
+    return redirect(url_for('encoursAlog'))
+
 # Une belle (Hyp'ss) page d'accueil avec un lien vers la partie Agilean et un vers la partie Agilog
 @app.route('/')
 def index():
@@ -19,6 +30,10 @@ def agilog():
 
 @app.route('/Agilog/Encours')
 def encoursAlog():
+    # try:
+    con = lite.connect(cheminbdd)
+    con.row_factory = lite.Row
+    cur = con.cursor()
 
     # met a jour la colonne à commander des pièces (necessite de seuil_commande)
     seuil_commande()
@@ -34,7 +49,12 @@ def encoursAlog():
     timer_agigreen=time_fournisseur("agigreen")
     timer_agipart=time_fournisseur("agipart")
 
-    return render_template('encours_alog.html',tab_reel=tab_reel, tab_encours=tab_encours,timer_agigreen=timer_agigreen, timer_agipart=timer_agipart)
+    cur.execute("SELECT strftime( '%s','now')")
+    now=cur.fetchall()
+    chrono=int(now[0][0])-int(heure_debut_run[0][0])
+    return render_template('encours_alog.html',tab_reel=tab_reel, tab_encours=tab_encours,timer_agigreen=timer_agigreen, timer_agipart=timer_agipart,run=chrono)
+    # except :
+    #     return (render_template('AgiLog_accueil.html'))
 
 @app.route('/Agilog/Encours/<id>')  # route pour passer la pièce (dont l'idéee est séléctionnée) du stock encours à stock réel
 def actualize_id(id):
@@ -212,23 +232,23 @@ def ajout_piece():
             if (ide in test):
                 return render_template('ajout_piece.html',liste_id=liste_id,liste_fournisseur=liste_fournisseur, err_quant= err_quant, msg="Cette piece existe deja")
             else : #ajouter un createur d'id apres
-                cur.execute("INSERT INTO piece('nom', 'quantite', 'id', fournisseur) VALUES (?,?,?,?)", (nome,quantitee,ide, fournisseur))
+                cur.execute("INSERT INTO piece('nom', 'quantite', 'id', 'fournisseur','a_commander') VALUES (?,?,?,?,0)", (nome,quantitee,ide, fournisseur))
                 con.commit()
                 con.close()
                 msg = ''
                 return(redirect(url_for('ajout_piece')))
         else :
             return render_template('ajout_piece.html',liste_id=liste_id,liste_fournisseur=liste_fournisseur, err_quant= err_quant, msg="il faut saisir un nom et un id")
-    return render_template('ajout_piece.html', liste_id=liste_id,liste_fournisseur=liste_fournisseur, err_quant= err_quant, msg=msg); # LES PROGRAMMEURS a retoucher / separer  fonctions
+    return render_template('ajout_piece.html', liste_id=liste_id,liste_fournisseur=liste_fournisseur, err_quant= err_quant, msg=msg);
 
 
-@app.route('/Agilog/Initialisation/supp', methods=['GET', 'POST'])
+@app.route('/Agilog/Initialisation/suppPiece', methods=['GET', 'POST'])
 def supprimer_piece() :
     if not request.method == 'POST':
         return render_template('ajout_piece.html',liste_id=liste_id, err_quant= "", msg="",testnom="la methode n'est pas post")
     else :
         nomdele=request.form.get('nomdele','')
-        con = lite.connect(cheminbdd) #attention chez toi c'est pas rangé au meme endroit
+        con = lite.connect(cheminbdd)
         con.row_factory = lite.Row
         cur = con.cursor()
         cur.execute ("DELETE FROM 'piece' WHERE nom=?", [nomdele])
@@ -312,12 +332,27 @@ def code_kit():
     #création dico_kit
     dico_kit=[]
     for base in id :
-        cur.execute('SELECT piece, quantite FROM compo_kit WHERE kit=?;',[base[0]])
+        cur.execute('SELECT nom, c.quantite, kit.nom_kit FROM piece p JOIN (compo_kit c JOIN kit on kit.id=c.kit) on p.id=c.piece WHERE c.kit=?;',[base[0]])
         dico_kit.append(cur.fetchall())#dico_kit est une liste de dictionnaire ou chaque dictionnaire est un kit
     cur.execute("SELECT nom_kit FROM kit;")
     base=cur.fetchall()
     cur.close()
     return(render_template("Code_kit_init.html", msg="" ,tab_piece=dico_kit ,liste_kit=base ,liste_id=id ))
+
+@app.route('/Agilog/Initialisation/SuppKit', methods=['GET', 'POST'])
+def supprimer_kit() :
+    if not request.method == 'POST':
+        return render_template("Code_kit_init.html", msg="" ,tab_piece=dico_kit ,liste_kit=base ,liste_id=id )
+    else :
+        nomdele=request.form.get('nomdele','')
+        con = lite.connect(cheminbdd)
+        con.row_factory = lite.Row
+        cur = con.cursor()
+        cur.execute ("DELETE FROM 'kit' WHERE nom_kit=?", [nomdele])
+        con.commit()
+        con.close()
+        return(redirect(url_for('code_kit')))
+    return(redirect(url_for('code_kit')))
 
 @app.route('/Agilog/Initialisation/Code_kit/modif_kit', methods=['GET', 'POST'])
 def modif_kit():
@@ -330,13 +365,13 @@ def modif_kit():
     cur.execute("SELECT id, nom FROM piece;")
     pieces=cur.fetchall()
     kit_a_modif =request.form.get('nom_kit_a_modif')#nom du kit à créer ou à modifier
-    choix=True #c'est un booléen qui traduit la volonté de créer (True) un kit ou de le modifier(False)
+    choix=request.form.get('choix') #c'est un booléen qui traduit la volonté de créer (True) un kit ou de le modifier(False)
     kit_a_creer=choix_kit([kit_a_modif,choix])
     id_kit_a_modif=kit_a_creer[1]
     cur.execute("SELECT piece, quantite FROM compo_kit WHERE kit=?;",[id_kit_a_modif])
     piece_du_kit=cur.fetchall()
     if kit_a_creer[0]==None:
-        message="tu ne peux créer un kit déjà existant donc je te propose de le modifier"
+        message="Tu ne peux créer un kit déjà existant donc je te propose de le modifier"
     #recupération des variables :
     if not request.method == 'POST':
         return render_template('modif_kit_init.html',d=kit_a_modif, id=id_kit_a_modif,pieces = pieces,msg=message, piece_du_kit=piece_du_kit)
