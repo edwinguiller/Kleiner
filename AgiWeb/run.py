@@ -20,7 +20,7 @@ def agilog():
 @app.route('/Agilog/Encours')
 def encoursAlog():
 
-    # met a jour la colonne à commander des pièces (necessite de seuil_commande
+    # met a jour la colonne à commander des pièces (necessite de seuil_commande)
     seuil_commande()
 
     # la fonction select_encours renvois un dictionnaire avec comme colonne: "id","date","nom", "quantite","timer" de la commande

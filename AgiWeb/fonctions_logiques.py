@@ -4,7 +4,7 @@ import sqlite3 as lite
 import time
 from constantes import *
 
-def transformation(a):#on transforme la chaine pour qu'elle soit traitable
+def transformation(a):#on transforme la chaine pour qu'elle soit comparable
     c=str(a)
     supprimable = ['é', 'è', 'ê', 'à', 'ù', 'û', 'ç', 'ô', 'î', 'ï', 'â',' ', '-', '_','.', ',',"'",'!' ,':', '/']
     correct = ['e', 'e', 'e', 'a', 'u', 'u', 'c', 'o', 'i', 'i', 'a', '', '', '', '', '','', '', '', '']
@@ -13,29 +13,26 @@ def transformation(a):#on transforme la chaine pour qu'elle soit traitable
     c=c.lower()
     return(c)
 
-def compare_nom(a,b):#On regarde si a est dans b, b est une liste
+def compare_nom(a,l):#On regarde si a est dans l, l est une liste
     A=transformation(a)
-    B=[]
-    for i in range(len(b)):
-        B.append(transformation(b[i]))
-    if A in B:
-        return(True)
-    return(False)
+    L=[]
+    for i in l:
+        L.append(transformation(i))
+    return A in L
 
-def liste(b):#transforme un dictionnaire en liste
-    c=[]
-    for chaque in b:
-        c.append(chaque[0])
-    return(c)
+def liste(cur):#transforme un resultat de fetchall en liste
+    L=[]
+    for i in cur:
+        L.append(i[0])
+    return(L)
 
-def creer_id(b):#créé un id
-    c=liste(b)
-    taille=len(c)
-    if taille==0:
-        ide=1
+def creer_id(dict):#créé un id. ATTENTION dict ne doit contenir que des int
+    L=liste(dict)
+    if len(L)==0:
+        newid=1
     else:
-        ide=max(c)+1
-    return(ide)
+        newid=max(L)+1
+    return(newid)
 
 def demande_interaction(n,contenu):
     for i in range(n):
@@ -43,6 +40,7 @@ def demande_interaction(n,contenu):
         contenu += "<input type='str' name='nom_kit'+str(i)+'' value='' />"
     contenu += "<input type='submit' value='Envoyer'/> </form>"
     return(contenu)
+
 def recupere_interraction(n,contenu):
     L=[]
     for i in range(n):
@@ -50,7 +48,7 @@ def recupere_interraction(n,contenu):
         L.append(nom)
     return(L)
 
-def modifier_kit(nom_kit,pieces,quantites):#La piece est choisit parmit un menu dérouant donc il n'y a pas besoin de vérifier
+def modifier_kit(nom_kit,pieces,quantites):#La piece est choisie parmi un menu déroulant donc il n'y a pas besoin de vérifier
     return(ajouter_piece(compo_kit, [piece,quantite], [pieces,quantites], [str(),int()]))
 
 def quantite_bonne(quantite):
@@ -58,12 +56,8 @@ def quantite_bonne(quantite):
             quantite=int(quantite)
     except: #si la quantité est mauvaise alors message d'erreur
         return([quantite,False])
-    else:
-        quantite=int(quantite)
-        if quantite>0:
-            return([quantite,True])
-        else:
-            return([quantite,False])
+    quantite=int(quantite)
+    return([quantite,quantite>0])
 
 def choix_kit(nom_du_kit):#nom_du_kit est une liste ["nom du kit",True/false] selon si on veut modifier ou creer le kit
 #la fonction execute l'ordre et retourne une liste [nom_du_kit/None,l'id du kit]
@@ -94,7 +88,6 @@ def choix_kit(nom_du_kit):#nom_du_kit est une liste ["nom du kit",True/false] se
        cur.execute("SELECT id from kit WHERE nom_kit=?;",[nom_du_kit[0]])
        id_kit=liste(cur.fetchall())[0]
        return([nom_du_kit,id_kit])
-
 
 def ajouter_bdd(base, colonne, entree, types): # prend en argument  une base (ex: piece), les colonnes que l'on veut modifier (une liste ex: [id, nom...]), les entrées (valeurs) et le type de ces valeurs
 
@@ -149,7 +142,7 @@ def testin (base, colonne, entree): # test si l entree (une seule) est deja dans
         return error
     return retour
 
-def test_rien(entree): # test si les entree (tableau) ne sont pas vide, renvois 1 si une valeur est vide et 0 sinon
+def test_rien(entree): # test si les entree (d'une table) ne sont pas vide, renvois 1 si une valeur est vide et 0 sinon
 
     taille=len(entree)
     for i in range (0,taille):
@@ -239,7 +232,7 @@ def seuil_commande (): #stock, nom et seuil_recomp sont des listes et si les sto
 
 def tableau (base,colonne): #prend les infos d'une base, et les rentres dans un tableau avec tableau[0]= colonne[0], tableau[1]=colonne[1]...
 
-    con = lite.connect(cheminbdd) #attention chez toi c'est pas rangé au meme endroit
+    con = lite.connect(cheminbdd)
     con.row_factory = lite.Row
     cur = con.cursor()
     tableau=[]*len(colonne)
@@ -249,24 +242,26 @@ def tableau (base,colonne): #prend les infos d'une base, et les rentres dans un 
         listes=liste(cur.fetchall())
         tableau.append(listes)
     return tableau
+
 def tab (listesql): #prend une liste sql et la transforme en tableau
 
-    tt=[]
+    T=[]
     for i in listesql:
-        a=[]
+        L=[]
         for j in i:
-            a.append(j)
-        tt.append(a)
-    if (tt!=[]):
-        ttt=[0]*len(tt[0])
-        for i in range (0,len(tt[0])):
-            ttt[i]=[0]*len(tt)
-        for i in range (0,len(tt[0])):
-                for j in range (0,len(tt)):
-                    ttt[i][j]=tt[j][i]
+            L.append(j)
+        T.append(L)
+    if (T!=[]):
+        t=[0]*len(T[0])
+        for i in range (0,len(T[0])):
+            t[i]=[0]*len(T)
+        for i in range (0,len(T[0])):
+                for j in range (0,len(T)):
+                    t[i][j]=T[j][i]
     else:
-        return (tt)
-    return(ttt)
+        return (T)
+    return(t)
+
 def convert_dict(L,c1=None,c2=None,c3=None,c4=None,c5=None,c6=None,c7=None,c8=None): #ci colonnes, ce sont des strings
     D=dict()
     C=[c1,c2,c3,c4,c5,c6,c7,c8]
@@ -307,9 +302,8 @@ def select_stock_reel (): #selectionne les stocks reel pour pouvoir ensuite les 
 
     return b
 
-
 def select_commande_fournisseur (fournisseur): #prend le fournisseur en lettre minuscule et("agigreen" ou "agipart") et renvoi les id, nom et quantité des pièces à commander du fournisseur
-    #fonctionne uniquement si il y'a quelque chose dans la colonne à commander (0 ou 1) pour les 2 fournisseur mais pas si il y'a que des NULL, si il y a que des NULL c'est chiant faut que je fasse un test pour ca
+    #fonctionne uniquement si il y'a quelque chose dans la colonne à commander (0 ou 1) pour les 2 fournisseur
     con = lite.connect(cheminbdd)
     con.row_factory = lite.Row
     cur = con.cursor()
@@ -321,29 +315,22 @@ def select_commande_fournisseur (fournisseur): #prend le fournisseur en lettre m
     else:
         return ERREUR
     cur.execute("SELECT id , nom, quantite FROM piece WHERE a_commander=? and fournisseur=?", [1,fourniss])
-    b=cur.fetchall()
+    piece_a_commander=cur.fetchall()
     cur.execute("SELECT seuil_recomp, quantite FROM piece WHERE a_commander=? and fournisseur=?", [1,fourniss])
     modif_quantite=cur.fetchall()
-    essai=tab(b)
-    for i in range (0,len(b)):
-        a=dict()
-        k=modif_quantite[i][0]-modif_quantite[i][1]
-        l=essai[0][i]
-        m=essai[1][i]
-        a["quantite"]=k
-        a["id"]=l
-        a["nom"]=m
-        b.append(a)
-        del (a)
-    taille=int(len(b)/2)
+    pac=tab(piece_a_commander)
+    for i in range (0,len(piece_a_commander)):
+        d=dict()
+        d["quantite"]=modif_quantite[i][0]-modif_quantite[i][1]
+        d["id"]=pac[0][i]
+        d["nom"]=pac[1][i]
+        piece_a_commander.append(d)
+        del (d)
+    taille=int(len(piece_a_commander)/2)
     for i in range (0,taille):
-        del(b[0])
-    for i in b:
-        for j in i:
-            print (j)
+        del(piece_a_commander[0])
     con.close()
-
-    return b
+    return piece_a_commander
 
 def passer__commande(commande): #prend en argument le dictionnaire commande avec les id des pieces, leurs nom et la quantite et créer la commande et la compo commande associé
 
@@ -355,8 +342,6 @@ def passer__commande(commande): #prend en argument le dictionnaire commande avec
     for piece in commande:
         commande_id.append(piece['id'])
         commande_quantite.append(piece['quantite'])
-    print (commande_id)
-    print (commande_quantite)
     if (commande==[]):
         return
     d=tab(commande)
@@ -403,7 +388,6 @@ def time_fournisseur(fournisseur): # prend en argumant un fournisseur ('agigreen
         return ERREUR
     cur.execute("SELECT strftime('%s',strftime('%H:%M:%S',(SELECT derniere_com FROM fournisseur WHERE fournisseur.id=?)))-strftime('%s',strftime('%H:%M:%S','now'))",[fourniss])
     timer=cur.fetchall()
-    print (timer)
     return timer
 
 def commander_kit(id,quantite): # au moment de commander un kit pour agilean, rajoute ce kit en production, et décrémente les stocks de pièce d'agilog
