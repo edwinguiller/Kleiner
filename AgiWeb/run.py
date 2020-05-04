@@ -36,7 +36,7 @@ def encoursAlog():
     timer_agigreen=time_fournisseur("agigreen")
     timer_agipart=time_fournisseur("agipart")
 
-    return render_template('encours_alog.html',tab_reel=tab_reel, tab_encours=tab_encours,timer_agigreen=timer_agigreen, timer_agipert=timer_agipart)
+    return render_template('encours_alog.html',tab_reel=tab_reel, tab_encours=tab_encours,timer_agigreen=timer_agigreen, timer_agipart=timer_agipart)
 
 @app.route('/Agilog/Encours/<id>')  # route pour passer la pièce (dont l'idéee est séléctionnée) du stock encours à stock réel: Programmeur à faire
 def actualize_id(id): #Programmeur à faire

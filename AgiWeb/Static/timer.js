@@ -69,6 +69,7 @@ const TIME_SCRIPT_START = new Date().getTime();
 timerProductsHtml = document.getElementsByClassName("timer") // on recupére tout les timers (objets html) que l'on met dans cette liste
 
 toWatchEl = [] //on va mettre tout les chronos, timers (objet js) dans cette liste
+for (const timerProductHtml of timerProductsHtml) {
   toWatchEl.push(new TimerProducts(timerProductHtml))
 }
 
