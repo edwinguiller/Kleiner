@@ -30,22 +30,15 @@ def encoursAlog():
     # la fonction select_stockreel renvois un dicionnaire avec comme colonne: "id","nom","quantite", "a_commander".
     # Toutes les pieces y sont renseigné. Les quantités sont les stocks. Les a_commander sont des "OUI" si il faut commander ou "NON" si il n'y'a pas besoin encore et non pas des 1 et 0 comme dans la base de donné.
     tab_reel=select_stock_reel()
-    #list_of_list = zip(tab_reel['id'],  tab_reel['nom'], tab_reel['quantite'], tab_reel['a_commander'])
-    #print(zip(tab_reel['id'],  tab_reel['nom'], tab_reel['quantite'], tab_reel['a_commander']))
 
     timer_agigreen=time_fournisseur("agigreen")
     timer_agipart=time_fournisseur("agipart")
 
     return render_template('encours_alog.html',tab_reel=tab_reel, tab_encours=tab_encours,timer_agigreen=timer_agigreen, timer_agipert=timer_agipart)
 
-@app.route('/Agilog/Encours/<id>')  # route pour passer la pièce (dont l'idéee est séléctionnée) du stock encours à stock réel: Programmeur à faire
-def actualize_id(id): #Programmeur à faire
-    # TODO: handle the id in the sql
-
+@app.route('/Agilog/Encours/<id>')  # route pour passer la pièce (dont l'idéee est séléctionnée) du stock encours à stock réel
+def actualize_id(id):
     valider_reception_commande(id)
-
-    # return render_template('encours_alog.html')
-
     return redirect(url_for('encoursAlog'))
 
 @app.route('/Agilog/Encours/Commande_agigreen')
@@ -53,8 +46,8 @@ def cmd_green():# renvoit la page Commande_agigreen!
     seuil_commande()
     commande=select_commande_fournisseur ("agigreen")
     # la fonction select_commande_fournisseur prend en argumant ("agipart") ou ("agigreen") en fonctioon du fournisseur qu'on veut, et renvois un dicionnaire avec comme colonne: "id","nom","quantite".
-    # Les pieces renseigné sont les pièces à commander qui sont fourni par le fournisseur choisi. Les quantités sont les stocks.
-    # Attention il faut que la bdd soit rempli pour que ca marche. si la ligne piece.a_commander n'est pas rempli, elle ne peut rien renvoyer!
+    # Les pieces renseignées sont les pièces à commander qui sont fournies par le fournisseur choisi. Les quantités sont les stocks.
+    # Attention il faut que la bdd soit remplie pour que ca marche. si la ligne piece.a_commander n'est pas rempli, elle ne peut rien renvoyer!
     return render_template('cmd_agigreen.html',liste_commande_green=commande)
 
 @app.route('/Agilog/Encours/Commande_agipart')
@@ -63,112 +56,101 @@ def cmd_part():# renvoit la page Commande_agipart!
     commande=select_commande_fournisseur ("agipart")
     return render_template('cmd_agipart.html',liste_commande_part=commande)
 
-@app.route('/Agilog/Encours/Commande_agipart/button')
+@app.route('/Agilog/Encours/Commande_agipart/Button')
 def valider_commande_part(): #à faire
-
-
-    commande=select_commande_fournisseur ("agipart") #commandepart non ? sinon ca se mélange avec green
-
+    commande=select_commande_fournisseur ("agipart")
     # prend en argument la commande donnée par la fonction select_commande_fournisseur et ajoute les pieces dans les commande en en créant une nouvelle
-    # a voir comment l'utiliser
     passer__commande(commande)
     return redirect(url_for('encoursAlog'))
 
-
-
-@app.route('/Agilog/Encours/Commande_agigreen/button')
+@app.route('/Agilog/Encours/Commande_agigreen/Button')
 def valider_commande_green(): #à faire
-
-
     commande=select_commande_fournisseur ("agigreen")
-
     # prend en argument la commande donnée par la fonction select_commande_fournisseur et ajoute les pieces dans les commande en en créant une nouvelle
-    # a voir comment l'utiliser
     passer__commande(commande)
     return redirect(url_for('encoursAlog'))
 
-
-@app.route('/Agilog/Encours/Declarer_kit', methods=['GET', 'POST'])#recupere 2 variable nom et prnom et les ajoutent a la base de données (a modifier pour mettre piece et quantite)
-def declarer_kit():
-
-    contenu = ""
-    contenu += "<form method='get' action='declarer_kit'>"
-    contenu += "num kit "
-    contenu += "<input type='text' name='num_kit' value=''>"
-    contenu += "<input type='submit' value='Envoyer'>"
-
-    num_kite=request.args.get('num_kit','')
-    #génération de l'id
-    con = lite.connect(cheminbdd) #attention chez toi c'est pas rangé au meme endroit
-    con.row_factory = lite.Row
-    cur = con.cursor()
-    cur.execute("SELECT id FROM production")
-    liste_id1 = cur.fetchall()
-    liste_id2=[]
-    for chaque in liste_id1:
-        liste_id2.append(int(chaque[0]))
-    if len(liste_id2)==0:
-        newid=1
-    else:
-        newid=max(liste_id2)+1
-    con.close()
-
-    con = lite.connect(cheminbdd)
-    con.row_factory = lite.Row
-    cur = con.cursor()
-    a=0
-    d=cur.execute(" SELECT datetime('now')")
-    if (num_kite!=""):
-        d=cur.execute(" SELECT datetime('now')")
-        cur.execute("INSERT INTO production('id', 'kit', 'fini','date') VALUES (?,?,?,?)", [newid ,num_kite ,1, d ])
-    #con.commit()#enregistrer la requete de modification.
-    cur.execute("SELECT id, kit, fini, date FROM Production;")
-    liste = cur.fetchall()
-    #
-    for chaque in liste:
-        contenu += "<br/>"
-        contenu += str(chaque[0]) + " "
-        contenu += str(chaque[1]) + " "
-        contenu += str(chaque[2]) + " "
-        contenu += str(chaque[3]) + " "
-    con.close()
-
-    return contenu;
-
-@app.route('/Agilog/Encours/Aff_stock', methods=['GET']) #la page pour passer une commande
-def commande():
-
-    contenu = ""
-    con = lite.connect(cheminbdd) #attention chez toi c'est pas rangé au meme endroit
-    con.row_factory = lite.Row
-    cur = con.cursor()
-    cur.execute("SELECT datetime('now')")
-    d=str(cur.fetchall()[0][0])
-    contenu += d
-
-    cur.execute("SELECT nom FROM piece")
-    nom = cur.fetchall()
-    liste_nom=liste(nom)
-    cur.execute("SELECT quantite FROM piece")
-    quantite = cur.fetchall()
-    liste_quantite=liste(quantite)
-    cur.execute("SELECT seuil_recomp FROM piece")
-    seuil = cur.fetchall()
-    liste_seuil=liste(seuil)
-
-    seuil_commande (liste_quantite,liste_seuil,liste_nom)
-
-    cur.execute("SELECT a_commander FROM piece")
-    commande = cur.fetchall()
-    liste_commande=liste(commande)
-    for i in range (0,len(liste_commande)):
-        print (liste_commande[i])
-        print (liste_nom[i])
-
-    con.commit
-    con.close
-
-    return contenu
+# @app.route('/Agilog/Encours/Declarer_kit', methods=['GET', 'POST'])#recupere 2 variable nom et prnom et les ajoutent a la base de données
+# def declarer_kit():
+#
+#     contenu = ""
+#     contenu += "<form method='get' action='declarer_kit'>"
+#     contenu += "num kit "
+#     contenu += "<input type='text' name='num_kit' value=''>"
+#     contenu += "<input type='submit' value='Envoyer'>"
+#
+#     num_kite=request.args.get('num_kit','')
+#     #génération de l'id
+#     con = lite.connect(cheminbdd)
+#     con.row_factory = lite.Row
+#     cur = con.cursor()
+#     cur.execute("SELECT id FROM production")
+#     liste_id1 = cur.fetchall()
+#     liste_id2=[]
+#     for chaque in liste_id1:
+#         liste_id2.append(int(chaque[0]))
+#     if len(liste_id2)==0:
+#         newid=1
+#     else:
+#         newid=max(liste_id2)+1
+#     con.close()
+#
+#     con = lite.connect(cheminbdd)
+#     con.row_factory = lite.Row
+#     cur = con.cursor()
+#     a=0
+#     d=cur.execute(" SELECT datetime('now')")
+#     if (num_kite!=""):
+#         d=cur.execute(" SELECT datetime('now')")
+#         cur.execute("INSERT INTO production('id', 'kit', 'fini','date') VALUES (?,?,?,?)", [newid ,num_kite ,1, d ])
+#     #con.commit()#enregistrer la requete de modification.
+#     cur.execute("SELECT id, kit, fini, date FROM Production;")
+#     liste = cur.fetchall()
+#     #
+#     for chaque in liste:
+#         contenu += "<br/>"
+#         contenu += str(chaque[0]) + " "
+#         contenu += str(chaque[1]) + " "
+#         contenu += str(chaque[2]) + " "
+#         contenu += str(chaque[3]) + " "
+#     con.close()
+#
+#     return contenu;
+#
+# @app.route('/Agilog/Encours/Aff_stock', methods=['GET']) #la page pour passer une commande
+# def commande():
+#
+#     contenu = ""
+#     con = lite.connect(cheminbdd) #attention chez toi c'est pas rangé au meme endroit
+#     con.row_factory = lite.Row
+#     cur = con.cursor()
+#     cur.execute("SELECT datetime('now')")
+#     d=str(cur.fetchall()[0][0])
+#     contenu += d
+#
+#     cur.execute("SELECT nom FROM piece")
+#     nom = cur.fetchall()
+#     liste_nom=liste(nom)
+#     cur.execute("SELECT quantite FROM piece")
+#     quantite = cur.fetchall()
+#     liste_quantite=liste(quantite)
+#     cur.execute("SELECT seuil_recomp FROM piece")
+#     seuil = cur.fetchall()
+#     liste_seuil=liste(seuil)
+#
+#     seuil_commande (liste_quantite,liste_seuil,liste_nom)
+#
+#     cur.execute("SELECT a_commander FROM piece")
+#     commande = cur.fetchall()
+#     liste_commande=liste(commande)
+#     for i in range (0,len(liste_commande)):
+#         print (liste_commande[i])
+#         print (liste_nom[i])
+#
+#     con.commit
+#     con.close
+#
+#     return contenu
 
 
 #La page Initialisation
